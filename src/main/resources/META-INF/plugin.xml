@@ -1,0 +1,23 @@
+<idea-plugin>
+    <id>jetbeans.jetbeans</id>
+    <name>JetBeans</name>
+    <vendor email="andbondstyle@gmail.com" url="https://github.com/AndBondStyle">AndBondStyle</vendor>
+
+    <description>
+        JavaBeans&#8482; component model visual editor
+    </description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
