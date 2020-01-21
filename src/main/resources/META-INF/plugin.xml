@@ -16,6 +16,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="Bean" implementationClass="JetBeansFileType" fieldName="INSTANCE" language="JetBeans"
                   extensions="bb"/>
+        <fileEditorProvider implementation="JetBeansFileEditorProvider"/>
     </extensions>
 
     <actions>
