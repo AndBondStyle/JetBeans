@@ -7,11 +7,7 @@
         JavaBeans&#8482; component model visual editor
     </description>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
-    <depends>com.intellij.modules.lang</depends>
-    -->
+    <!--<depends>com.intellij.modules.lang</depends>-->
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="JetBeans Component" implementationClass="integration.CustomFileType" fieldName="INSTANCE"
@@ -20,6 +16,9 @@
     </extensions>
 
     <actions>
-        <!-- Add your actions here -->
+        <action id="NewJetBeansFile" class="integration.CustomNewFileAction" text="JetBeans Component"
+                description="New JetBeans component"> <!-- TODO: ACTION ICON -->
+            <add-to-group group-id="NewGroup" anchor="first"/>
+        </action>
     </actions>
 </idea-plugin>
