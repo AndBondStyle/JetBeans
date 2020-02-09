@@ -16,8 +16,8 @@
     </extensions>
 
     <actions>
-        <action id="NewJetBeansFile" class="integration.CustomNewFileAction" text="JetBeans Component"
-                description="New JetBeans component"> <!-- TODO: ACTION ICON -->
+        <action id="JetBeans.NewFile" class="integration.CustomNewFileAction" text="JetBeans Component"
+                description="New JetBeans component">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>
     </actions>

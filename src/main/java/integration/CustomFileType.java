@@ -10,7 +10,7 @@ import javax.swing.*;
 
 public class CustomFileType extends XmlLikeFileType implements UIBasedFileType {
     public static final CustomFileType INSTANCE = new CustomFileType();
-    private static final Icon ICON = IconLoader.getIcon("../jar-gray.png");
+    public static final Icon ICON = IconLoader.getIcon("../jar-gray.png");
 
     private CustomFileType() {
         super(CustomLanguage.INSTANCE);
