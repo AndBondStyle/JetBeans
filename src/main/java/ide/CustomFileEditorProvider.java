@@ -1,4 +1,4 @@
-package integration;
+package ide;
 
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorPolicy;

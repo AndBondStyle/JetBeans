@@ -10,13 +10,13 @@
     <!--<depends>com.intellij.modules.lang</depends>-->
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="JetBeans Component" implementationClass="integration.CustomFileType" fieldName="INSTANCE"
+        <fileType name="JetBeans Component" implementationClass="ide.CustomFileType" fieldName="INSTANCE"
                   language="JetBeans" extensions="bb"/>
-        <fileEditorProvider implementation="integration.CustomFileEditorProvider"/>
+        <fileEditorProvider implementation="ide.CustomFileEditorProvider"/>
     </extensions>
 
     <actions>
-        <action id="JetBeans.NewFile" class="integration.CustomNewFileAction" text="JetBeans Component"
+        <action id="JetBeans.NewFile" class="ide.CustomNewFileAction" text="JetBeans Component"
                 description="New JetBeans component">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>

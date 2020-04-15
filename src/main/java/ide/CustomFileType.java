@@ -1,4 +1,4 @@
-package integration;
+package ide;
 
 import com.intellij.ide.highlighter.XmlLikeFileType;
 import com.intellij.openapi.fileTypes.UIBasedFileType;

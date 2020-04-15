@@ -1,4 +1,4 @@
-package integration;
+package ide;
 
 import com.intellij.lang.Language;
 
