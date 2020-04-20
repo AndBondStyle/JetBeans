@@ -8,8 +8,8 @@ import java.awt.*;
 
 // Helper widget that actually holds canvas' contents
 public class Content extends JBPanel<Content> {
-    public static int GRID_THICKNESS = 1;
-    public static int GRID_STEP = 50;
+    static int GRID_THICKNESS = 1;
+    static int GRID_STEP = 50;
 
     @Override
     public Color getBackground() {
