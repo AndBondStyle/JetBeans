@@ -7,7 +7,7 @@ import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.components.JBPanel;
+import gui.MainFrame;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,9 +24,7 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor {
     public CustomFileEditor(Project project, VirtualFile file) {
         this.project = project;
         this.file = file;
-        this.component = new JBPanel<>();
-        this.component.add(new JLabel("TEST FILE EDITOR"));
-        this.component.add(new JButton("TEST BUTTON (TOUCHY)"));
+        this.component = new MainFrame();
     }
 
     @NotNull
