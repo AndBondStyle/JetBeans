@@ -30,6 +30,7 @@ public class Canvas extends JBPanel<Canvas> implements MouseListener, MouseMotio
     boolean resizing = false;
 
     public Canvas() {
+        content.setFocusable(true);
         glass.setOpaque(false);
         glass.setFocusable(false);
         glass.addMouseListener(this);
@@ -60,6 +61,7 @@ public class Canvas extends JBPanel<Canvas> implements MouseListener, MouseMotio
         if (this.selection != null) ((Selectable) this.selection).setSelected(false);
         if (selection != null) ((Selectable) selection).setSelected(true);
         this.selection = selection;
+        if (this.selection == null) content.requestFocus();
     }
 
     // Events section
@@ -70,12 +72,15 @@ public class Canvas extends JBPanel<Canvas> implements MouseListener, MouseMotio
         if (target == content) target = null;
         // Convert & re-dispatch event
         if (target != null) {
+            // Dispatch to real target
+            MouseEvent ee = SwingUtilities.convertMouseEvent(content, e, target);
+            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(ee);
+            // Find our component (probably Wrapper or Link)
             while (target.getParent() != content) target = target.getParent();
             e = SwingUtilities.convertMouseEvent(content, e, target);
-            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(e);
+            // Check if component actually contains point
+            if (!target.contains(e.getX(), e.getY())) target = null;
         }
-        // Check if component actually contains point
-        if (target != null && !target.contains(e.getX(), e.getY())) target = null;
         return target;
     }
 
