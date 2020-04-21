@@ -2,24 +2,15 @@ package gui.wrapper;
 
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBPanel;
-import gui.common.Selectable;
+import gui.canvas.CanvasItem;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 
-public class Wrapper extends JBPanel<Wrapper> implements Selectable {
-    static Color SELECTION_BORDER_COLOR = JBColor.CYAN;
-    static int SELECTION_BORDER_WIDTH = 2;
-
-    // Selectable interface impl.
-    boolean isSelected = false;
-    public boolean isSelected() { return isSelected; }
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-        setBorder(getBorder());
-        repaint();
-    }
+public class Wrapper extends JBPanel<Wrapper> implements CanvasItem {
+    static Color SEL_BORDER_COLOR = JBColor.CYAN;
+    static int SEL_BORDER_WIDTH = 2;
 
     Component target;
 
@@ -27,20 +18,46 @@ public class Wrapper extends JBPanel<Wrapper> implements Selectable {
         this.target = target;
         this.setLayout(new BorderLayout());
         this.add(target, BorderLayout.CENTER);
-        setSelected(false);
+        updateBorder(false);
     }
 
     @Override
-    public Border getBorder() {
-        return isSelected
-                ? BorderFactory.createLineBorder(SELECTION_BORDER_COLOR, SELECTION_BORDER_WIDTH)
-                : BorderFactory.createLineBorder(new Color(0, 0, 0, 0), SELECTION_BORDER_WIDTH);
+    public void setSelected(boolean selected) {
+        updateBorder(selected);
+        repaint();
+    }
+
+    void updateBorder(boolean selected) {
+        Border border = selected
+                ? BorderFactory.createLineBorder(SEL_BORDER_COLOR, SEL_BORDER_WIDTH)
+                : BorderFactory.createEmptyBorder(SEL_BORDER_WIDTH, SEL_BORDER_WIDTH, SEL_BORDER_WIDTH, SEL_BORDER_WIDTH);
+        setBorder(border);
+    }
+
+    @Override
+    public boolean isResizable() {
+        return true;
+    }
+
+    @Override
+    public boolean isMovable() {
+        return true;
+    }
+
+    @Override
+    public boolean isSelectable() {
+        return true;
+    }
+
+    @Override
+    public boolean isDeletable() {
+        return true;
     }
 
     Dimension fixSize(Dimension size) {
         return new Dimension(
-            size.width + SELECTION_BORDER_WIDTH * 2,
-            size.height + SELECTION_BORDER_WIDTH * 2
+                size.width + SEL_BORDER_WIDTH * 2,
+                size.height + SEL_BORDER_WIDTH * 2
         );
     }
 
