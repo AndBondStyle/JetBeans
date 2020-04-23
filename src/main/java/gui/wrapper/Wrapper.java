@@ -11,11 +11,13 @@ import java.awt.*;
 public class Wrapper extends JBPanel<Wrapper> implements CanvasItem {
     static Color SEL_BORDER_COLOR = JBColor.CYAN;
     static int SEL_BORDER_WIDTH = 2;
+    static int SEL_BORDER_EXTRA = 2;
 
     Component target;
 
     public Wrapper(Component target) {
         this.target = target;
+        this.setOpaque(false);
         this.setLayout(new BorderLayout());
         this.add(target, BorderLayout.CENTER);
         updateBorder(false);
@@ -28,9 +30,14 @@ public class Wrapper extends JBPanel<Wrapper> implements CanvasItem {
     }
 
     void updateBorder(boolean selected) {
+        int extra = SEL_BORDER_EXTRA;
+        int total = SEL_BORDER_WIDTH + SEL_BORDER_EXTRA;
         Border border = selected
-                ? BorderFactory.createLineBorder(SEL_BORDER_COLOR, SEL_BORDER_WIDTH)
-                : BorderFactory.createEmptyBorder(SEL_BORDER_WIDTH, SEL_BORDER_WIDTH, SEL_BORDER_WIDTH, SEL_BORDER_WIDTH);
+                ? BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(extra, extra, extra, extra),
+                BorderFactory.createLineBorder(SEL_BORDER_COLOR, SEL_BORDER_WIDTH)
+        )
+                : BorderFactory.createEmptyBorder(total, total, total, total);
         setBorder(border);
     }
 
@@ -54,10 +61,10 @@ public class Wrapper extends JBPanel<Wrapper> implements CanvasItem {
         return true;
     }
 
-    Dimension fixSize(Dimension size) {
+    public Dimension fixSize(Dimension size) {
         return new Dimension(
-                size.width + SEL_BORDER_WIDTH * 2,
-                size.height + SEL_BORDER_WIDTH * 2
+                size.width + (SEL_BORDER_WIDTH + SEL_BORDER_EXTRA) * 2,
+                size.height + (SEL_BORDER_WIDTH + SEL_BORDER_EXTRA) * 2
         );
     }
 

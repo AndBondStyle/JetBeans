@@ -3,10 +3,7 @@ package gui.canvas;
 import com.intellij.ui.JBIntSpinner;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
-import gui.canvas.helpers.Helper;
-import gui.canvas.helpers.MoveHelper;
-import gui.canvas.helpers.PanHelper;
-import gui.canvas.helpers.SelectHelper;
+import gui.canvas.helpers.*;
 import gui.wrapper.Wrapper;
 
 import javax.swing.*;
@@ -23,9 +20,10 @@ public class Canvas extends JBPanel<Canvas> {
 
     public Cursor cursor;
     public Helper[] helpers = {
+            new PanHelper(),
             new SelectHelper(),
+            new ResizeHelper(),
             new MoveHelper(),
-            new PanHelper()
     };
 
     public Canvas() {
@@ -41,7 +39,7 @@ public class Canvas extends JBPanel<Canvas> {
         JComponent temp = new JBIntSpinner(50, 0, 100, 1);
         Wrapper wrapper = new Wrapper(temp);
         content.add(wrapper, JLayeredPane.DEFAULT_LAYER);
-        wrapper.setSize(temp.getPreferredSize());
+        wrapper.setSize(wrapper.fixSize(temp.getPreferredSize()));
         wrapper.setLocation(100, 100);
     }
 
@@ -54,13 +52,11 @@ public class Canvas extends JBPanel<Canvas> {
             target = SwingUtilities.getDeepestComponentAt(item, p.x, p.y);
             if (target != null) this.cursor = target.getCursor();
         }
-//        System.out.println("ITEM: " + item + " TARGET: " + target + " CURSOR: " + this.cursor);
-        for (Helper helper : helpers) helper.process(e, (CanvasItem) item, target);
+        for (Helper helper : helpers) helper.process(e, (CanvasItem) item);
         if (target != null && !e.isConsumed()) {
             MouseEvent ee = SwingUtilities.convertMouseEvent(content, e, target);
             target.dispatchEvent(ee);
         }
-//        System.out.println("CURR CURSOR: " + content.glass.getCursor() + " NEW CURSOR: " + this.cursor);
         if (this.cursor != content.glass.getCursor()) content.glass.setCursor(this.cursor);
     }
 

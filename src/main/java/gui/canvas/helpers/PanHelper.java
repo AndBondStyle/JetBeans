@@ -7,47 +7,71 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class PanHelper extends Helper {
-    Point prevPos = null;
+    Point oldLocation = null;
+    Point oldPoint = null;
+    int button = -1;
 
     @Override
-    public void process(MouseEvent e, CanvasItem item, Component target) {
-        super.process(e, item, target);
-        if (!active) {
-            if (item == null) parent.cursor = getCursor();
-            if (e.getID() == MouseEvent.MOUSE_PRESSED) {
-                if ((item == null && e.getButton() == MouseEvent.BUTTON1) || e.getButton() == MouseEvent.BUTTON2) {
-                    active = true;
-                    prevPos = parent.scroll.getViewport().getViewPosition();
-                    e.consume();
-                }
-            }
-        } else {
-            parent.cursor = getCursor();
-            e.consume();
-            if (e.getID() == MouseEvent.MOUSE_RELEASED) active = false;
-            if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
-                Point pos = parent.scroll.getViewport().getViewPosition();
-                JViewport viewport = parent.scroll.getViewport();
-
-                if (!pos.equals(prevPos)) {
-                    // Looks like mouse wheel was used...
-                    Point externalDelta = new Point(pos.x - prevPos.x, pos.y - prevPos.y);
-                    prevPoint.translate(externalDelta.x, externalDelta.y);
-                    delta = new Point(prevPoint.x - currPoint.x, prevPoint.y - currPoint.y);
-                }
-
-                pos.translate(delta.x, delta.y);
-                pos.x = Math.min(Math.max(pos.x, 0), parent.content.getWidth() - viewport.getWidth());
-                pos.y = Math.min(Math.max(pos.y, 0), parent.content.getHeight() - viewport.getHeight());
-                parent.scroll.getViewport().setViewPosition(pos);
-                currPoint.translate(delta.x, delta.y);
-                prevPos = pos;
-            }
-        }
+    boolean checkStart() {
+        if (this.event.isConsumed()) return false;
+        if (checkEvent(MouseEvent.BUTTON2, MouseEvent.MOUSE_PRESSED)) return true;
+        return this.target == null && checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_PRESSED);
     }
 
-    Cursor getCursor() {
-        // TODO: ???
-        return Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    @Override
+    void processStart() {
+        super.processStart();
+        this.event.consume();
+        this.parent.cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
+
+        this.oldLocation = this.parent.scroll.getViewport().getViewPosition();
+        this.button = this.event.getButton();
+        System.out.println("PAN ACTION STARTED");
+    }
+
+    @Override
+    boolean checkProgress() {
+        if (this.event.isConsumed()) return false;
+        this.parent.cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
+        return checkEvent(this.button, MouseEvent.MOUSE_DRAGGED);
+    }
+
+    @Override
+    void processPorgress() {
+        super.processPorgress();
+        this.event.consume();
+        Point pos = this.parent.scroll.getViewport().getViewPosition();
+        JViewport viewport = this.parent.scroll.getViewport();
+
+        if (!pos.equals(this.oldLocation)) {
+            // Looks like mouse wheel was used...
+            Point externalDelta = new Point(pos.x - this.oldLocation.x, pos.y - this.oldLocation.y);
+            this.oldPoint.translate(externalDelta.x, externalDelta.y);
+        }
+
+        Point delta = new Point(this.oldPoint.x - this.point.x, this.oldPoint.y - this.point.y);
+        pos.translate(delta.x, delta.y);
+        pos.x = Math.min(Math.max(pos.x, 0), this.parent.content.getWidth() - viewport.getWidth());
+        pos.y = Math.min(Math.max(pos.y, 0), this.parent.content.getHeight() - viewport.getHeight());
+        this.parent.scroll.getViewport().setViewPosition(pos);
+        this.point.translate(delta.x, delta.y);
+        this.oldLocation = pos;
+    }
+
+    @Override
+    boolean checkEnd() {
+        return checkEvent(this.button, MouseEvent.MOUSE_RELEASED);
+    }
+
+    @Override
+    void processEnd() {
+        super.processEnd();
+        System.out.println("PAN ACTION ENDED");
+    }
+
+    @Override
+    public void process(MouseEvent e, CanvasItem item) {
+        this.oldPoint = this.point;
+        super.process(e, item);
     }
 }
