@@ -4,6 +4,7 @@ import gui.canvas.CanvasItem;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.CubicCurve2D;
 
 public class Link extends JPanel implements CanvasItem {
     static int THICKNESS = 2;
@@ -11,9 +12,8 @@ public class Link extends JPanel implements CanvasItem {
 
     public LinkEnd[] ends = {new LinkEnd(this), new LinkEnd(this)};
     boolean isSelected = false;
+    CubicCurve2D curve = null;
     Point[] points = {};
-    int[] xPoints = {};
-    int[] yPoints = {};
     Color color;
 
     public Link(Color color) {
@@ -42,25 +42,20 @@ public class Link extends JPanel implements CanvasItem {
     }
 
     public void update() {
-        Point a = ends[0].point;
-        Point b = ends[1].point;
-        int left = Math.min(a.x, b.x) - THICKNESS;
-        int right = Math.max(a.x, b.x) + THICKNESS;
-        int top = Math.min(a.y, b.y) - THICKNESS;
-        int bottom = Math.max(a.y, b.y) + THICKNESS;
+        Point start = ends[0].point;
+        Point end = ends[1].point;
+        int left = Math.min(start.x, end.x) - CONTAINS_THRESHOLD;
+        int right = Math.max(start.x, end.x) + CONTAINS_THRESHOLD;
+        int top = Math.min(start.y, end.y) - CONTAINS_THRESHOLD;
+        int bottom = Math.max(start.y, end.y) + CONTAINS_THRESHOLD;
         setBounds(left, top, right - left, bottom - top);
 
-        Point[] rawPoints = CubicBezier.getPoints(ends[0].point, ends[0].control, ends[1].control, ends[1].point);
-        this.points = new Point[rawPoints.length];
-        this.xPoints = new int[rawPoints.length];
-        this.yPoints = new int[rawPoints.length];
-        for (int i = 0; i < points.length; i++) {
-            Point mapped = SwingUtilities.convertPoint(getParent(), rawPoints[i], this);
-            this.points[i] = mapped;
-            this.xPoints[i] = mapped.x;
-            this.yPoints[i] = mapped.y;
-        }
-
+        Point a = SwingUtilities.convertPoint(getParent(), ends[0].point, this);
+        Point b = SwingUtilities.convertPoint(getParent(), ends[0].control, this);
+        Point c = SwingUtilities.convertPoint(getParent(), ends[1].control, this);
+        Point d = SwingUtilities.convertPoint(getParent(), ends[1].point, this);
+        this.curve = new CubicCurve2D.Float(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
+        this.points = CubicBezier.getPoints(a, b, c, d);
         this.repaint();
     }
 
@@ -81,10 +76,9 @@ public class Link extends JPanel implements CanvasItem {
     @Override
     public void paint(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        // TODO: Something is very wrong with antialiasing
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setStroke(new BasicStroke(THICKNESS));
         g2.setColor(getColor());
-        g2.drawPolyline(this.xPoints, this.yPoints, this.points.length);
+        g2.draw(this.curve);
     }
 }

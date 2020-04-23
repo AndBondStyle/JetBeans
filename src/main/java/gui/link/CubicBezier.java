@@ -22,12 +22,11 @@ public class CubicBezier {
         Point p3 = eval(a, b, c, d, 0.7f);
         Point p4 = eval(a, b, c, d, 0.9f);
         double dist = a.distance(p1) + p1.distance(p2) + p2.distance(p3) + p3.distance(p4) + p4.distance(d);
-        return 1 / dist;
+        return 1 / dist * 5;
     }
 
     public static Point[] getPoints(Point a, Point b, Point c, Point d) {
         double step = getStepSize(a, b, c, d);
-        System.out.println("STEP: " + step);
         ArrayList<Point> points = new ArrayList<>();
         for (double t = 0; t <= 1; t += step) points.add(eval(a, b, c, d, t));
         return points.toArray(Point[]::new);
