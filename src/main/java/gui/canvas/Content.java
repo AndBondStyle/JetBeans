@@ -45,8 +45,10 @@ public class Content extends JLayeredPane {
     Component getTargetItem(MouseEvent e) {
         if (!this.contains(e.getPoint())) return null;
         for (Component child : this.getComponents()) {
+            // TODO: Selection priority
+            if (child == glass) continue;
             Point p = SwingUtilities.convertPoint(glass, e.getPoint(), child);
-            if (child != glass && child.contains(p)) return child;
+            if (child.contains(p)) return child;
         }
         return null;
     }

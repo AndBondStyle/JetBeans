@@ -1,9 +1,11 @@
 package gui.canvas;
 
+import com.intellij.ui.JBColor;
 import com.intellij.ui.JBIntSpinner;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import gui.canvas.helpers.*;
+import gui.link.Link;
 import gui.wrapper.Wrapper;
 
 import javax.swing.*;
@@ -35,12 +37,18 @@ public class Canvas extends JBPanel<Canvas> {
         for (Helper helper : helpers) helper.parent = this;
 
         // TODO: TEMP
-        content.setLayout(null);
         JComponent temp = new JBIntSpinner(50, 0, 100, 1);
         Wrapper wrapper = new Wrapper(temp);
-        content.add(wrapper, JLayeredPane.DEFAULT_LAYER);
+        content.add(wrapper, JLayeredPane.PALETTE_LAYER);
         wrapper.setSize(wrapper.fixSize(temp.getPreferredSize()));
         wrapper.setLocation(100, 100);
+
+        Link testLink = new Link(JBColor.ORANGE);
+        content.add(testLink, JLayeredPane.DEFAULT_LAYER);
+        testLink.ends[0].arrange(new Point(500, 500), SwingConstants.EAST);
+        testLink.ends[1].arrange(new Point(700, 700), SwingConstants.WEST);
+        System.out.println(testLink.getSize());
+        System.out.println(testLink.getLocation());
     }
 
     public void processMouseEvent(MouseEvent e) {
