@@ -22,8 +22,6 @@ public class PanHelper extends Helper {
     void processStart() {
         super.processStart();
         this.event.consume();
-        this.parent.cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
-
         this.oldLocation = this.parent.scroll.getViewport().getViewPosition();
         this.button = this.event.getButton();
         System.out.println("PAN ACTION STARTED");

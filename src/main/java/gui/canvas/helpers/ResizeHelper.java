@@ -1,5 +1,7 @@
 package gui.canvas.helpers;
 
+import gui.canvas.CanvasItem;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -117,6 +119,7 @@ public class ResizeHelper extends Helper {
     @Override
     boolean checkPossible() {
         if (this.event.isConsumed() || this.target == null) return false;
+        if (!((CanvasItem) this.target).isResizable()) return false;
         Shape[] areas = computeAreas(this.target.getBounds());
         this.mode = -1;
         for (int i = 0; i < LOCATIONS.length; i++) {

@@ -25,6 +25,7 @@ public class MoveHelper extends Helper {
     @Override
     boolean checkStart() {
         if (!checkPossible()) return false;
+        this.event.consume();
         return checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_PRESSED);
     }
 
