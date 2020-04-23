@@ -43,12 +43,21 @@ public class Canvas extends JBPanel<Canvas> {
         wrapper.setSize(wrapper.fixSize(temp.getPreferredSize()));
         wrapper.setLocation(100, 100);
 
+        JComponent temp2 = new JBIntSpinner(50, 0, 100, 1);
+        Wrapper wrapper2 = new Wrapper(temp2);
+        content.add(wrapper2, JLayeredPane.PALETTE_LAYER);
+        wrapper2.setSize(wrapper2.fixSize(temp2.getPreferredSize()));
+        wrapper2.setLocation(200, 100);
+
         Link testLink = new Link(JBColor.ORANGE);
         content.add(testLink, JLayeredPane.DEFAULT_LAYER);
-        testLink.ends[0].arrange(new Point(500, 500), SwingConstants.EAST);
-        testLink.ends[1].arrange(new Point(700, 700), SwingConstants.WEST);
+//        testLink.ends[0].arrange(new Point(500, 500), SwingConstants.EAST);
+//        testLink.ends[1].arrange(new Point(700, 700), SwingConstants.WEST);
         System.out.println(testLink.getSize());
         System.out.println(testLink.getLocation());
+
+        wrapper.linkManager.add(testLink.ends[0]);
+        wrapper2.linkManager.add(testLink.ends[1]);
     }
 
     public void processMouseEvent(MouseEvent e) {

@@ -4,9 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LinkEnd {
-    static int CONTROL_SHIFT = 100;
+    static double CONTROL_SHIFT_RATIO = 0.5;
 
     Link parent;
+    LinkManager manager = null;
+    int orientation = -1;
     Point point = new Point();
     Point control = new Point();
 
@@ -14,12 +16,19 @@ public class LinkEnd {
         this.parent = parent;
     }
 
-    public void arrange(Point point, int orientation) {
+    public LinkEnd opposite() {
+        if (this == parent.ends[0]) return parent.ends[1];
+        return parent.ends[0];
+    }
+
+    public void arrange(Point point, int orientation, int distance) {
+        this.orientation = orientation;
         this.point = point;
-        if (orientation == SwingConstants.NORTH) this.control = new Point(point.x, point.y - CONTROL_SHIFT);
-        if (orientation == SwingConstants.EAST) this.control = new Point(point.x + CONTROL_SHIFT, point.y);
-        if (orientation == SwingConstants.SOUTH) this.control = new Point(point.x, point.y + CONTROL_SHIFT);
-        if (orientation == SwingConstants.WEST) this.control = new Point(point.x - CONTROL_SHIFT, point.y);
+        int shift = (int) Math.round(distance * CONTROL_SHIFT_RATIO);
+        if (orientation == SwingConstants.NORTH) this.control = new Point(point.x, point.y - shift);
+        if (orientation == SwingConstants.EAST) this.control = new Point(point.x + shift, point.y);
+        if (orientation == SwingConstants.SOUTH) this.control = new Point(point.x, point.y + shift);
+        if (orientation == SwingConstants.WEST) this.control = new Point(point.x - shift, point.y);
         this.parent.update();
     }
 }

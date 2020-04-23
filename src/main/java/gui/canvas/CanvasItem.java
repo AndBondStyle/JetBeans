@@ -10,4 +10,6 @@ public interface CanvasItem {
     void setSelected(boolean selected);
 
     boolean isDeletable();
+
+    // TODO: getPreferredLayer
 }

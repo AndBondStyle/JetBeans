@@ -3,6 +3,7 @@ package gui.wrapper;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBPanel;
 import gui.canvas.CanvasItem;
+import gui.link.LinkManager;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -14,12 +15,14 @@ public class Wrapper extends JBPanel<Wrapper> implements CanvasItem {
     static int SEL_BORDER_EXTRA = 2;
 
     Component target;
+    public LinkManager linkManager;
 
     public Wrapper(Component target) {
         this.target = target;
         this.setOpaque(false);
         this.setLayout(new BorderLayout());
         this.add(target, BorderLayout.CENTER);
+        this.linkManager = new LinkManager(this);
         updateBorder(false);
     }
 
