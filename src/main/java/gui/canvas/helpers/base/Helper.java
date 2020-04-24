@@ -1,4 +1,4 @@
-package gui.canvas.helpers;
+package gui.canvas.helpers.base;
 
 import gui.canvas.Canvas;
 import gui.canvas.CanvasItem;
@@ -8,42 +8,22 @@ import java.awt.event.MouseEvent;
 
 public abstract class Helper {
     public Canvas parent;           // Link to Canvas instance
-    public boolean active = false;  // Active state flag
     public MouseEvent event;        // Current event
     public Component target;        // Current target
     public Point point;             // Current cursor point
 
-    boolean checkPossible() {
-        return true;
+    public void setParent(Canvas parent) {
+        this.parent = parent;
     }
 
-    boolean checkStart() {
-        return false;
+    public void process(MouseEvent e, CanvasItem item) {
+        this.event = e;
+        this.target = (Component) item;
+        this.point = e.getPoint();
     }
 
-    boolean checkProgress() {
-        return false;
-    }
-
-    boolean checkEnd() {
-        return false;
-    }
-
-    void processPossible() {
-    }
-
-    void processStart() {
-        this.active = true;
-    }
-
-    void processPorgress() {
-    }
-
-    void processEnd() {
-        this.active = false;
-    }
-
-    boolean checkEvent(Integer button, Integer action) {
+    // TODO: Move to "utils" or something
+    public boolean checkEvent(Integer button, Integer action) {
         if (button != null) {
             if (action != MouseEvent.MOUSE_RELEASED && action != MouseEvent.MOUSE_CLICKED) {
                 // Here we check only methods that imply some button is actually pressed
@@ -55,19 +35,5 @@ public abstract class Helper {
             }
         }
         return action == null || this.event.getID() == action;
-    }
-
-    public void process(MouseEvent e, CanvasItem item) {
-        this.event = e;
-        this.target = (Component) item;
-        this.point = e.getPoint();
-
-        if (!active) {
-            if (checkPossible()) processPossible();
-            if (checkStart()) processStart();
-        } else {
-            if (checkProgress()) processPorgress();
-            if (checkEnd()) processEnd();
-        }
     }
 }
