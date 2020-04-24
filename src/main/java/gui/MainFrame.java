@@ -11,6 +11,7 @@ import com.intellij.ui.JBColor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 // Main custom editor widget
 public class MainFrame extends JBPanel<MainFrame> {
@@ -26,21 +27,22 @@ public class MainFrame extends JBPanel<MainFrame> {
         mockBeanLibrary.setBorder(BorderFactory.createLineBorder(JBColor.GREEN, 2));
         mockPropertyEditor.setBorder(BorderFactory.createLineBorder(JBColor.CYAN, 2));
 
-        JComponent temp = new JBIntSpinner(50, 0, 100, 1);
+        Component temp = new JBIntSpinner(50, 0, 100, 1);
         Wrapper wrapper = new Wrapper(temp);
         canvas.addItem(wrapper);
         wrapper.setLocation(100, 100);
 
-        JComponent temp2 = new JBIntSpinner(50, 0, 100, 1);
-        Wrapper wrapper2 = new Wrapper(temp2);
-        canvas.addItem(wrapper2);
-        wrapper2.setLocation(200, 100);
+        for (int i = 0; i < 10; i++) {
+            Component temp2 = new JBIntSpinner(50, 0, 100, 1);
+            Wrapper wrapper2 = new Wrapper(temp2);
+            canvas.addItem(wrapper2);
+            wrapper2.setLocation(100, 200 + 100 * i);
 
-        Link testLink = new Link(JBColor.ORANGE);
-        canvas.addItem(testLink);
-
-        wrapper.linkManager.add(testLink.ends[0]);
-        wrapper2.linkManager.add(testLink.ends[1]);
+            Link link = new Link(JBColor.MAGENTA);
+            canvas.addItem(link);
+            wrapper.attachLink(link, 0);
+            wrapper2.attachLink(link, 1);
+        }
 
         this.setLayout(new BorderLayout());
         this.add(mainSplitter, BorderLayout.CENTER);

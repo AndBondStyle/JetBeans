@@ -2,6 +2,7 @@ package gui.wrapper;
 
 import gui.canvas.CanvasItem;
 import gui.link.LinkManager;
+import gui.link.Link;
 
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.JBColor;
@@ -28,10 +29,8 @@ public class Wrapper extends JBPanel<Wrapper> implements CanvasItem {
         updateBorder(false);
     }
 
-    @Override
-    public void setSelected(boolean selected) {
-        updateBorder(selected);
-        repaint();
+    public void attachLink(Link link, int end) {
+        this.linkManager.add(link.ends[end]);
     }
 
     void updateBorder(boolean selected) {
@@ -57,6 +56,11 @@ public class Wrapper extends JBPanel<Wrapper> implements CanvasItem {
         return true;
     }
     public int getPreferredLayer() { return JLayeredPane.MODAL_LAYER; }
+
+    public void setSelected(boolean selected) {
+        updateBorder(selected);
+        repaint();
+    }
 
     public Dimension fixSize(Dimension size) {
         return new Dimension(

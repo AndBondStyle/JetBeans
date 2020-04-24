@@ -18,6 +18,7 @@ public class Link extends JPanel implements CanvasItem {
 
     public Link(Color color) {
         this.color = color;
+        this.setOpaque(false);
     }
 
     // CanvasItem implementation
