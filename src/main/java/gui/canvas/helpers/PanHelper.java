@@ -1,46 +1,53 @@
 package gui.canvas.helpers;
 
 import gui.canvas.CanvasItem;
+import gui.canvas.helpers.base.ToggleHelper;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-public class PanHelper extends Helper {
-    Point oldLocation = null;
-    Point oldPoint = null;
-    int button = -1;
+public class PanHelper extends ToggleHelper {
+    public Point oldLocation = null;
+    public Point oldPoint = null;
+    public int button = -1;
 
     @Override
-    boolean checkStart() {
-        if (this.event.isConsumed()) return false;
-        if (checkEvent(MouseEvent.BUTTON2, MouseEvent.MOUSE_PRESSED)) return true;
-        return this.target == null && checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_PRESSED);
+    public void process(MouseEvent e, CanvasItem item) {
+        this.oldPoint = this.point;
+        super.process(e, item);
     }
 
     @Override
-    void processStart() {
-        super.processStart();
+    public Cursor getCursor() {
+        if (!this.active) return null;
+        return Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
+    }
+
+    @Override
+    public boolean isPossible() {
+        return !this.event.isConsumed();
+    }
+
+    @Override
+    public boolean isStarted() {
+        boolean middleButton = checkEvent(MouseEvent.BUTTON2, MouseEvent.MOUSE_PRESSED);
+        boolean dragBackground = this.target == null && checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_PRESSED);
+        if (!middleButton && !dragBackground) return false;
         this.event.consume();
         this.oldLocation = this.parent.scroll.getViewport().getViewPosition();
         this.button = this.event.getButton();
-        System.out.println("PAN ACTION STARTED");
+        return true;
     }
 
     @Override
-    boolean checkProgress() {
-        if (this.event.isConsumed()) return false;
-        this.parent.cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
-        return checkEvent(this.button, MouseEvent.MOUSE_DRAGGED);
-    }
-
-    @Override
-    void processPorgress() {
-        super.processPorgress();
+    public void handleProgress() {
+        if (this.event.isConsumed()) return;
+        if (!checkEvent(this.button, MouseEvent.MOUSE_DRAGGED)) return;
         this.event.consume();
+
         Point pos = this.parent.scroll.getViewport().getViewPosition();
         JViewport viewport = this.parent.scroll.getViewport();
-
         if (!pos.equals(this.oldLocation)) {
             // Looks like mouse wheel was used...
             Point externalDelta = new Point(pos.x - this.oldLocation.x, pos.y - this.oldLocation.y);
@@ -57,19 +64,7 @@ public class PanHelper extends Helper {
     }
 
     @Override
-    boolean checkEnd() {
+    public boolean isEnded() {
         return checkEvent(this.button, MouseEvent.MOUSE_RELEASED);
-    }
-
-    @Override
-    void processEnd() {
-        super.processEnd();
-        System.out.println("PAN ACTION ENDED");
-    }
-
-    @Override
-    public void process(MouseEvent e, CanvasItem item) {
-        this.oldPoint = this.point;
-        super.process(e, item);
     }
 }
