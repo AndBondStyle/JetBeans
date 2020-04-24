@@ -1,13 +1,17 @@
 package gui.canvas.helpers;
 
 import gui.canvas.CanvasItem;
+import gui.canvas.helpers.base.ToggleHelper;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
-public class ResizeHelper extends Helper {
+public class ResizeHelper extends ToggleHelper {
+    // https://imgur.com/a/VsWkIb7
     static int INNER_WIDTH = 6;
     static int OUTER_WIDTH = 0;
     static int CORNER_WIDTH = 8;
@@ -16,15 +20,16 @@ public class ResizeHelper extends Helper {
             SwingConstants.NORTH, SwingConstants.EAST, SwingConstants.SOUTH, SwingConstants.WEST,
             SwingConstants.NORTH_WEST, SwingConstants.NORTH_EAST, SwingConstants.SOUTH_EAST, SwingConstants.SOUTH_WEST,
     };
-    static int[] CURSORS = {
+    static Cursor[] CURSORS = Arrays.stream(new int[]{
             Cursor.N_RESIZE_CURSOR, Cursor.E_RESIZE_CURSOR, Cursor.S_RESIZE_CURSOR, Cursor.W_RESIZE_CURSOR,
             Cursor.NW_RESIZE_CURSOR, Cursor.NE_RESIZE_CURSOR, Cursor.SE_RESIZE_CURSOR, Cursor.SW_RESIZE_CURSOR,
-    };
+    }).mapToObj(Cursor::getPredefinedCursor).toArray(Cursor[]::new);
 
-    Component resizeTarget;
-    Point offset;
-    int mode;
+    public Component resizeTarget;  // Target component
+    public Point offset;            // Offset from origin point (see getOrigin)
+    public int mode;                // Aka index of LOCATIONS / CURSORS element
 
+    // TODO: Move to utilities
     Rectangle rectFromPoints(int x1, int y1, int x2, int y2) {
         return new Rectangle(x1, y1, x2 - x1, y2 - y1);
     }
@@ -66,7 +71,9 @@ public class ResizeHelper extends Helper {
         return new Shape[]{north, east, south, west, northWest, northEast, southEast, southWest};
     }
 
+    // Gets point that should remain stationary during resize
     Point getOrigin(Rectangle target) {
+        // TODO: Utility function: rect -> [top, left, right, bottom]
         int left = target.x;
         int top = target.y;
         int right = target.x + target.width;
@@ -89,77 +96,63 @@ public class ResizeHelper extends Helper {
     }
 
     Rectangle getNewBounds(Rectangle oldBounds) {
-        int x = point.x;
-        int y = point.y;
+        // TODO: Utility function: rect -> [top, left, right, bottom]
         int left = oldBounds.x;
         int top = oldBounds.y;
         int right = oldBounds.x + oldBounds.width;
         int bottom = oldBounds.y + oldBounds.height;
         switch (LOCATIONS[mode]) {
             case SwingConstants.NORTH_WEST:
-                return rectFromPoints(x, y, right, bottom);
+                return rectFromPoints(point.x, point.y, right, bottom);
             case SwingConstants.NORTH:
-                return rectFromPoints(left, y, right, bottom);
+                return rectFromPoints(left, point.y, right, bottom);
             case SwingConstants.NORTH_EAST:
-                return rectFromPoints(left, y, x, bottom);
+                return rectFromPoints(left, point.y, point.x, bottom);
             case SwingConstants.EAST:
-                return rectFromPoints(left, top, x, bottom);
+                return rectFromPoints(left, top, point.x, bottom);
             case SwingConstants.SOUTH_EAST:
-                return rectFromPoints(left, top, x, y);
+                return rectFromPoints(left, top, point.x, point.y);
             case SwingConstants.SOUTH:
-                return rectFromPoints(left, top, right, y);
+                return rectFromPoints(left, top, right, point.y);
             case SwingConstants.SOUTH_WEST:
-                return rectFromPoints(x, top, right, y);
+                return rectFromPoints(point.x, top, right, point.y);
             case SwingConstants.WEST:
-                return rectFromPoints(x, top, right, bottom);
+                return rectFromPoints(point.x, top, right, bottom);
         }
         return null;
     }
 
     @Override
-    boolean checkPossible() {
+    public Cursor getCursor() {
+        return this.possible || this.active ? CURSORS[this.mode] : null;
+    }
+
+    @Override
+    public boolean isPossible() {
         if (this.event.isConsumed() || this.target == null) return false;
         if (!((CanvasItem) this.target).isResizable()) return false;
         Shape[] areas = computeAreas(this.target.getBounds());
-        this.mode = -1;
-        for (int i = 0; i < LOCATIONS.length; i++) {
-            if (areas[i].contains(this.event.getPoint())) this.mode = i;
-        }
+        this.mode = IntStream.range(0, 8).map(i -> 7 - i)
+                .filter(i -> areas[i].contains(this.event.getPoint()))
+                .findFirst().orElse(-1);
         return this.mode != -1;
     }
 
     @Override
-    void processPossible() {
-        this.parent.cursor = Cursor.getPredefinedCursor(CURSORS[this.mode]);
-    }
-
-    @Override
-    boolean checkStart() {
-        if (!checkPossible()) return false;
-        this.event.consume();
-        return checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_PRESSED);
-    }
-
-    @Override
-    void processStart() {
-        super.processStart();
+    public boolean isStarted() {
+        if (!checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_PRESSED)) return false;
         this.event.consume();
         Point origin = getOrigin(this.target.getBounds());
         this.offset = new Point(origin.x - point.x, origin.y - point.y);
         this.resizeTarget = this.target;
-        System.out.println("RESIZE ACTION STARTED");
+        return true;
     }
 
     @Override
-    boolean checkProgress() {
-        if (this.event.isConsumed()) return false;
-        return checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_DRAGGED);
-    }
-
-    @Override
-    void processPorgress() {
+    public void handleProgress() {
+        if (this.event.isConsumed()) return;
+        if (!checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_DRAGGED)) return;
         this.event.consume();
-        this.parent.cursor = Cursor.getPredefinedCursor(CURSORS[this.mode]);
         this.point.translate(this.offset.x, this.offset.y);
         Rectangle oldBounds = this.resizeTarget.getBounds();
         Rectangle newBounds = getNewBounds(oldBounds);
@@ -174,52 +167,7 @@ public class ResizeHelper extends Helper {
     }
 
     @Override
-    boolean checkEnd() {
+    public boolean isEnded() {
         return checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_RELEASED);
     }
-
-    @Override
-    void processEnd() {
-        super.processEnd();
-        System.out.println("RESIZE ACTION ENDED");
-    }
-
-    //    @Override
-//    public void process(MouseEvent e, CanvasItem item) {
-//        super.process(e, item);
-//        if (!active) {
-//            if (item == null) return;
-//            Rectangle targetRect = ((Component) item).getBounds();
-//            Shape[] areas = computeAreas(targetRect);
-//            mode = -1;
-//            for (int i = 0; i < LOCATIONS.length; i++) {
-//                if (areas[i].contains(e.getPoint())) mode = i;
-//            }
-//            if (mode == -1) return;
-//            parent.cursor = Cursor.getPredefinedCursor(CURSORS[mode]);
-//            e.consume();
-//            if (e.getButton() == MouseEvent.BUTTON1 && e.getID() == MouseEvent.MOUSE_PRESSED) {
-//                Point origin = getOrigin(targetRect);
-//                this.offset = new Point(origin.x - point.x, origin.y - point.y);
-//                this.resizeTarget = (Component) item;
-//                this.active = true;
-//            }
-//        } else {
-//            if (e.getButton() == MouseEvent.BUTTON1 && e.getID() == MouseEvent.MOUSE_RELEASED) active = false;
-//            if (e.getID() != MouseEvent.MOUSE_DRAGGED) return;
-//            e.consume();
-//            parent.cursor = Cursor.getPredefinedCursor(CURSORS[mode]);
-//            point.translate(offset.x, offset.y);
-//            Rectangle oldBounds = this.resizeTarget.getBounds();
-//            Rectangle newBounds = getNewBounds(oldBounds);
-//            Dimension size = newBounds.getSize();
-//            Dimension minSize = this.resizeTarget.getMinimumSize();
-//            Point oldOrigin = getOrigin(oldBounds);
-//            if (size.width < minSize.width) point.x = oldOrigin.x;
-//            if (size.height < minSize.height) point.y = oldOrigin.y;
-//            newBounds = getNewBounds(oldBounds);
-//            this.resizeTarget.setBounds(newBounds);
-//            this.resizeTarget.revalidate();
-//        }
-//    }
 }
