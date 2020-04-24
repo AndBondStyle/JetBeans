@@ -2,9 +2,9 @@ package gui.link;
 
 import gui.canvas.CanvasItem;
 
+import java.awt.geom.CubicCurve2D;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.CubicCurve2D;
 
 public class Link extends JPanel implements CanvasItem {
     static int THICKNESS = 2;
@@ -20,21 +20,20 @@ public class Link extends JPanel implements CanvasItem {
         this.color = color;
     }
 
+    // CanvasItem implementation
     public boolean isResizable() {
         return false;
     }
-
     public boolean isMovable() {
-        return true;
+        return false;
     }
-
     public boolean isSelectable() {
         return true;
     }
-
     public boolean isDeletable() {
         return true;
     }
+    public int getPreferredLayer() { return JLayeredPane.PALETTE_LAYER; }
 
     public void setSelected(boolean selected) {
         this.isSelected = selected;

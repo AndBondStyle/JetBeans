@@ -11,5 +11,5 @@ public interface CanvasItem {
 
     boolean isDeletable();
 
-    // TODO: getPreferredLayer
+    int getPreferredLayer();
 }

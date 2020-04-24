@@ -1,15 +1,17 @@
 package gui.wrapper;
 
-import com.intellij.ui.JBColor;
-import com.intellij.ui.components.JBPanel;
 import gui.canvas.CanvasItem;
 import gui.link.LinkManager;
 
-import javax.swing.*;
+import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.JBColor;
+
 import javax.swing.border.Border;
+import javax.swing.*;
 import java.awt.*;
 
 public class Wrapper extends JBPanel<Wrapper> implements CanvasItem {
+    // TODO: Move to constants
     static Color SEL_BORDER_COLOR = JBColor.CYAN;
     static int SEL_BORDER_WIDTH = 2;
     static int SEL_BORDER_EXTRA = 2;
@@ -37,32 +39,24 @@ public class Wrapper extends JBPanel<Wrapper> implements CanvasItem {
         int total = SEL_BORDER_WIDTH + SEL_BORDER_EXTRA;
         Border border = selected
                 ? BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(extra, extra, extra, extra),
-                BorderFactory.createLineBorder(SEL_BORDER_COLOR, SEL_BORDER_WIDTH)
-        )
-                : BorderFactory.createEmptyBorder(total, total, total, total);
+                    BorderFactory.createEmptyBorder(extra, extra, extra, extra),
+                    BorderFactory.createLineBorder(SEL_BORDER_COLOR, SEL_BORDER_WIDTH)
+                ) : BorderFactory.createEmptyBorder(total, total, total, total);
         setBorder(border);
     }
 
-    @Override
-    public boolean isResizable() {
-        return true;
-    }
-
-    @Override
+    // CanvasItem implementation
+    public boolean isResizable() { return true; }
     public boolean isMovable() {
         return true;
     }
-
-    @Override
     public boolean isSelectable() {
         return true;
     }
-
-    @Override
     public boolean isDeletable() {
         return true;
     }
+    public int getPreferredLayer() { return JLayeredPane.MODAL_LAYER; }
 
     public Dimension fixSize(Dimension size) {
         return new Dimension(
