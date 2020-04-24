@@ -1,16 +1,22 @@
 package gui.canvas.helpers;
 
 import gui.canvas.CanvasItem;
+import gui.canvas.helpers.base.ToggleHelper;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-public class MoveHelper extends Helper {
-    Component moveTarget;
-    Point offset;
+public class MoveHelper extends ToggleHelper {
+    public Component moveTarget;
+    public Point offset;
 
     @Override
-    boolean checkPossible() {
+    public Cursor getCursor() {
+        return this.possible || this.active ? Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR) : null;
+    }
+
+    @Override
+    public boolean isPossible() {
         return !this.event.isConsumed()
                 && this.event.isShiftDown()
                 && this.target != null
@@ -18,50 +24,25 @@ public class MoveHelper extends Helper {
     }
 
     @Override
-    void processPossible() {
-        this.parent.cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
-    }
-
-    @Override
-    boolean checkStart() {
-        if (!checkPossible()) return false;
+    public boolean isStarted() {
+        if (!checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_PRESSED)) return false;
         this.event.consume();
-        return checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_PRESSED);
-    }
-
-    @Override
-    void processStart() {
-        super.processStart();
-        this.event.consume();
-        this.parent.cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
-
         this.moveTarget = this.target;
         Point pos = this.target.getLocation();
         this.offset = new Point(pos.x - point.x, pos.y - point.y);
-        System.out.println("MOVE ACTION STARTED");
+        return true;
     }
 
     @Override
-    boolean checkProgress() {
-        if (this.event.isConsumed()) return false;
-        this.parent.cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
-        return checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_DRAGGED);
-    }
-
-    @Override
-    void processPorgress() {
+    public void handleProgress() {
+        if (this.event.isConsumed()) return;
+        if (!checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_DRAGGED)) return;
         this.point.translate(this.offset.x, this.offset.y);
         this.moveTarget.setLocation(this.point);
     }
 
     @Override
-    boolean checkEnd() {
+    public boolean isEnded() {
         return checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_RELEASED);
-    }
-
-    @Override
-    void processEnd() {
-        super.processEnd();
-        System.out.println("MOVE ACTION ENDED");
     }
 }
