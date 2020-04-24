@@ -9,6 +9,7 @@ public class LinkEnd {
     Link parent;
     LinkManager manager = null;
     int orientation = -1;
+    int distance = -1;
     Point point = new Point();
     Point control = new Point();
 
@@ -21,14 +22,23 @@ public class LinkEnd {
         return parent.ends[0];
     }
 
-    public void arrange(Point point, int orientation, int distance) {
-        this.orientation = orientation;
-        this.point = point;
-        int shift = (int) Math.round(distance * CONTROL_SHIFT_RATIO);
-        if (orientation == SwingConstants.NORTH) this.control = new Point(point.x, point.y - shift);
-        if (orientation == SwingConstants.EAST) this.control = new Point(point.x + shift, point.y);
-        if (orientation == SwingConstants.SOUTH) this.control = new Point(point.x, point.y + shift);
-        if (orientation == SwingConstants.WEST) this.control = new Point(point.x - shift, point.y);
+    public void arrange(Point point, Integer orientation, Integer distance) {
+        // Backup old values
+        Point oldPoint = this.point;
+        int oldOrientation = this.orientation;
+        int oldDistance = this.distance;
+        // Load new ones
+        if (point != null) this.point = point;
+        if (orientation != null) this.orientation = orientation;
+        if (distance != null) this.distance = distance;
+        // Check for difference
+        if (oldPoint.equals(this.point) && oldOrientation == this.orientation && oldDistance == this.distance) return;
+        // Something changed -> updating...
+        int shift = (int) Math.round(this.distance * CONTROL_SHIFT_RATIO);
+        if (this.orientation == SwingConstants.NORTH) this.control = new Point(this.point.x, this.point.y - shift);
+        if (this.orientation == SwingConstants.EAST) this.control = new Point(this.point.x + shift, this.point.y);
+        if (this.orientation == SwingConstants.SOUTH) this.control = new Point(this.point.x, this.point.y + shift);
+        if (this.orientation == SwingConstants.WEST) this.control = new Point(this.point.x - shift, this.point.y);
         this.parent.update();
     }
 }

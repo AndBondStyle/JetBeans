@@ -6,10 +6,12 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class LinkManager extends ComponentAdapter {
-    public List<LinkEnd> linkEnds = new ArrayList<>();
+    List<LinkEnd> linkEnds = new ArrayList<>();
+    boolean updated = false;
     Component parent;
 
     public LinkManager(Component parent) {
@@ -17,7 +19,7 @@ public class LinkManager extends ComponentAdapter {
         this.parent.addComponentListener(this);
     }
 
-    void update(boolean deep) {
+    void assignOrigins() {
         List<LinkEnd> north = new ArrayList<>();
         List<LinkEnd> east = new ArrayList<>();
         List<LinkEnd> south = new ArrayList<>();
@@ -25,7 +27,7 @@ public class LinkManager extends ComponentAdapter {
 
         Rectangle bounds = this.parent.getBounds();
         for (LinkEnd le : linkEnds) {
-            Rectangle otherBounds = le.parent.getBounds();
+            Rectangle otherBounds = le.opposite().manager.parent.getBounds();
             int location = getLocation(bounds, otherBounds);
             if (location == 0) north.add(le);
             if (location == 1) east.add(le);
@@ -33,64 +35,57 @@ public class LinkManager extends ComponentAdapter {
             if (location == 3) west.add(le);
         }
 
-        // TODO: Fix govno (x inf)
         Point northCenter = new Point((int) bounds.getCenterX(), (int) bounds.getMinY());
         Point eastCenter = new Point((int) bounds.getMaxX(), (int) bounds.getCenterY());
         Point southCenter = new Point((int) bounds.getCenterX(), (int) bounds.getMaxY());
         Point westCenter = new Point((int) bounds.getMinX(), (int) bounds.getCenterY());
 
-        if (!deep) {
-            for (LinkEnd le : north) le.arrange(northCenter, SwingUtilities.NORTH, 0);
-            for (LinkEnd le : east) le.arrange(eastCenter, SwingUtilities.EAST, 0);
-            for (LinkEnd le : south) le.arrange(southCenter, SwingUtilities.SOUTH, 0);
-            for (LinkEnd le : west) le.arrange(westCenter, SwingUtilities.WEST, 0);
-        } else {
-            multiArrange(north, northCenter, SwingUtilities.NORTH);
-            multiArrange(east, eastCenter, SwingUtilities.EAST);
-            multiArrange(south, southCenter, SwingUtilities.SOUTH);
-            multiArrange(west, westCenter, SwingUtilities.WEST);
-        }
-    }
-
-    void multiArrange(List<LinkEnd> links, Point origin, int orientation) {
-        for (LinkEnd le : links) {
-            le.opposite().manager.update(false);
-            le.orientation = orientation;
-            le.arrange(origin, orientation, computeShift(le));
-            le.opposite().arrange(le.opposite().point, le.opposite().orientation, computeShift(le.opposite()));
-        }
-    }
-
-    int computeShift(LinkEnd le) {
-        switch (le.orientation) {
-            case SwingConstants.NORTH:
-            case SwingConstants.SOUTH:
-                return Math.abs(le.opposite().point.y - le.point.y);
-            case SwingConstants.EAST:
-            case SwingConstants.WEST:
-                return Math.abs(le.opposite().point.x - le.point.x);
-        }
-        return 0;
+        for (LinkEnd le : north) le.arrange(northCenter, SwingUtilities.NORTH, null);
+        for (LinkEnd le : east) le.arrange(eastCenter, SwingUtilities.EAST, null);
+        for (LinkEnd le : south) le.arrange(southCenter, SwingUtilities.SOUTH, null);
+        for (LinkEnd le : west) le.arrange(westCenter, SwingUtilities.WEST, null);
     }
 
     int getLocation(Rectangle a, Rectangle b) {
         Line2D line = new Line2D.Double(a.getCenterX(), a.getCenterY(), b.getCenterX(), b.getCenterY());
-        Line2D[] sides = getSides(a);
-        for (int i = 0; i < sides.length; i++) if (line.intersectsLine(sides[i])) return i;
+        double left = a.getMinX();
+        double top = a.getMinY();
+        double right = a.getMaxX();
+        double bottom = a.getMaxY();
+        if (line.intersectsLine(new Line2D.Double(left, top, right, top))) return 0;
+        if (line.intersectsLine(new Line2D.Double(right, top, right, bottom))) return 1;
+        if (line.intersectsLine(new Line2D.Double(right, bottom, left, bottom))) return 2;
+        if (line.intersectsLine(new Line2D.Double(left, bottom, left, top))) return 3;
         return -1;
     }
 
-    Line2D[] getSides(Rectangle rect) {
-        double left = rect.getMinX();
-        double top = rect.getMinY();
-        double right = rect.getMaxX();
-        double bottom = rect.getMaxY();
-        return new Line2D[]{
-                new Line2D.Double(left, top, right, top),
-                new Line2D.Double(right, top, right, bottom),
-                new Line2D.Double(right, bottom, left, bottom),
-                new Line2D.Double(left, bottom, left, top)
-        };
+    void assignDistance(LinkEnd le) {
+        switch (le.orientation) {
+            case SwingConstants.NORTH:
+            case SwingConstants.SOUTH:
+                le.arrange(null, null, Math.abs(le.opposite().point.y - le.point.y));
+                break;
+            case SwingConstants.EAST:
+            case SwingConstants.WEST:
+                le.arrange(null, null, Math.abs(le.opposite().point.x - le.point.x));
+                break;
+        }
+    }
+
+    void update() {
+        this.assignOrigins();
+        HashSet<LinkManager> managers = new HashSet<>();
+        for (LinkEnd le : linkEnds) managers.add(le.opposite().manager);
+        for (LinkManager manager : managers) manager.updated = false;
+        for (LinkManager manager : managers) {
+            if (manager.updated) return;
+            manager.assignOrigins();
+            manager.updated = true;
+        }
+        for (LinkEnd le : linkEnds) {
+            assignDistance(le);
+            assignDistance(le.opposite());
+        }
     }
 
     public void add(LinkEnd linkEnd) {
@@ -100,11 +95,11 @@ public class LinkManager extends ComponentAdapter {
 
     @Override
     public void componentResized(ComponentEvent e) {
-        update(true);
+        update();
     }
 
     @Override
     public void componentMoved(ComponentEvent e) {
-        update(true);
+        update();
     }
 }
