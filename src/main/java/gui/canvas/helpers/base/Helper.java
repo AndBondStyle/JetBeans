@@ -1,10 +1,10 @@
 package gui.canvas.helpers.base;
 
-import gui.canvas.Canvas;
 import gui.canvas.CanvasItem;
+import gui.canvas.Canvas;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.*;
 
 public abstract class Helper {
     public Canvas parent;           // Link to Canvas instance

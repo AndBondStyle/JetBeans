@@ -1,10 +1,10 @@
 package gui.canvas.helpers;
 
-import gui.canvas.CanvasItem;
 import gui.canvas.helpers.base.ToggleHelper;
+import gui.canvas.CanvasItem;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.*;
 
 public class MoveHelper extends ToggleHelper {
     public Component moveTarget;

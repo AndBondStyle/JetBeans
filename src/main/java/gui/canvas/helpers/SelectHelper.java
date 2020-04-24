@@ -1,5 +1,6 @@
 package gui.canvas.helpers;
 
+import gui.canvas.helpers.base.Helper;
 import gui.canvas.CanvasItem;
 
 import java.awt.event.MouseEvent;

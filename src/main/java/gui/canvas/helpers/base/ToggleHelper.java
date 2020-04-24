@@ -2,8 +2,8 @@ package gui.canvas.helpers.base;
 
 import gui.canvas.CanvasItem;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.*;
 
 public abstract class ToggleHelper extends Helper {
     public boolean possible = false;  // Possible state flag

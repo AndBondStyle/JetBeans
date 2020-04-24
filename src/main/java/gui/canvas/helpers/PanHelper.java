@@ -1,11 +1,11 @@
 package gui.canvas.helpers;
 
-import gui.canvas.CanvasItem;
 import gui.canvas.helpers.base.ToggleHelper;
+import gui.canvas.CanvasItem;
 
+import java.awt.event.MouseEvent;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 
 public class PanHelper extends ToggleHelper {
     public Point oldLocation = null;
