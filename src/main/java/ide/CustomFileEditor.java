@@ -1,5 +1,7 @@
 package ide;
 
+import gui.MainFrame;
+
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorLocation;
@@ -7,19 +9,21 @@ import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
-import gui.MainFrame;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import javax.swing.*;
 
 public class CustomFileEditor extends UserDataHolderBase implements FileEditor {
-    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-    private final Project project;
-    private final VirtualFile file;
-    private final JComponent component;
+    public final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    public final Project project;
+    public final VirtualFile file;
+    public final JComponent component;
 
     public CustomFileEditor(Project project, VirtualFile file) {
         this.project = project;
@@ -55,6 +59,19 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
+    @Override
+    public void selectNotify() {
+        System.out.println("SELECT");
+        ToolWindowManager manager = ToolWindowManager.getInstance(this.project);
+        ToolWindow window = manager.getToolWindow(LibraryToolWindowFactory.TOOL_WINDOW_ID);
+        if (window != null) window.show(null);
+    }
+
+    @Override
+    public void deselectNotify() {
+        System.out.println("DESELECT");
+    }
+
     // NOT USED (YET)
 
     public BackgroundEditorHighlighter getBackgroundHighlighter() { return null; }
@@ -62,7 +79,5 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor {
     public void setState(@NotNull FileEditorState state) { }
     public boolean isModified() { return false; }
     public boolean isValid() { return true; }
-    public void selectNotify() { }
-    public void deselectNotify() { }
     public void dispose() { }
 }

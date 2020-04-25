@@ -17,6 +17,7 @@ public class CustomFileEditorProvider implements FileEditorProvider, DumbAware {
     @NotNull
     @Override
     public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {
+        // TODO: Ensure editor uniqueness for file (or implement smart proxy)
         return new CustomFileEditor(project, file);
     }
 
