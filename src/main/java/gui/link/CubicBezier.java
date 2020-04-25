@@ -1,7 +1,7 @@
 package gui.link;
 
-import java.awt.*;
 import java.util.ArrayList;
+import java.awt.*;
 
 public class CubicBezier {
     public static double eval(double a, double b, double c, double d, double t) {
@@ -11,8 +11,8 @@ public class CubicBezier {
 
     public static Point eval(Point a, Point b, Point c, Point d, double t) {
         return new Point(
-                (int) Math.round(eval(a.x, b.x, c.x, d.x, t)),
-                (int) Math.round(eval(a.y, b.y, c.y, d.y, t))
+                (int) eval(a.x, b.x, c.x, d.x, t),
+                (int) eval(a.y, b.y, c.y, d.y, t)
         );
     }
 
@@ -22,7 +22,7 @@ public class CubicBezier {
         Point p3 = eval(a, b, c, d, 0.7f);
         Point p4 = eval(a, b, c, d, 0.9f);
         double dist = a.distance(p1) + p1.distance(p2) + p2.distance(p3) + p3.distance(p4) + p4.distance(d);
-        return 1 / dist * 5;
+        return 1 / dist * 5;  // <- adjust this to balance speed/accuracy
     }
 
     public static Point[] getPoints(Point a, Point b, Point c, Point d) {

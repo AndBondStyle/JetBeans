@@ -3,10 +3,13 @@ package gui.link;
 import gui.canvas.CanvasItem;
 
 import java.awt.geom.CubicCurve2D;
+import java.util.Arrays;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class Link extends JPanel implements CanvasItem {
+    // TODO: Move to constants
     static int THICKNESS = 2;
     static int CONTAINS_THRESHOLD = 8;
 
@@ -62,10 +65,7 @@ public class Link extends JPanel implements CanvasItem {
     @Override
     public boolean contains(int x, int y) {
         if (!super.contains(x, y)) return false;
-        for (Point point : this.points) {
-            if (point.distance(x, y) <= CONTAINS_THRESHOLD) return true;
-        }
-        return false;
+        return Arrays.stream(this.points).anyMatch(p -> p.distance(x, y) <= CONTAINS_THRESHOLD);
     }
 
     Color getColor() {

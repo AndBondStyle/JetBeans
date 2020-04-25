@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LinkEnd {
+    // TODO: Move to constants
     static double CONTROL_SHIFT_RATIO = 0.5;
 
     Link parent;
@@ -18,8 +19,7 @@ public class LinkEnd {
     }
 
     public LinkEnd opposite() {
-        if (this == parent.ends[0]) return parent.ends[1];
-        return parent.ends[0];
+        return this == this.parent.ends[0] ? this.parent.ends[1] : this.parent.ends[0];
     }
 
     public void arrange(Point point, Integer orientation, Integer distance) {
