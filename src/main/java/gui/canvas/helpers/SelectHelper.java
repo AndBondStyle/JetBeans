@@ -10,8 +10,8 @@ public class SelectHelper extends Helper {
         super.process(e, item);
         if (e.isConsumed()) return;
         if (item != null && item.isSelectable() && checkEvent(null, MouseEvent.MOUSE_PRESSED))
-            this.parent.select(item);
+            this.parent.setSelection(item);
         if (item == null && checkEvent(MouseEvent.BUTTON1, MouseEvent.MOUSE_CLICKED))
-            this.parent.select(null);
+            this.parent.setSelection(null);
     }
 }

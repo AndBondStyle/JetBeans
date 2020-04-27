@@ -3,6 +3,9 @@ package gui.library.actions;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
+//import core.JetBeans;
+//import core.registry.loaders.ClassLoaderEx;
+//import core.registry.loaders.HardcodedLoader;
 import ide.CustomFileType;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +16,8 @@ public class TestAction extends AnAction implements DumbAware {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        System.out.println("Test action");
+//        JetBeans core = e.getProject().getService(JetBeans.class);
+//        ClassLoaderEx loader = new HardcodedLoader("Swing 2", "javax.swing.*");
+//        core.getRegistry().register(loader, "javax.swing.JButton");
     }
 }

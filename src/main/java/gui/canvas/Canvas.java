@@ -1,17 +1,16 @@
 package gui.canvas;
 
+import core.events.SimpleEventSupport;
 import gui.canvas.helpers.base.Helper;
 import gui.canvas.helpers.*;
 
 import com.intellij.ui.components.JBScrollPane;
-import com.intellij.ui.components.JBPanel;
-
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 import java.awt.*;
 
 // Main canvas widget, handling move/select/resize actions
-public class Canvas extends JBPanel<Canvas> {
+public class Canvas extends JPanel implements SimpleEventSupport {
     // TODO: Move to constants
     static Dimension CANVAS_SIZE = new Dimension(5000, 5000);
 
@@ -65,7 +64,7 @@ public class Canvas extends JBPanel<Canvas> {
         if (this.cursor != this.content.glass.getCursor()) this.content.glass.setCursor(this.cursor);
     }
 
-    public void select(CanvasItem target) {
+    public void setSelection(CanvasItem target) {
         if (target == this.selection) return;
         // Disable previous item selection
         if (this.selection != null) this.selection.setSelected(false);
@@ -77,5 +76,10 @@ public class Canvas extends JBPanel<Canvas> {
         this.selection = target;
         // Void selected -> grab focus
         if (this.selection == null) this.content.requestFocus();
+        this.fireEvent("select");
+    }
+
+    public CanvasItem getSelection() {
+        return this.selection;
     }
 }

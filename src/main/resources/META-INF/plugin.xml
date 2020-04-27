@@ -12,7 +12,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="JetBeans Component" implementationClass="ide.CustomFileType" fieldName="INSTANCE" extensions="bb"/>
         <fileEditorProvider implementation="ide.CustomFileEditorProvider"/>
-        <toolWindow id="Bean Library" anchor="right" factoryClass="ide.LibraryToolWindowFactory"/>
+        <toolWindow id="Bean Library" anchor="right" factoryClass="gui.library.LibraryView"/>
     </extensions>
 
     <actions>

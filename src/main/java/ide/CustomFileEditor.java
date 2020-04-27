@@ -1,6 +1,8 @@
 package ide;
 
-import gui.MainFrame;
+import com.intellij.ui.JBIntSpinner;
+import com.intellij.ui.JBColor;
+import core.JetBeans;
 
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.openapi.fileEditor.FileEditor;
@@ -9,38 +11,84 @@ import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
 
+import core.events.SimpleEventSupport;
+import gui.canvas.Canvas;
+import gui.canvas.CanvasItem;
+import gui.link.Link;
+import gui.wrapper.Wrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import javax.swing.*;
+import java.awt.*;
 
-public class CustomFileEditor extends UserDataHolderBase implements FileEditor {
-    public final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-    public final Project project;
-    public final VirtualFile file;
-    public final JComponent component;
+public class CustomFileEditor extends UserDataHolderBase implements FileEditor, SimpleEventSupport {
+    private boolean isActive = false;
+    private VirtualFile file;
+    private JetBeans core;
+    private Canvas canvas;
 
     public CustomFileEditor(Project project, VirtualFile file) {
-        this.project = project;
         this.file = file;
-        this.component = new MainFrame();
+        this.canvas = new Canvas();
+        this.core = JetBeans.getInstance(project);
+        this.core.registerEditor(this);
+
+        // ====== TEMP ======
+        Component temp = new JBIntSpinner(50, 0, 100, 1);
+        Wrapper wrapper = new Wrapper(temp);
+        this.canvas.addItem(wrapper);
+        wrapper.setLocation(100, 100);
+
+        for (int i = 0; i < 10; i++) {
+            Component temp2 = new JBIntSpinner(50, 0, 100, 1);
+            Wrapper wrapper2 = new Wrapper(temp2);
+            this.canvas.addItem(wrapper2);
+            wrapper2.setLocation(100, 200 + 100 * i);
+
+            Link link = new Link(JBColor.MAGENTA);
+            this.canvas.addItem(link);
+            wrapper.attachLink(link, 0);
+            wrapper2.attachLink(link, 1);
+        }
+    }
+
+    public Canvas getCanvas() {
+        return this.canvas;
+    }
+
+    public VirtualFile getFile() {
+        return this.file;
+    }
+
+    @Override
+    public void selectNotify() {
+        this.isActive = true;
+        this.fireEvent("activate");
+    }
+
+    @Override
+    public void deselectNotify() {
+        this.isActive = false;
+        this.fireEvent("deactivate");
+    }
+
+    public boolean isActive() {
+        return this.isActive;
     }
 
     @NotNull
     @Override
     public JComponent getComponent() {
-        return component;
+        return this.canvas;
     }
 
     @Nullable
     @Override
     public JComponent getPreferredFocusedComponent() {
-        return component;
+        return this.canvas;
     }
 
     @NotNull
@@ -49,35 +97,14 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor {
         return "JetBeans Editor";
     }
 
-    @Override
-    public void addPropertyChangeListener(@NotNull PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    @Override
-    public void removePropertyChangeListener(@NotNull PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
-
-    @Override
-    public void selectNotify() {
-        System.out.println("SELECT");
-        ToolWindowManager manager = ToolWindowManager.getInstance(this.project);
-        ToolWindow window = manager.getToolWindow(LibraryToolWindowFactory.TOOL_WINDOW_ID);
-        if (window != null) window.show(null);
-    }
-
-    @Override
-    public void deselectNotify() {
-        System.out.println("DESELECT");
-    }
-
     // NOT USED (YET)
 
+    public void addPropertyChangeListener(@NotNull PropertyChangeListener listener) {}
+    public void removePropertyChangeListener(@NotNull PropertyChangeListener listener) {}
     public BackgroundEditorHighlighter getBackgroundHighlighter() { return null; }
     public FileEditorLocation getCurrentLocation() { return null; }
     public void setState(@NotNull FileEditorState state) { }
     public boolean isModified() { return false; }
     public boolean isValid() { return true; }
-    public void dispose() { }
+    public void dispose() {}
 }
