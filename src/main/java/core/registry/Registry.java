@@ -21,12 +21,20 @@ public class Registry implements SimpleEventSupport {
         return true;
     }
 
-    public Class<?> getClass(String id) {
+    public Object instantiate(String id) {
         String[] tokens = id.split(":");
         ClassLoaderBase loader = this.loaders.get(tokens[0]  + ":" + tokens[1]);
         // TODO: Try to dynamically create loader on cache miss?
         if (loader == null) return null;
-        return loader.safeLoadClass(tokens[2]);
+        Class<?> klass = loader.safeLoadClass(tokens[2]);
+        if (klass == null) return null;
+        try {
+            return klass.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            System.err.println("Failed to instantiate class ID = " + id);
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public HashMap<String, ClassLoaderBase> getLoaders() {

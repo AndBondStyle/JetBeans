@@ -39,6 +39,7 @@ public class Canvas extends JPanel implements SimpleEventSupport {
         Component comp = (Component) item;
         this.content.add(comp);
         this.content.setLayer(comp, item.getPreferredLayer());
+        this.content.revalidate();
         comp.setSize(comp.getPreferredSize());
     }
 

@@ -13,8 +13,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.icons.AllIcons;
+import gui.wrapper.Wrapper;
 
 import javax.swing.tree.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.*;
 import java.util.Map;
 
 public class ClassesPanel extends SimpleToolWindowPanel {
@@ -47,6 +51,23 @@ public class ClassesPanel extends SimpleToolWindowPanel {
         this.tree.setRootVisible(false);
         this.tree.setShowsRootHandles(true);
         this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        this.tree.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                System.out.println(e);
+                if (e.getButton() != MouseEvent.BUTTON1) return;
+                if (e.getClickCount() != 2) return;
+                PatchedNode node = (PatchedNode) tree.getLastSelectedPathComponent();
+                if (node.getData().equals("")) return;
+                System.out.println("INSTANTIATE");
+                Component component = (Component) core.getRegistry().instantiate(node.getData());
+                // TODO: Autowrap helper function
+                Wrapper wrapper = new Wrapper(component);
+                // TODO: Activate placing action
+                core.getCanvas().addItem(wrapper);
+                wrapper.setLocation(100, 100);
+                core.getCanvas().setSelection(wrapper);
+            }
+        });
         this.setContent(ScrollPaneFactory.createScrollPane(this.tree));
         this.update();
     }

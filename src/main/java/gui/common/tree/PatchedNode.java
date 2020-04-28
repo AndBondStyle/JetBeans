@@ -15,6 +15,10 @@ public class PatchedNode extends DefaultMutableTreeNode {
         this.presentation = descriptor.getPresentation();
     }
 
+    public String getData() {
+        return (String) ((PatchedDescriptor) this.getUserObject()).getValue();
+    }
+
     public void setPrimaryText(String text) {
         this.presentation.setPresentableText(text);
     }
