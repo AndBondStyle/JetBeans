@@ -1,5 +1,6 @@
 package gui.library;
 
+import gui.library.classes.ClassesPanel;
 import core.JetBeans;
 
 import com.intellij.openapi.components.Service;
@@ -11,21 +12,17 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-
 @Service
 public final class LibraryView implements ToolWindowFactory, DumbAware {
     public JetBeans core;
-//    public ClassesPanel classes;
-    public JComponent classes;
+    public ClassesPanel classes;
     public InstancesPanel instances;
 
     public LibraryView() {}
 
     public LibraryView(Project project) {
         this.core = JetBeans.getInstance(project);
-//        this.classes = new ClassesPanel(this, project);
-        this.classes = new JLabel("// TODO");
+        this.classes = new ClassesPanel(this, project);
         this.instances = new InstancesPanel(this, project);
     }
 
