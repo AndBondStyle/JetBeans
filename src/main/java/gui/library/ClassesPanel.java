@@ -1,9 +1,9 @@
 package gui.library;
 
 import gui.library.actions.TestAction;
-import com.intellij.icons.AllIcons;
-import gui.common.PatchedNode;
-import gui.common.PatchedTree;
+import gui.common.tree.PatchedNode;
+import gui.common.tree.PatchedTree;
+import core.registry.loaders.ClassLoaderBase;
 import core.JetBeans;
 
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -12,10 +12,10 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.ui.ScrollPaneFactory;
+import com.intellij.icons.AllIcons;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.tree.*;
+import java.util.Map;
 
 public class ClassesPanel extends SimpleToolWindowPanel {
     public LibraryView parent;
@@ -26,8 +26,8 @@ public class ClassesPanel extends SimpleToolWindowPanel {
         super(false, true);
         this.parent = parent;
         this.core = JetBeans.getInstance(project);
-        this.core.addListener(e -> {
-            if (e.getActionCommand().equals("registry")) this.update();
+        this.core.getRegistry().addListener(e -> {
+            if (e.getActionCommand().equals("update")) this.update();
         });
         this.initToolbar();
         this.initContent();
@@ -52,29 +52,16 @@ public class ClassesPanel extends SimpleToolWindowPanel {
     }
 
     public void update() {
-        List<List<String>> data = new ArrayList<>();
-        List<String> a = new ArrayList<>();
-        a.add("Group 1");
-        a.add("Item a");
-        a.add("Item b");
-        a.add("Item c");
-        data.add(a);
-        List<String> b = new ArrayList<>();
-        b.add("Group 2");
-        b.add("Item a");
-        b.add("Item b");
-        b.add("Item c");
-        data.add(b);
-
         PatchedNode root = this.tree.getRoot();
-        for (List<String> group : data) {
-            PatchedNode groupNode = this.tree.makeNode(group.get(0));
-            groupNode.setPrimaryText(group.get(0));
-            groupNode.setIcon(AllIcons.Nodes.NativeLibrariesFolder);
-            for (String item : group) {
-                PatchedNode childNode = this.tree.makeNode(item);
-                childNode.setPrimaryText(item);
-                childNode.setSecondaryText("secondary");
+        root.removeAllChildren();
+        for (Map.Entry<String, ClassLoaderBase> loader : this.core.getRegistry().getLoaders().entrySet()) {
+            PatchedNode groupNode = this.tree.makeNode("");
+            groupNode.setPrimaryText(loader.getKey());
+            groupNode.setSecondaryText(loader.getValue().getSecondaryText());
+            groupNode.setIcon(loader.getValue().getIcon());
+            for (Map.Entry<String, String> klass : loader.getValue().getClasses().entrySet()) {
+                PatchedNode childNode = this.tree.makeNode(klass.getValue());
+                childNode.setPrimaryText(klass.getKey());
                 childNode.setIcon(AllIcons.Nodes.Class);
                 groupNode.add(childNode);
             }

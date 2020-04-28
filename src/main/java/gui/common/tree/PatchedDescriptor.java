@@ -1,4 +1,4 @@
-package gui.common;
+package gui.common.tree;
 
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.util.treeView.AbstractTreeNode;

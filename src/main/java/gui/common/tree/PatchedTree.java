@@ -1,7 +1,5 @@
-package gui.common;
+package gui.common.tree;
 
-import com.intellij.icons.AllIcons;
-import com.intellij.ide.projectView.PresentationData;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.SimpleTree;
 

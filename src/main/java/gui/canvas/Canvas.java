@@ -1,6 +1,6 @@
 package gui.canvas;
 
-import core.events.SimpleEventSupport;
+import gui.common.SimpleEventSupport;
 import gui.canvas.helpers.base.Helper;
 import gui.canvas.helpers.*;
 

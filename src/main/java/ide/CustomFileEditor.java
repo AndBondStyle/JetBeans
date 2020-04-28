@@ -1,9 +1,13 @@
 package ide;
 
-import com.intellij.ui.JBIntSpinner;
-import com.intellij.ui.JBColor;
+import gui.common.SimpleEventSupport;
+import gui.wrapper.Wrapper;
+import gui.canvas.Canvas;
+import gui.link.Link;
 import core.JetBeans;
 
+import com.intellij.ui.JBIntSpinner;
+import com.intellij.ui.JBColor;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorLocation;
@@ -11,12 +15,6 @@ import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
-
-import core.events.SimpleEventSupport;
-import gui.canvas.Canvas;
-import gui.canvas.CanvasItem;
-import gui.link.Link;
-import gui.wrapper.Wrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

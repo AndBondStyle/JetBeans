@@ -1,6 +1,7 @@
 package core;
 
-import core.events.SimpleEventSupport;
+import gui.common.SimpleEventSupport;
+import core.registry.Registry;
 import gui.canvas.CanvasItem;
 import gui.canvas.Canvas;
 
@@ -11,7 +12,7 @@ import ide.CustomFileEditor;
 @Service
 public final class JetBeans implements SimpleEventSupport {
     private Project project;
-//    private Registry registry;
+    private Registry registry;
     private CanvasItem selection;
 
     private CustomFileEditor prevEditor;
@@ -19,7 +20,7 @@ public final class JetBeans implements SimpleEventSupport {
 
     public JetBeans(Project project) {
         this.project = project;
-//        this.registry = new Registry(this);
+        this.registry = new Registry();
     }
 
     public static JetBeans getInstance(Project project) {
@@ -30,9 +31,9 @@ public final class JetBeans implements SimpleEventSupport {
         return this.project;
     }
 
-//    public Registry getRegistry() {
-//        return this.registry;
-//    }
+    public Registry getRegistry() {
+        return this.registry;
+    }
 
     public CanvasItem getSelection() {
         return this.selection;
