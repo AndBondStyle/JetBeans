@@ -1,6 +1,5 @@
 package gui.library;
 
-import gui.library.classes.ClassesPanel;
 import core.JetBeans;
 
 import com.intellij.openapi.components.Service;
