@@ -16,6 +16,10 @@ public abstract class Helper {
         this.parent = parent;
     }
 
+    public void updateCursor(Cursor cursor) {
+        if (this.parent.cursor == null) this.parent.cursor = cursor;
+    }
+
     public void process(MouseEvent e, CanvasItem item) {
         this.event = e;
         this.target = (Component) item;

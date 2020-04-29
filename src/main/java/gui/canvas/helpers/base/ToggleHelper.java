@@ -35,6 +35,6 @@ public abstract class ToggleHelper extends Helper {
             if (this.isEnded()) this.active = false;
         }
         Cursor cursor = getCursor();
-        if (cursor != null) this.parent.cursor = cursor;
+        if (cursor != null) this.updateCursor(cursor);
     }
 }

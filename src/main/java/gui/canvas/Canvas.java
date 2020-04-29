@@ -13,6 +13,7 @@ import java.awt.*;
 public class Canvas extends JPanel implements SimpleEventSupport {
     // TODO: Move to constants
     static Dimension CANVAS_SIZE = new Dimension(5000, 5000);
+    static Dimension MIN_ITEM_SIZE = new Dimension(20, 20);
 
     public Content content;
     public JBScrollPane scroll;
@@ -22,8 +23,8 @@ public class Canvas extends JPanel implements SimpleEventSupport {
     public Helper[] helpers = {
             new PanHelper(),
             new SelectHelper(),
-            new ResizeHelper(),
             new MoveHelper(),
+            new ResizeHelper(),
     };
 
     public Canvas() {
@@ -40,21 +41,24 @@ public class Canvas extends JPanel implements SimpleEventSupport {
         this.content.add(comp);
         this.content.setLayer(comp, item.getPreferredLayer());
         this.content.revalidate();
-        comp.setSize(comp.getPreferredSize());
+        Dimension size = comp.getPreferredSize();
+        // Expand element if preferred size is too small
+        if (size.width < MIN_ITEM_SIZE.width) size.width = MIN_ITEM_SIZE.width;
+        if (size.height < MIN_ITEM_SIZE.height) size.height = MIN_ITEM_SIZE.height;
+        comp.setSize(size);
     }
 
     public void processMouseEvent(MouseEvent e) {
         // Get root item (direct child of this.content)
         Component item = this.content.getTargetItem(e);
-        this.cursor = Cursor.getDefaultCursor();
         Component target = null;
         if (item != null) {
             // Find actual event target - deepest child containing event point
             Point p = SwingUtilities.convertPoint(this.content, e.getPoint(), item);
             target = SwingUtilities.getDeepestComponentAt(item, p.x, p.y);
-            if (target != null) this.cursor = target.getCursor();
         }
         // Notify helpers
+        this.cursor = null;
         for (Helper helper : this.helpers) helper.process(e, (CanvasItem) item);
         if (target != null && !e.isConsumed()) {
             // If event wasn't consumed, forward it to original target
@@ -62,6 +66,8 @@ public class Canvas extends JPanel implements SimpleEventSupport {
             target.dispatchEvent(ee);
         }
         // Update glass cursor (if modified)
+        if (this.cursor == null && target != null) this.cursor = target.getCursor();
+        if (this.cursor == null) this.cursor = Cursor.getDefaultCursor();
         if (this.cursor != this.content.glass.getCursor()) this.content.glass.setCursor(this.cursor);
     }
 

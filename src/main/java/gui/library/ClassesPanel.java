@@ -53,12 +53,10 @@ public class ClassesPanel extends SimpleToolWindowPanel {
         this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.tree.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                System.out.println(e);
                 if (e.getButton() != MouseEvent.BUTTON1) return;
                 if (e.getClickCount() != 2) return;
                 PatchedNode node = (PatchedNode) tree.getLastSelectedPathComponent();
-                if (node.getData().equals("")) return;
-                System.out.println("INSTANTIATE");
+                if (node.getData().startsWith("!")) return;
                 Component component = (Component) core.getRegistry().instantiate(node.getData());
                 // TODO: Autowrap helper function
                 Wrapper wrapper = new Wrapper(component);
@@ -74,9 +72,10 @@ public class ClassesPanel extends SimpleToolWindowPanel {
 
     public void update() {
         PatchedNode root = this.tree.getRoot();
+        this.tree.saveExpandedState();
         root.removeAllChildren();
         for (Map.Entry<String, ClassLoaderBase> loader : this.core.getRegistry().getLoaders().entrySet()) {
-            PatchedNode groupNode = this.tree.makeNode("");
+            PatchedNode groupNode = this.tree.makeNode("!" + loader.getKey());
             groupNode.setPrimaryText(loader.getKey());
             groupNode.setSecondaryText(loader.getValue().getSecondaryText());
             groupNode.setIcon(loader.getValue().getIcon());
@@ -89,5 +88,6 @@ public class ClassesPanel extends SimpleToolWindowPanel {
             root.add(groupNode);
         }
         this.tree.forceUpdate();
+        this.tree.restoreExpandedState();
     }
 }

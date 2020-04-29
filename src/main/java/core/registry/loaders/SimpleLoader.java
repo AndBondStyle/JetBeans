@@ -14,7 +14,7 @@ public class SimpleLoader extends ClassLoaderBase {
     public SimpleLoader(String display, String pkg) {
         super(pkg);
         this.primaryText = display;
-        this.secondaryText = pkg + ".*";
+        this.secondaryText = pkg;
         this.icon = AllIcons.Nodes.PpLib;
     }
 
