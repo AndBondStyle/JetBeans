@@ -4,7 +4,7 @@ import com.intellij.icons.AllIcons;
 
 public class SimpleLoader extends ClassLoaderBase {
     static {
-        ClassLoaderBase.registerLoader("BASE", SimpleLoader.class);
+        ClassLoaderBase.registerLoader("core", SimpleLoader.class);
     }
 
     public SimpleLoader(String data) {

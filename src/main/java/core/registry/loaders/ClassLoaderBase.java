@@ -52,7 +52,7 @@ public abstract class ClassLoaderBase extends ClassLoader {
 
     public Class<?> load(String name) {
         try {
-            return this.loadClass(name, true);
+            return this.loadClass(name);
         } catch (ClassNotFoundException e) {
             String message = "Class \"" + name + "\" not found in loader \"" + this.getID() + "\"";
             throw new RuntimeException(message, e);
