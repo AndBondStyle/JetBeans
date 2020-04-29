@@ -20,6 +20,7 @@ public class SimpleLoader extends ClassLoaderBase {
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
+        if (!this.data.equals("")) name = this.data + "." + name;
         return super.loadClass(name, true);
     }
 }

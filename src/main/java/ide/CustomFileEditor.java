@@ -36,13 +36,13 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor, 
 
         // ====== TEMP ======
         Component temp = new JBIntSpinner(50, 0, 100, 1);
-        Wrapper wrapper = new Wrapper(temp);
+        Wrapper wrapper = Wrapper.autowrap(temp);
         this.canvas.addItem(wrapper);
         wrapper.setLocation(100, 100);
 
         for (int i = 0; i < 10; i++) {
             Component temp2 = new JBIntSpinner(50, 0, 100, 1);
-            Wrapper wrapper2 = new Wrapper(temp2);
+            Wrapper wrapper2 = Wrapper.autowrap(temp2);
             this.canvas.addItem(wrapper2);
             wrapper2.setLocation(100, 200 + 100 * i);
 

@@ -57,13 +57,7 @@ public class ClassesPanel extends SimpleToolWindowPanel {
                 if (e.getClickCount() != 2) return;
                 PatchedNode node = (PatchedNode) tree.getLastSelectedPathComponent();
                 if (node.getData().startsWith("!")) return;
-                Component component = (Component) core.getRegistry().instantiate(node.getData());
-                // TODO: Autowrap helper function
-                Wrapper wrapper = new Wrapper(component);
-                // TODO: Activate placing action
-                core.getCanvas().addItem(wrapper);
-                wrapper.setLocation(100, 100);
-                core.getCanvas().setSelection(wrapper);
+                core.instantiate(node.getData());
             }
         });
         this.setContent(ScrollPaneFactory.createScrollPane(this.tree));
@@ -76,7 +70,7 @@ public class ClassesPanel extends SimpleToolWindowPanel {
         root.removeAllChildren();
         for (Map.Entry<String, ClassLoaderBase> loader : this.core.getRegistry().getLoaders().entrySet()) {
             PatchedNode groupNode = this.tree.makeNode("!" + loader.getKey());
-            groupNode.setPrimaryText(loader.getKey());
+            groupNode.setPrimaryText(loader.getValue().getPrimaryText());
             groupNode.setSecondaryText(loader.getValue().getSecondaryText());
             groupNode.setIcon(loader.getValue().getIcon());
             for (Map.Entry<String, String> klass : loader.getValue().getClasses().entrySet()) {

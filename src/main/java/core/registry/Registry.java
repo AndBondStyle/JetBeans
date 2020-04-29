@@ -23,18 +23,17 @@ public class Registry implements SimpleEventSupport {
 
     public Object instantiate(String id) {
         String[] tokens = id.split(":");
-        ClassLoaderBase loader = this.loaders.get(tokens[0]  + ":" + tokens[1]);
+        String loaderId = tokens[0]  + ":" + tokens[1];
+        ClassLoaderBase loader = this.loaders.get(loaderId);
         // TODO: Try to dynamically create loader on cache miss?
-        if (loader == null) return null;
-        Class<?> klass = loader.safeLoadClass(tokens[2]);
-        if (klass == null) return null;
+        if (loader == null) throw new RuntimeException("Loader \"" + loaderId + "\" not found");
+        Class<?> klass = loader.load(tokens[2]);
         try {
             return klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
-            System.err.println("Failed to instantiate class ID = " + id);
-            e.printStackTrace();
+            String message = "Failed to construct class \"" + id + "\"";
+            throw new RuntimeException(message, e);
         }
-        return null;
     }
 
     public HashMap<String, ClassLoaderBase> getLoaders() {

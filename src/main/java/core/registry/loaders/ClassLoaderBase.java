@@ -50,12 +50,12 @@ public abstract class ClassLoaderBase extends ClassLoader {
         return this.classes;
     }
 
-    public Class<?> safeLoadClass(String name) {
+    public Class<?> load(String name) {
         try {
-            return this.loadClass(this.data + "." + name, true);
+            return this.loadClass(name, true);
         } catch (ClassNotFoundException e) {
-            System.err.println("Class NAME = " + name + " not found in loader ID = " + this.getID());
-            return null;
+            String message = "Class \"" + name + "\" not found in loader \"" + this.getID() + "\"";
+            throw new RuntimeException(message, e);
         }
     }
 

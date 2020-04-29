@@ -4,6 +4,11 @@ import gui.common.SimpleEventSupport;
 import core.registry.Registry;
 import gui.canvas.CanvasItem;
 import gui.canvas.Canvas;
+import gui.wrapper.Wrapper;
+
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
@@ -88,6 +93,22 @@ public final class JetBeans implements SimpleEventSupport {
         } else {
             this.setSelection(null);
             this.fireEvent("deactivate");
+        }
+    }
+
+    public void instantiate(String id) {
+        try {
+            Object instance = this.registry.instantiate(id);
+            // TODO: Activate placing action
+            Wrapper wrapper = Wrapper.autowrap(instance);
+            this.getCanvas().addItem(wrapper);
+            wrapper.setLocation(100, 100);
+            this.getCanvas().setSelection(wrapper);
+        } catch (RuntimeException e) {
+            Notification n = new Notification("JetBeans", null, NotificationType.ERROR);
+            n.setTitle("Bean instantiation failed");
+            n.setContent(e.getMessage());
+            Notifications.Bus.notify(n, this.project);
         }
     }
 }

@@ -20,8 +20,11 @@ public class TestAction extends AnAction implements DumbAware {
         SimpleLoader loader = new SimpleLoader("Swing", "javax.swing");
         loader.add("JComboBox");
         core.getRegistry().add(loader);
-        loader = new SimpleLoader("AWT", "java.awt");
-        loader.add("Button");
+        loader = new SimpleLoader("Test", "");
+        loader.add("java.awt.Button");
+        loader.add("java.awt.Label");
+        loader.add("java.lang.String");
+        loader.add("java.lang.Kek");
         core.getRegistry().add(loader);
     }
 }
