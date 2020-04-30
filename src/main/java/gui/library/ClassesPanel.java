@@ -1,9 +1,9 @@
 package gui.library;
 
-import gui.library.actions.TestAction;
+import gui.library.actions.LoadJarAction;
 import gui.common.tree.PatchedNode;
 import gui.common.tree.PatchedTree;
-import core.registry.loaders.ClassLoaderBase;
+import core.registry.loaders.Loader;
 import core.JetBeans;
 
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -13,13 +13,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.icons.AllIcons;
-import gui.wrapper.Wrapper;
 
 import javax.swing.tree.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.*;
-import java.util.Map;
+import java.util.*;
 
 public class ClassesPanel extends SimpleToolWindowPanel {
     public LibraryView parent;
@@ -39,7 +37,7 @@ public class ClassesPanel extends SimpleToolWindowPanel {
 
     void initToolbar() {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
-        actionGroup.add(new TestAction());
+        actionGroup.add(new LoadJarAction());
         ActionToolbar toolbar = ActionManager.getInstance()
                 .createActionToolbar("JetBeansLibraryToolbar", actionGroup, false);
         this.setToolbar(toolbar.getComponent());
@@ -68,14 +66,18 @@ public class ClassesPanel extends SimpleToolWindowPanel {
         PatchedNode root = this.tree.getRoot();
         this.tree.saveExpandedState();
         root.removeAllChildren();
-        for (Map.Entry<String, ClassLoaderBase> loader : this.core.getRegistry().getLoaders().entrySet()) {
+        for (Map.Entry<String, Loader> loader : this.core.getRegistry().getLoaders().entrySet()) {
             PatchedNode groupNode = this.tree.makeNode("!" + loader.getKey());
             groupNode.setPrimaryText(loader.getValue().getPrimaryText());
             groupNode.setSecondaryText(loader.getValue().getSecondaryText());
             groupNode.setIcon(loader.getValue().getIcon());
             for (Map.Entry<String, String> klass : loader.getValue().getClasses().entrySet()) {
+                List<String> tokens = new ArrayList<>(Arrays.asList(klass.getKey().split("\\.")));
+                String name = tokens.remove(tokens.size() - 1);
+                String pkg = String.join(".", tokens);
                 PatchedNode childNode = this.tree.makeNode(klass.getValue());
-                childNode.setPrimaryText(klass.getKey());
+                childNode.setPrimaryText(name);
+                if (!pkg.equals("")) childNode.setSecondaryText(pkg);
                 childNode.setIcon(AllIcons.Nodes.Class);
                 groupNode.add(childNode);
             }

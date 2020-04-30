@@ -4,7 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.HashMap;
 import javax.swing.*;
 
-public abstract class ClassLoaderBase extends ClassLoader {
+public abstract class Loader extends ClassLoader {
+    public static String SEP = "?";
     private static HashMap<String, Class<?>> keyToClass = new HashMap<>();
     private static HashMap<Class<?>, String> classToKey = new HashMap<>();
     protected HashMap<String, String> classes = new LinkedHashMap<>();
@@ -15,22 +16,22 @@ public abstract class ClassLoaderBase extends ClassLoader {
     protected String secondaryText;
     protected Icon icon;
 
-    public ClassLoaderBase(String data) {
-        this.key = ClassLoaderBase.classToKey.get(this.getClass());
+    public Loader(String data) {
+        this.key = Loader.classToKey.get(this.getClass());
         this.data = data;
     }
 
-    public static void registerLoader(String key, Class<? extends ClassLoaderBase> klass) {
-        ClassLoaderBase.keyToClass.put(key, klass);
-        ClassLoaderBase.classToKey.put(klass, key);
+    public static void registerLoader(String key, Class<? extends Loader> klass) {
+        Loader.keyToClass.put(key, klass);
+        Loader.classToKey.put(klass, key);
     }
 
-    public static ClassLoaderBase create(String id) {
+    public static Loader create(String id) {
         // TODO: ???
         try {
-            String[] tokens = id.split(":");
-            Class<?> klass = ClassLoaderBase.keyToClass.get(tokens[0]);
-            return (ClassLoaderBase) klass.getDeclaredConstructor().newInstance(tokens[1]);
+            String[] tokens = id.split(SEP);
+            Class<?> klass = Loader.keyToClass.get(tokens[0]);
+            return (Loader) klass.getDeclaredConstructor().newInstance(tokens[1]);
         } catch (IndexOutOfBoundsException e) {
             System.err.println("IOOB while creating loader. ID = " + id);
             e.printStackTrace();
@@ -42,7 +43,7 @@ public abstract class ClassLoaderBase extends ClassLoader {
     }
 
     public void add(String name) {
-        String id = this.getID() + ":" + name;
+        String id = this.getID() + SEP + name;
         this.classes.put(name, id);
     }
 
@@ -60,7 +61,7 @@ public abstract class ClassLoaderBase extends ClassLoader {
     }
 
     public String getID() {
-        return this.key + ":" + this.data;
+        return this.key + SEP + this.data;
     }
 
     public String getPrimaryText() {

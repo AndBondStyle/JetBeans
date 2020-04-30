@@ -14,6 +14,9 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import ide.CustomFileEditor;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 @Service
 public final class JetBeans implements SimpleEventSupport {
     private Project project;
@@ -108,6 +111,10 @@ public final class JetBeans implements SimpleEventSupport {
             Notification n = new Notification("JetBeans", null, NotificationType.ERROR);
             n.setTitle("Bean instantiation failed");
             n.setContent(e.getMessage());
+            StringWriter writer = new StringWriter();
+            PrintWriter printer = new PrintWriter(writer);
+            e.printStackTrace(printer);
+            n.setSubtitle(writer.toString());
             Notifications.Bus.notify(n, this.project);
         }
     }

@@ -1,19 +1,20 @@
 package core.registry;
 
-import core.registry.loaders.ClassLoaderBase;
+import core.registry.loaders.Loader;
 import gui.common.SimpleEventSupport;
 
 import java.util.LinkedHashMap;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class Registry implements SimpleEventSupport {
-    private HashMap<String, ClassLoaderBase> loaders = new LinkedHashMap<>();
+    private HashMap<String, Loader> loaders = new LinkedHashMap<>();
 
     public Registry() {
         Hardcoded.populate(this);
     }
 
-    public boolean add(ClassLoaderBase loader) {
+    public boolean add(Loader loader) {
         String key = loader.getID();
         if (this.loaders.containsKey(key)) return false;
         this.loaders.put(key, loader);
@@ -22,9 +23,9 @@ public class Registry implements SimpleEventSupport {
     }
 
     public Object instantiate(String id) {
-        String[] tokens = id.split(":");
-        String loaderId = tokens[0]  + ":" + tokens[1];
-        ClassLoaderBase loader = this.loaders.get(loaderId);
+        String[] tokens = id.split(Pattern.quote(Loader.SEP));
+        String loaderId = tokens[0]  + Loader.SEP + tokens[1];
+        Loader loader = this.loaders.get(loaderId);
         // TODO: Try to dynamically create loader on cache miss?
         if (loader == null) throw new RuntimeException("Loader \"" + loaderId + "\" not found");
         Class<?> klass = loader.load(tokens[2]);
@@ -36,7 +37,7 @@ public class Registry implements SimpleEventSupport {
         }
     }
 
-    public HashMap<String, ClassLoaderBase> getLoaders() {
+    public HashMap<String, Loader> getLoaders() {
         return this.loaders;
     }
 }
