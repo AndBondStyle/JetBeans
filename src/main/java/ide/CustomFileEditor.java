@@ -1,6 +1,7 @@
 package ide;
 
 import gui.common.SimpleEventSupport;
+import gui.common.TestBean;
 import gui.wrapper.Wrapper;
 import gui.canvas.Canvas;
 import gui.link.Link;
@@ -35,7 +36,7 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor, 
         this.core.registerEditor(this);
 
         // ====== TEMP ======
-        Component temp = new JBIntSpinner(50, 0, 100, 1);
+        Component temp = new TestBean();
         Wrapper wrapper = Wrapper.autowrap(temp);
         this.canvas.addItem(wrapper);
         wrapper.setLocation(100, 100);

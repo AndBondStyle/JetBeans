@@ -20,9 +20,6 @@ public class GUIWrapper extends Wrapper {
     @Override
     protected Component initView() {
         return (Component) this.target;
-//        Component comp = (Component) this.target;
-//        comp.setVisible(true);
-//        return comp;
     }
 
     public Color getStripesColor() {
@@ -44,7 +41,8 @@ public class GUIWrapper extends Wrapper {
 
     @Override
     protected void paintComponent(Graphics g) {
-        this.drawStripes((Graphics2D) g);
+        Component comp = (Component) this.target;
+        if (!comp.isOpaque()) this.drawStripes((Graphics2D) g);
         super.paintComponent(g);
     }
 }

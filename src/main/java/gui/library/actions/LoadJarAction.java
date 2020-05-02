@@ -1,9 +1,9 @@
 package gui.library.actions;
 
 import core.registry.loaders.JarLoader;
-import ide.CustomFileType;
 import core.JetBeans;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class LoadJarAction extends AnAction implements DumbAware {
     public LoadJarAction() {
-        super("Import Jar", "Import classes from jar", CustomFileType.ICON);
+        super("Import Jar", "Import classes from jar", AllIcons.Actions.Download);
     }
 
     @Override
