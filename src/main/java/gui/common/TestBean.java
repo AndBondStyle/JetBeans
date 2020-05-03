@@ -28,6 +28,7 @@ public class TestBean extends JPanel {
     }
 
     public void setColor(Color newColor) {
+        firePropertyChange("color", this.color, newColor);
         this.color = newColor;
         this.repaint();
     }
