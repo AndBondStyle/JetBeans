@@ -12,7 +12,10 @@ import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.IntrospectionException;
@@ -29,8 +32,13 @@ public class PropertyTree extends PatchedTree {
     public PropertyTree(Project project) {
         super(project);
         this.setCellRenderer(new PropertyNodeRenderer());
-//        this.setCellEditor(new PropertyNodeEditor());
-//        this.setEditable(true);
+        this.setCellEditor(new PropertyNodeEditor());
+        this.setEditable(true);
+        this.expandRow(0);
+        this.setRootVisible(false);
+        this.setShowsRootHandles(true);
+        this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
         this.core = JetBeans.getInstance(project);
         this.core.addListener(e -> {
             if (e.getActionCommand().equals("select")) {
@@ -42,27 +50,17 @@ public class PropertyTree extends PatchedTree {
                 }
             }
         });
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                System.out.println("CLICK: " + e);
-                TreePath path = getPathForLocation(e.getX(), e.getY());
-                System.out.println("--> " + PropertyTree.this.getSelectionPath());
-                System.out.println("PATH: " + path);
-                if (path == null) return;
-                PatchedNode node = (PatchedNode) path.getLastPathComponent();
-                System.out.println("NODE: " + path);
-                if (!(node instanceof PropertyNode)) return;
-                Editor editor = ((PropertyNode) node).getEditor();
-                System.out.println("EDITOR: " + editor);
-                MouseEvent ee = SwingUtilities.convertMouseEvent(PropertyTree.this, e, editor);
-                Component target = SwingUtilities.getDeepestComponentAt(editor, ee.getX(), ee.getY());
-                if (target != null) {
-                    ee = SwingUtilities.convertMouseEvent(editor, ee, target);
-                    target.dispatchEvent(ee);
-                }
+
+        this.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                PropertyTree.this.forceUpdate();
             }
         });
+    }
+
+    public void updateSplitters(float proportion) {
+        for (Editor<?> editor : this.editors) editor.updateSplitter(proportion);
+        this.repaint();
     }
 
     public void setTarget(Object target) {

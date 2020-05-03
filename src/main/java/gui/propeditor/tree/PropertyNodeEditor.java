@@ -1,6 +1,7 @@
 package gui.propeditor.tree;
 
 import gui.common.tree.PatchedNode;
+import gui.propeditor.editors.Editor;
 
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;

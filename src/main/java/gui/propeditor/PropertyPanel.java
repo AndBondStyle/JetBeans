@@ -5,7 +5,9 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.icons.AllIcons;
 import gui.propeditor.tree.PropertyTree;
+import gui.propeditor.tree.PropertyTreeUI;
 
+import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,15 +30,9 @@ public class PropertyPanel extends SimpleToolWindowPanel {
 
     void initContent() {
         this.tree = new PropertyTree(this.project);
-        this.tree.expandRow(0);
-        this.tree.setRootVisible(false);
-        this.tree.setShowsRootHandles(true);
-        this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-//        this.tree.addMouseListener(new MouseAdapter() {
-//            public void mouseClicked(MouseEvent e) {
-//                // TODO?
-//            }
-//        });
-        this.setContent(ScrollPaneFactory.createScrollPane(this.tree));
+        JScrollPane scroll = ScrollPaneFactory.createScrollPane(this.tree);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.tree.setUI(new PropertyTreeUI(scroll));
+        this.setContent(scroll);
     }
 }

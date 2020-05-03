@@ -3,6 +3,7 @@ package gui.propeditor.editors;
 import gui.propeditor.tree.PropertyTree;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -16,7 +17,7 @@ public class ObjectEditor extends Editor<Object> {
     @Override
     protected void build() {
         this.label = new JLabel();
-        this.add(this.label);
+        this.centerPanel.add(this.label);
     }
 
     @Override

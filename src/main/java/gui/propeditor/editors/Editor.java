@@ -1,14 +1,20 @@
 package gui.propeditor.editors;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.impl.ActionButton;
+import com.intellij.openapi.ui.Splitter;
+import com.intellij.ui.JBSplitter;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
+import gui.propeditor.actions.ShellInputAction;
 import gui.propeditor.tree.PropertyTree;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
@@ -26,6 +32,11 @@ public abstract class Editor<T> extends JPanel {
         Editor.registerEditor(Object.class, ObjectEditor.class);
     }
 
+    protected JPanel namePanel;
+    protected JPanel centerPanel;
+    protected JPanel buttonsPanel;
+    protected JBSplitter splitter;
+
     protected PropertyChangeListener listener;
     protected PropertyTree parent;
     protected Supplier<T> getter;
@@ -33,7 +44,7 @@ public abstract class Editor<T> extends JPanel {
     protected Object target;
     protected Class<?> type;
     protected String name;
-    protected T value = (T) new Object();
+    protected T value;
 
     public Editor (PropertyTree parent, Object target, String name, Class<?> type, Supplier<T> getter, Consumer<T> setter) {
         this.parent = parent;
@@ -42,7 +53,6 @@ public abstract class Editor<T> extends JPanel {
         this.setter = setter;
         this.type = type;
         this.name = name;
-        this.buildAll();
     }
 
     public static void registerEditor(Class<?> propClass, Class<?> editorClass) {
@@ -93,11 +103,13 @@ public abstract class Editor<T> extends JPanel {
     }
 
     public void init() {
+        this.buildAll();
         if (this.target instanceof Component) {
             Component comp = (Component) this.target;
             this.listener = e -> this.accept((T) e.getNewValue(), false);
             comp.addPropertyChangeListener(this.name, this.listener);
             this.accept(this.getter.get(), false);
+            this.update();
         }
     }
 
@@ -109,25 +121,50 @@ public abstract class Editor<T> extends JPanel {
     }
 
     protected void buildAll() {
-        this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+        this.namePanel = new JPanel();
+        this.namePanel.setLayout(new BoxLayout(this.namePanel, BoxLayout.LINE_AXIS));
+        this.namePanel.setMinimumSize(new Dimension());
+        this.centerPanel = new JPanel();
+        this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.LINE_AXIS));
+        this.centerPanel.setMinimumSize(new Dimension());
+        this.buttonsPanel = new JPanel();
+        this.buttonsPanel.setLayout(new BoxLayout(this.buttonsPanel, BoxLayout.LINE_AXIS));
+        this.splitter = new JBSplitter(false, 0.5f);
+        this.splitter.setFirstComponent(this.namePanel);
+        this.splitter.setSecondComponent(this.centerPanel);
+        this.splitter.addPropertyChangeListener("proportion", e -> this.parent.updateSplitters((float) e.getNewValue()));
+        this.setLayout(new BorderLayout());
+        this.add(this.splitter, BorderLayout.CENTER);
+        this.add(this.buttonsPanel, BorderLayout.EAST);
+
         SimpleColoredComponent label = new SimpleColoredComponent();
         label.setOpaque(false);
         label.append(this.name);
         label.append("   ");
-        label.append(this.type.getCanonicalName(), SimpleTextAttributes.GRAYED_ATTRIBUTES);
-        this.add(label);
+        label.append(this.type.getSimpleName(), SimpleTextAttributes.GRAYED_ATTRIBUTES);
+        label.setToolTipText(this.type.getCanonicalName() + (this.setter == null ? " (readonly)" : ""));
+        this.namePanel.add(label);
+
         this.build();
-        JButton button = new JButton(AllIcons.Nodes.Console);
-        button.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                System.out.println("SHELL EDITOR ACTION");
-            }
-        });
-        this.add(button);
+
+        AnAction action = new ShellInputAction();
+        ActionButton button = new ActionButton(
+                action,
+                action.getTemplatePresentation().clone(),
+                ActionPlaces.UNKNOWN,
+                ActionToolbar.NAVBAR_MINIMUM_BUTTON_SIZE
+        );
+        button.setMaximumSize(new Dimension(50, 1000));
+        this.buttonsPanel.add(button);
+
         if (this.setter == null) {
             label.setIcon(AllIcons.Diff.Lock);
             button.setEnabled(false);
         }
+    }
+
+    public void updateSplitter(float proportion) {
+        this.splitter.setProportion(proportion);
     }
 
     public void accept(T value, boolean forward) {
