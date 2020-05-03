@@ -7,7 +7,10 @@
         JavaBeans&#8482; component model visual editor
     </description>
 
-    <!--<depends>com.intellij.modules.lang</depends>-->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.ultimate</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="JetBeans Component" implementationClass="ide.CustomFileType" fieldName="INSTANCE" extensions="bb"/>

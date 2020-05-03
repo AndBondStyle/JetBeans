@@ -37,14 +37,14 @@ public abstract class Editor<T> extends JPanel {
     protected JPanel buttonsPanel;
     protected JBSplitter splitter;
 
-    protected PropertyChangeListener listener;
-    protected PropertyTree parent;
-    protected Supplier<T> getter;
-    protected Consumer<T> setter;
-    protected Object target;
-    protected Class<?> type;
-    protected String name;
-    protected T value;
+    public PropertyChangeListener listener;
+    public PropertyTree parent;
+    public Supplier<T> getter;
+    public Consumer<T> setter;
+    public Object target;
+    public Class<?> type;
+    public String name;
+    public T value;
 
     public Editor (PropertyTree parent, Object target, String name, Class<?> type, Supplier<T> getter, Consumer<T> setter) {
         this.parent = parent;
@@ -147,7 +147,7 @@ public abstract class Editor<T> extends JPanel {
 
         this.build();
 
-        AnAction action = new ShellInputAction();
+        AnAction action = new ShellInputAction(this);
         ActionButton button = new ActionButton(
                 action,
                 action.getTemplatePresentation().clone(),
@@ -167,10 +167,10 @@ public abstract class Editor<T> extends JPanel {
         this.splitter.setProportion(proportion);
     }
 
-    public void accept(T value, boolean forward) {
+    public void accept(Object value, boolean forward) {
         if (value == this.value) return;
-        this.value = value;
-        if (forward) this.setter.accept(value);
+        this.value = (T) value;
+        if (forward) this.setter.accept((T) value);
         this.update();
     }
 
