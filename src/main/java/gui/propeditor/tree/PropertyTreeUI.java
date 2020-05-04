@@ -1,6 +1,5 @@
 package gui.propeditor.tree;
 
-import javax.swing.*;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.AbstractLayoutCache;
 import java.awt.*;

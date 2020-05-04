@@ -6,12 +6,14 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import gui.propeditor.editors.Editor;
 import gui.propeditor.ShellInputDialog;
+import gui.propeditor.tree.PropertyTree;
 import org.jetbrains.annotations.NotNull;
 
 public class ShellInputAction extends AnAction implements DumbAware {
-    private Editor<?> editor;
+    private PropertyTree tree;
+    private Editor editor;
 
-    public ShellInputAction(Editor<?> editor) {
+    public ShellInputAction(Editor editor) {
         this.editor = editor;
         this.getTemplatePresentation().setIcon(AllIcons.Nodes.Console);
         this.getTemplatePresentation().setDescription("Enter from shell");

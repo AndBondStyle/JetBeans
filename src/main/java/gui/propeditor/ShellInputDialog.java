@@ -26,9 +26,9 @@ public class ShellInputDialog extends DialogWrapper {
 
     private com.intellij.openapi.editor.Editor code;
     private Project project;
-    private Editor<?> editor;
+    private Editor editor;
 
-    public ShellInputDialog(Project project, Editor<?> editor) {
+    public ShellInputDialog(Project project, Editor editor) {
         super(project, true, IdeModalityType.PROJECT);
         this.setTitle("Shell Input");
         this.setOKButtonText("Evaluate");
@@ -65,7 +65,7 @@ public class ShellInputDialog extends DialogWrapper {
         try {
             String text = this.code.getDocument().getText();
             ScriptEvaluator se = new ScriptEvaluator();
-            se.setReturnType(this.editor.type);
+            se.setReturnType(this.editor.prop.type);
             se.cook(text);
             Object value = se.evaluate(new Object[0]);
             this.editor.accept(value, true);

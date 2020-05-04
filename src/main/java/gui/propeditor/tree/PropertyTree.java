@@ -1,37 +1,29 @@
 package gui.propeditor.tree;
 
-import core.JetBeans;
-import gui.link.Link;
-import gui.canvas.CanvasItem;
-import gui.propeditor.editors.EditorUI;
-import gui.wrapper.Wrapper;
 import gui.common.tree.PatchedNode;
 import gui.common.tree.PatchedTree;
 import gui.propeditor.editors.Editor;
 
 import com.intellij.openapi.project.Project;
 
-import javax.swing.*;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.Introspector;
 import java.beans.BeanInfo;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.*;
 
 public class PropertyTree extends PatchedTree {
-    private List<Editor<?>> editors = new ArrayList<>();
-    private JetBeans core;
+    private List<Editor> editors = new ArrayList<>();
+    private Project project;
 
     public PropertyTree(Project project) {
         super(project);
+        this.project = project;
         this.setCellRenderer(new PropertyNodeRenderer());
         this.setCellEditor(new PropertyNodeEditor());
         this.setEditable(true);
@@ -39,18 +31,6 @@ public class PropertyTree extends PatchedTree {
         this.setRootVisible(false);
         this.setShowsRootHandles(true);
         this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-        this.core = JetBeans.getInstance(project);
-        this.core.addListener(e -> {
-            if (e.getActionCommand().equals("select")) {
-                CanvasItem selection = this.core.getSelection();
-                if (selection == null) this.setTarget(null);
-                if (selection instanceof Wrapper) {
-                    Object target = ((Wrapper) selection).getTarget();
-                    this.setTarget(target);
-                }
-            }
-        });
 
         this.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -60,8 +40,12 @@ public class PropertyTree extends PatchedTree {
     }
 
     public void updateSplitters(float proportion) {
-        for (Editor<?> editor : this.editors) ((EditorUI<?>) editor).updateSplitter(proportion);
+        for (Editor editor : this.editors) editor.updateSplitter(proportion);
         this.repaint();
+    }
+
+    public Editor getActiveEditor() {
+        return this.editors.stream().filter(Component::hasFocus).findFirst().get();
     }
 
     public void setTarget(Object target) {
@@ -86,9 +70,9 @@ public class PropertyTree extends PatchedTree {
         // Build property tree
         // TODO: Property grouping & sorting
         for (PropertyDescriptor prop : props) {
-            Editor<?> editor = Editor.createEditor(this, prop, target);
+            Editor editor = Editor.createEditor(this, prop, target);
             if (editor == null) continue;
-            PropertyNode node = new PropertyNode(editor, this.core.getProject());
+            PropertyNode node = new PropertyNode(editor, this.project);
             this.editors.add(editor);
             root.add(node);
         }

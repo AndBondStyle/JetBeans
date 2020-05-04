@@ -1,21 +1,19 @@
 package gui.propeditor.tree;
 
 import gui.common.tree.PatchedNode;
-import gui.propeditor.editors.Editor;
 
-import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
+import javax.swing.*;
+import java.awt.*;
 
 public class PropertyNodeEditor implements TreeCellEditor {
     @Override
     public Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row) {
-        if (value instanceof PropertyNode) return ((PropertyNode) value).getEditor();
-        return null;
+        return ((PropertyNode) value).getEditor();
     }
 
     @Override
@@ -26,15 +24,10 @@ public class PropertyNodeEditor implements TreeCellEditor {
         PropertyTree tree = (PropertyTree) e.getSource();
         TreePath path = tree.getPathForLocation(e.getX(), e.getY());
         PatchedNode node = (PatchedNode) path.getLastPathComponent();
-        if (!(node instanceof PropertyNode)) return false;
-        return true;
+        return node instanceof PropertyNode;
     }
 
-    @Override
-    public boolean shouldSelectCell(EventObject event) {
-        return true;
-    }
-
+    public boolean shouldSelectCell(EventObject event) { return true; }
     public Object getCellEditorValue() { return null; }
     public boolean stopCellEditing() { return true; }
     public void cancelCellEditing() {}

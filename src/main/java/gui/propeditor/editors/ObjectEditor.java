@@ -2,12 +2,13 @@ package gui.propeditor.editors;
 
 import javax.swing.*;
 
-public class ObjectEditor extends EditorUI<Object> {
+public class ObjectEditor extends Editor {
     private JLabel label;
 
     @Override
     protected void populateCenterPanel() {
         this.label = new JLabel();
+        this.centerPanel.add(Box.createHorizontalStrut(5));
         this.centerPanel.add(this.label);
     }
 
