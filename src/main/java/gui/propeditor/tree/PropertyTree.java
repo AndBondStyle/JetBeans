@@ -3,6 +3,7 @@ package gui.propeditor.tree;
 import core.JetBeans;
 import gui.link.Link;
 import gui.canvas.CanvasItem;
+import gui.propeditor.editors.EditorUI;
 import gui.wrapper.Wrapper;
 import gui.common.tree.PatchedNode;
 import gui.common.tree.PatchedTree;
@@ -59,7 +60,7 @@ public class PropertyTree extends PatchedTree {
     }
 
     public void updateSplitters(float proportion) {
-        for (Editor<?> editor : this.editors) editor.updateSplitter(proportion);
+        for (Editor<?> editor : this.editors) ((EditorUI<?>) editor).updateSplitter(proportion);
         this.repaint();
     }
 

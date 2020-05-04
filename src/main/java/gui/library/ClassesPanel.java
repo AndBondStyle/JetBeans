@@ -51,10 +51,9 @@ public class ClassesPanel extends SimpleToolWindowPanel {
         this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.tree.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                if (e.getButton() != MouseEvent.BUTTON1) return;
-                if (e.getClickCount() != 2) return;
+                if (e.getButton() != MouseEvent.BUTTON1 || e.getClickCount() != 2) return;
                 PatchedNode node = (PatchedNode) tree.getLastSelectedPathComponent();
-                if (node.getData().startsWith("!")) return;
+                if (node == null || node.getData().startsWith("!")) return;
                 core.instantiate(node.getData());
             }
         });

@@ -1,21 +1,12 @@
 package gui.propeditor.editors;
 
-import gui.propeditor.tree.PropertyTree;
-
 import javax.swing.*;
-import java.awt.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-public class ObjectEditor extends Editor<Object> {
+public class ObjectEditor extends EditorUI<Object> {
     private JLabel label;
 
-    public ObjectEditor(PropertyTree parent, Object target, String name, Class<?> type, Supplier<Object> getter, Consumer<Object> setter) {
-        super(parent, target, name, type, getter, setter);
-    }
-
     @Override
-    protected void build() {
+    protected void populateCenterPanel() {
         this.label = new JLabel();
         this.centerPanel.add(this.label);
     }

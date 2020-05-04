@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import gui.propeditor.editors.Editor;
-import gui.propeditor.shell.ShellInputDialog;
+import gui.propeditor.ShellInputDialog;
 import org.jetbrains.annotations.NotNull;
 
 public class ShellInputAction extends AnAction implements DumbAware {
