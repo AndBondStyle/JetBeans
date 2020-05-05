@@ -5,19 +5,21 @@ import gui.common.tree.PatchedTree;
 import gui.propeditor.editors.Editor;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.icons.AllIcons;
 
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.Introspector;
 import java.beans.BeanInfo;
-import java.util.ArrayList;
+import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.TreePath;
 import java.util.List;
-import java.awt.*;
+import java.util.*;
 
 public class PropertyTree extends PatchedTree {
+    public PropertyTreeSettings settings = new PropertyTreeSettings();
     private List<Editor> editors = new ArrayList<>();
     private Project project;
 
@@ -31,10 +33,10 @@ public class PropertyTree extends PatchedTree {
         this.setRootVisible(false);
         this.setShowsRootHandles(true);
         this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
+        this.settings.addListener((e) -> this.rebuild());
         this.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
-                PropertyTree.this.forceUpdate();
+                // TODO: ???
             }
         });
     }
@@ -45,19 +47,19 @@ public class PropertyTree extends PatchedTree {
     }
 
     public Editor getActiveEditor() {
-        return this.editors.stream().filter(Component::hasFocus).findFirst().get();
+        TreePath path = this.getSelectionPath();
+        if (path == null) return null;
+        PatchedNode node = (PatchedNode) path.getLastPathComponent();
+        if (!(node instanceof PropertyNode)) return null;
+        return ((PropertyNode) node).editor;
     }
 
     public void setTarget(Object target) {
-        // Unbind listeners & reset
         this.editors.forEach(Editor::dispose);
         this.editors.clear();
-        PatchedNode root = this.getRoot();
-        root.removeAllChildren();
-        this.forceUpdate();
+        this.rebuild();
         if (target == null) return;
 
-        // Analyze target bean
         PropertyDescriptor[] props;
         try {
             BeanInfo bi = Introspector.getBeanInfo(target.getClass());
@@ -67,16 +69,35 @@ public class PropertyTree extends PatchedTree {
             throw new RuntimeException(message, e);
         }
 
-        // Build property tree
-        // TODO: Property grouping & sorting
         for (PropertyDescriptor prop : props) {
             Editor editor = Editor.createEditor(this, prop, target);
             if (editor == null) continue;
-            PropertyNode node = new PropertyNode(editor, this.project);
             this.editors.add(editor);
-            root.add(node);
         }
         this.editors.forEach(Editor::init);
+        this.rebuild();
+    }
+
+    public void rebuild() {
+        PatchedNode root = this.getRoot();
+        root.removeAllChildren();
+        PropertyNode[] nodes = this.editors.stream()
+                .map(editor -> new PropertyNode(editor, this.project))
+                .toArray(PropertyNode[]::new);
+        nodes = this.settings.filterNodes(nodes);
+        nodes = this.settings.sortNodes(nodes);
+        HashMap<String, List<PropertyNode>> groups = this.settings.groupNodes(nodes);
+        if (groups == null) {
+            Arrays.asList(nodes).forEach(root::add);
+        } else {
+            for (Map.Entry<String, List<PropertyNode>> group : groups.entrySet()) {
+                PatchedNode groupNode = new PatchedNode(this.project, "!");
+                groupNode.setPrimaryText(group.getKey());
+                groupNode.setIcon(AllIcons.Nodes.Class);
+                for (PropertyNode node : group.getValue()) groupNode.add(node);
+                root.add(groupNode);
+            }
+        }
         this.forceUpdate();
     }
 }

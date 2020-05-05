@@ -118,20 +118,13 @@ public abstract class Editor extends JPanel {
         this.splitter.setFirstComponent(this.namePanel);
         this.splitter.setSecondComponent(this.centerPanel);
         this.splitter.addPropertyChangeListener("proportion", e -> this.parent.updateSplitters((float) e.getNewValue()));
-        this.splitter.setBackground(UIUtil.getTreeSelectionBackground(true));
-        this.splitter.setForeground(UIUtil.getTreeSelectionBackground(true));
-        this.splitter.setOpaque(false);
+        this.splitter.getDivider().setOpaque(false);
 
         this.setLayout(new BorderLayout());
         this.add(this.splitter, BorderLayout.CENTER);
         this.add(this.buttonsPanel, BorderLayout.EAST);
-        this.setBackground(UIUtil.getTreeSelectionBackground(true));
-        this.setFocusable(true);
+        this.setFocusable(false);
         this.setOpaque(false);
-        this.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent e) { Editor.this.setOpaque(true); }
-            public void focusLost(FocusEvent e) { Editor.this.setOpaque(false); }
-        });
     }
 
     protected void populateNamePanel() {

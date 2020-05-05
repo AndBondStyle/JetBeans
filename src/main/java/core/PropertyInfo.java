@@ -5,11 +5,12 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class PropertyInfo {
+public class PropertyInfo implements Cloneable {
     public PropertyDescriptor descriptor;
     public Object target;
     public Supplier<Object> getter;
     public Consumer<Object> setter;
+    public Class<?> definer;
     public Class<?> type;
     public String name;
 
@@ -23,7 +24,27 @@ public class PropertyInfo {
         if (info.getter == null) return null;
         info.setter = wrapSetter(descriptor, target);
         info.name = descriptor.getName();
+        info.definer = PropertyInfo.getDefiner(info);
         return info;
+    }
+
+    public static PropertyInfo rebind(PropertyInfo info, Object target) {
+        try {
+            PropertyInfo copy = (PropertyInfo) info.clone();
+            copy.target = target;
+            copy.getter = PropertyInfo.wrapGetter(info.descriptor, target);
+            copy.setter = PropertyInfo.wrapSetter(info.descriptor, target);
+            return copy;
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
+
+    public static Class<?> getDefiner(PropertyInfo info) {
+        Class<?> getterDefiner = info.descriptor.getReadMethod().getDeclaringClass();
+        if (!info.isSettable()) return getterDefiner;
+        Class<?> setterDefiner = info.descriptor.getWriteMethod().getDeclaringClass();
+        return setterDefiner.isAssignableFrom(getterDefiner) ? getterDefiner : setterDefiner;
     }
 
     public static Supplier<Object> wrapGetter(PropertyDescriptor prop, Object target) {

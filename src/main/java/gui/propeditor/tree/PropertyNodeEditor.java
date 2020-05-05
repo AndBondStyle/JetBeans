@@ -13,7 +13,7 @@ import java.awt.*;
 public class PropertyNodeEditor implements TreeCellEditor {
     @Override
     public Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row) {
-        return ((PropertyNode) value).getEditor();
+        return ((PropertyNode) value).editor;
     }
 
     @Override
