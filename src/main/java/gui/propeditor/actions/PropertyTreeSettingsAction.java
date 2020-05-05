@@ -1,6 +1,6 @@
 package gui.propeditor.actions;
 
-import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.ToggleAction;
@@ -19,7 +19,9 @@ public class PropertyTreeSettingsAction extends DefaultActionGroup implements Du
 
     public PropertyTreeSettingsAction(PropertyTree tree) {
         this.settings = tree.settings;
+        this.getTemplatePresentation().setIcon(AllIcons.General.Filter);
         this.setPopup(true);
+
         this.addSeparator("Group By");
         this.add(this.makeToggleAction(
                 null, "Class",

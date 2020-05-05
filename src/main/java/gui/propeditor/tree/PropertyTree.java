@@ -13,8 +13,12 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.Introspector;
 import java.beans.BeanInfo;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.TreePath;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.*;
 
@@ -28,6 +32,7 @@ public class PropertyTree extends PatchedTree {
         this.project = project;
         this.setCellRenderer(new PropertyNodeRenderer());
         this.setCellEditor(new PropertyNodeEditor());
+        this.getExpandableItemsHandler().setEnabled(false);
         this.setEditable(true);
         this.expandRow(0);
         this.setRootVisible(false);
@@ -35,10 +40,23 @@ public class PropertyTree extends PatchedTree {
         this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.settings.addListener((e) -> this.rebuild());
         this.addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
-                // TODO: ???
-            }
+            public void componentResized(ComponentEvent e) { PropertyTree.this.forceResize(); }
         });
+        this.addTreeSelectionListener(new TreeSelectionListener() {
+            public void valueChanged(TreeSelectionEvent e) { PropertyTree.this.forceResize(); }
+        });
+    }
+
+    public void forceResize() {
+        Editor editor = PropertyTree.this.getActiveEditor();
+        if (editor != null) {
+            try {
+                // https://stackoverflow.com/questions/22330502/
+                Method method = BasicTreeUI.class.getDeclaredMethod("configureLayoutCache");
+                method.setAccessible(true);
+                method.invoke(PropertyTree.this.getUI());
+            } catch (ReflectiveOperationException ignored) {}
+        }
     }
 
     public void updateSplitters(float proportion) {
@@ -92,7 +110,9 @@ public class PropertyTree extends PatchedTree {
         } else {
             for (Map.Entry<String, List<PropertyNode>> group : groups.entrySet()) {
                 PatchedNode groupNode = new PatchedNode(this.project, "!");
-                groupNode.setPrimaryText(group.getKey());
+                String[] tokens = group.getKey().split("!");
+                groupNode.setPrimaryText(tokens[0]);
+                if (tokens.length > 1) groupNode.setSecondaryText(tokens[1]);
                 groupNode.setIcon(AllIcons.Nodes.Class);
                 for (PropertyNode node : group.getValue()) groupNode.add(node);
                 root.add(groupNode);

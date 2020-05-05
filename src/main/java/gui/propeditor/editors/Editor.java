@@ -11,13 +11,10 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.JBSplitter;
-import com.intellij.util.ui.UIUtil;
 import com.intellij.icons.AllIcons;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.util.HashMap;
 import javax.swing.*;
 import java.awt.*;
@@ -133,9 +130,16 @@ public abstract class Editor extends JPanel {
         this.nameLabel.append(this.prop.name);
         this.nameLabel.append("   ");
         this.nameLabel.append(this.prop.type.getSimpleName(), SimpleTextAttributes.GRAYED_ATTRIBUTES);
-        String tooltip = this.prop.type.getCanonicalName();
-        if (!this.prop.isSettable()) tooltip += " (readonly)";
-        this.nameLabel.setToolTipText(tooltip);
+        StringBuilder tooltip = new StringBuilder();
+        tooltip.append(this.prop.descriptor.getShortDescription());
+        if (tooltip.toString().endsWith(".")) tooltip.setLength(tooltip.length() - 1);
+        tooltip.append(" - ").append(this.prop.type.getCanonicalName()).append(" - ");
+        if (!this.prop.isSettable()) tooltip.append("readonly, ");
+        if (this.prop.isBound()) tooltip.append("bound, ");
+        if (this.prop.isHidden()) tooltip.append("hidden, ");
+        if (this.prop.isExpert()) tooltip.append("expert, ");
+        tooltip.setLength(tooltip.length() - 2);
+        this.nameLabel.setToolTipText(tooltip.toString());
         this.namePanel.add(this.nameLabel);
     }
 
@@ -149,6 +153,13 @@ public abstract class Editor extends JPanel {
         );
         this.shellButton.setMaximumSize(new Dimension(50, 1000));
         this.buttonsPanel.add(this.shellButton);
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        Dimension size = g.getClipBounds().getSize();
+        this.setPreferredSize(size);
+        super.paint(g);
     }
 
     public void updateSplitter(float proportion) {

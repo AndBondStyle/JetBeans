@@ -41,8 +41,7 @@ public class GUIWrapper extends Wrapper {
 
     @Override
     protected void paintComponent(Graphics g) {
-        Component comp = (Component) this.target;
-        if (!comp.isOpaque()) this.drawStripes((Graphics2D) g);
+        this.drawStripes((Graphics2D) g);
         super.paintComponent(g);
     }
 }

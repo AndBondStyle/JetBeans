@@ -85,9 +85,8 @@ public class PropertyTreeSettings implements SimpleEventSupport {
         HashMap<String, List<PropertyNode>> result = new LinkedHashMap<>();
         for (Map.Entry<Class<?>, List<PropertyNode>> group : groups.entrySet()) {
             PropertyInfo prop = group.getValue().get(0).editor.prop;
-            String title = group.getKey().getName();
-            if (group.getKey() == prop.target.getClass()) title += " (own properties)";
-            else title += " (inherited)";
+            String title = group.getKey().getSimpleName();
+            if (group.getKey() != prop.target.getClass()) title += "!inherited";
             result.put(title, group.getValue());
         }
         return result;
