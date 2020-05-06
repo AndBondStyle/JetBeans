@@ -7,12 +7,10 @@ import gui.propeditor.editors.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.icons.AllIcons;
 
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.beans.Introspector;
-import java.beans.BeanInfo;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicTreeUI;
@@ -20,6 +18,7 @@ import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.TreePath;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.beans.*;
 import java.util.*;
 
 public class PropertyTree extends PatchedTree {
@@ -98,7 +97,6 @@ public class PropertyTree extends PatchedTree {
 
     public void rebuild() {
         PatchedNode root = this.getRoot();
-        root.removeAllChildren();
         PropertyNode[] nodes = this.editors.stream()
                 .map(editor -> new PropertyNode(editor, this.project))
                 .toArray(PropertyNode[]::new);
@@ -106,11 +104,14 @@ public class PropertyTree extends PatchedTree {
         nodes = this.settings.sortNodes(nodes);
         HashMap<String, List<PropertyNode>> groups = this.settings.groupNodes(nodes);
         if (groups == null) {
+            root.removeAllChildren();
             Arrays.asList(nodes).forEach(root::add);
         } else {
+            this.saveExpandedState();
+            root.removeAllChildren();
             for (Map.Entry<String, List<PropertyNode>> group : groups.entrySet()) {
-                PatchedNode groupNode = new PatchedNode(this.project, "!");
                 String[] tokens = group.getKey().split("!");
+                PatchedNode groupNode = new PatchedNode(this.project, "!" + tokens[0]);
                 groupNode.setPrimaryText(tokens[0]);
                 if (tokens.length > 1) groupNode.setSecondaryText(tokens[1]);
                 groupNode.setIcon(AllIcons.Nodes.Class);
@@ -119,5 +120,6 @@ public class PropertyTree extends PatchedTree {
             }
         }
         this.forceUpdate();
+        this.restoreExpandedState();
     }
 }

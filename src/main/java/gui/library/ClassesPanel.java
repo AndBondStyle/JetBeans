@@ -31,16 +31,7 @@ public class ClassesPanel extends SimpleToolWindowPanel {
         this.core.getRegistry().addListener(e -> {
             if (e.getActionCommand().equals("update")) this.update();
         });
-        this.initToolbar();
         this.initContent();
-    }
-
-    void initToolbar() {
-        DefaultActionGroup actionGroup = new DefaultActionGroup();
-        actionGroup.add(new LoadJarAction());
-        ActionToolbar toolbar = ActionManager.getInstance()
-                .createActionToolbar("JetBeansLibraryToolbar", actionGroup, false);
-        this.setToolbar(toolbar.getComponent());
     }
 
     void initContent() {

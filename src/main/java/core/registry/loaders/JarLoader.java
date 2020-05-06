@@ -33,7 +33,6 @@ public class JarLoader extends Loader {
                 this.add(name.replace('/', '.'));
             }
             this.primaryText = Paths.get(this.data).getFileName().toString();
-            this.secondaryText = this.data;
             this.icon = AllIcons.Nodes.PpJar;
         } catch (IOException e) {
             String message = "Can't read jar (" + this.data + ")";

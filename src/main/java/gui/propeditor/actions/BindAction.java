@@ -14,7 +14,7 @@ public class BindAction extends AnAction implements DumbAware {
     public BindAction(PropertyTree tree) {
         this.tree = tree;
         this.getTemplatePresentation().setIcon(AllIcons.Actions.Lightning);
-        this.getTemplatePresentation().setDescription("Bind property");
+        this.getTemplatePresentation().setText("Bind Property");
     }
 
     @Override

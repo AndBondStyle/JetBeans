@@ -13,7 +13,7 @@ public class Link extends JPanel implements CanvasItem {
     // TODO: Move to constants
     static int THICKNESS = 2;
     static int CONTAINS_THRESHOLD = 8;
-    static int INACTIVE_ALPHA = 128;
+    static int INACTIVE_ALPHA = 170;
 
     public LinkEnd[] ends = {new LinkEnd(this), new LinkEnd(this)};
     boolean isSelected = false;
@@ -71,8 +71,9 @@ public class Link extends JPanel implements CanvasItem {
     }
 
     Color getColor() {
-        if (this.isSelected) return this.color;
-        return ColorUtil.toAlpha(this.color, INACTIVE_ALPHA);
+        Color color = this.isSelected ? this.color.brighter() : this.color;
+        if (this.isSelected) return color;
+        return ColorUtil.toAlpha(color, INACTIVE_ALPHA);
     }
 
     @Override

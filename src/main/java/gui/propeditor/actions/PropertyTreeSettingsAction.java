@@ -26,24 +26,24 @@ public class PropertyTreeSettingsAction extends DefaultActionGroup implements Du
         this.add(this.makeToggleAction(
                 null, "Class",
                 () -> this.settings.groupMode == PropertyTreeSettings.GROUP_BY_CLASS,
-                (state) -> this.settings.setGroupMode(state ? PropertyTreeSettings.GROUP_BY_CLASS : PropertyTreeSettings.GROUP_BY_NONE)
+                (state) -> { if (state) this.settings.setGroupMode(PropertyTreeSettings.GROUP_BY_CLASS); }
         ));
         this.add(this.makeToggleAction(
                 null, "None",
                 () -> this.settings.groupMode == PropertyTreeSettings.GROUP_BY_NONE,
-                (state) -> this.settings.setGroupMode(!state ? PropertyTreeSettings.GROUP_BY_CLASS : PropertyTreeSettings.GROUP_BY_NONE)
+                (state) -> { if (state) this.settings.setGroupMode(PropertyTreeSettings.GROUP_BY_NONE); }
         ));
 
         this.addSeparator("Sort By");
         this.add(this.makeToggleAction(
                 null, "Name",
                 () -> this.settings.sortMode == PropertyTreeSettings.SORT_BY_NAME,
-                (state) -> this.settings.setSortMode(state ? PropertyTreeSettings.SORT_BY_NAME : PropertyTreeSettings.SORT_BY_KIND)
+                (state) -> { if (state) this.settings.setSortMode(PropertyTreeSettings.SORT_BY_NAME); }
         ));
         this.add(this.makeToggleAction(
                 null, "Kind",
                 () -> this.settings.sortMode == PropertyTreeSettings.SORT_BY_KIND,
-                (state) -> this.settings.setSortMode(!state ? PropertyTreeSettings.SORT_BY_NAME : PropertyTreeSettings.SORT_BY_KIND)
+                (state) -> { if (state) this.settings.setSortMode(PropertyTreeSettings.SORT_BY_KIND); }
         ));
 
         this.addSeparator("Filter");

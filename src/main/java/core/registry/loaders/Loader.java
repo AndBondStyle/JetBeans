@@ -12,8 +12,8 @@ public abstract class Loader extends ClassLoader {
 
     protected String key;
     protected String data;
-    protected String primaryText;
-    protected String secondaryText;
+    protected String primaryText = "";
+    protected String secondaryText = "";
     protected Icon icon;
 
     public Loader(String data) {

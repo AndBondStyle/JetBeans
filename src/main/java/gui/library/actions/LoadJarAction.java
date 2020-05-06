@@ -1,5 +1,6 @@
 package gui.library.actions;
 
+import gui.library.LibraryView;
 import core.registry.loaders.JarLoader;
 import core.JetBeans;
 
@@ -23,6 +24,8 @@ public class LoadJarAction extends AnAction implements DumbAware {
         FileChooser.chooseFile(d, e.getProject(), null, file -> {
             JarLoader loader = new JarLoader(file.getPath());
             core.getRegistry().add(loader);
+            LibraryView view = e.getProject().getService(LibraryView.class);
+            view.setActiveTab(LibraryView.CLASSES_TAB);
         });
     }
 }
