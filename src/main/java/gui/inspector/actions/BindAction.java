@@ -1,18 +1,13 @@
-package gui.propeditor.actions;
+package gui.inspector.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
-import gui.propeditor.editors.Editor;
-import gui.propeditor.tree.PropertyTree;
 import org.jetbrains.annotations.NotNull;
 
 public class BindAction extends AnAction implements DumbAware {
-    private PropertyTree tree;
-
-    public BindAction(PropertyTree tree) {
-        this.tree = tree;
+    public BindAction() {
         this.getTemplatePresentation().setIcon(AllIcons.Nodes.ExceptionClass);
         this.getTemplatePresentation().setText("Bind Property");
     }

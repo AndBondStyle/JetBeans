@@ -1,12 +1,11 @@
-package gui.propeditor.actions;
+package gui.inspector.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
-import gui.propeditor.editors.Editor;
-import gui.propeditor.ShellInputDialog;
-import gui.propeditor.tree.PropertyTree;
+import gui.inspector.editors.Editor;
+import gui.inspector.ShellInputDialog;
 import org.jetbrains.annotations.NotNull;
 
 public class ShellInputAction extends AnAction implements DumbAware {

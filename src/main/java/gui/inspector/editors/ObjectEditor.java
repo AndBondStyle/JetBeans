@@ -1,4 +1,4 @@
-package gui.propeditor.editors;
+package gui.inspector.editors;
 
 import javax.swing.*;
 

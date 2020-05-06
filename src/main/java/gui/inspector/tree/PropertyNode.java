@@ -1,8 +1,8 @@
-package gui.propeditor.tree;
+package gui.inspector.tree;
 
 import com.intellij.openapi.project.Project;
 import gui.common.tree.PatchedNode;
-import gui.propeditor.editors.Editor;
+import gui.inspector.editors.Editor;
 
 public class PropertyNode extends PatchedNode {
     public Editor editor;

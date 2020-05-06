@@ -1,8 +1,8 @@
-package gui.propeditor;
+package gui.inspector;
 
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiFile;
-import gui.propeditor.editors.Editor;
+import gui.inspector.editors.Editor;
 
 import org.codehaus.commons.compiler.CompileException;
 import java.lang.reflect.InvocationTargetException;

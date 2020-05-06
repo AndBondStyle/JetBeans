@@ -6,9 +6,11 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class PropertyInfo implements Cloneable {
     public PropertyDescriptor descriptor;
@@ -19,15 +21,15 @@ public class PropertyInfo implements Cloneable {
     public Class<?> type;
     public String name;
 
-    public static PropertyInfo[] fetch(Object target) {
+    public static List<PropertyInfo> fetch(Object target) {
         try {
             // TODO: Refactor
             BeanInfo bi = Introspector.getBeanInfo(target.getClass());
             PropertyDescriptor[] descriptors = bi.getPropertyDescriptors();
-            return Arrays.stream(descriptors)
+            return Arrays.stream(bi.getPropertyDescriptors())
                     .map(x -> PropertyInfo.create(x, target))
                     .filter(Objects::nonNull)
-                    .toArray(PropertyInfo[]::new);
+                    .collect(Collectors.toList());
         } catch (IntrospectionException e) {
             String message = "Failed to analyze bean \"" + target + "\"";
             throw new RuntimeException(message, e);
@@ -55,7 +57,7 @@ public class PropertyInfo implements Cloneable {
             copy.getter = PropertyInfo.wrapGetter(info.descriptor, target);
             copy.setter = PropertyInfo.wrapSetter(info.descriptor, target);
             return copy;
-        } catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException ignored) {
             return null;
         }
     }

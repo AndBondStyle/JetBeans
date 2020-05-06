@@ -1,11 +1,14 @@
-package gui.propeditor.tree;
+package gui.inspector;
 
+import core.inspection.MethodInfo;
 import core.inspection.PropertyInfo;
 import gui.common.SimpleEventSupport;
+import gui.common.tree.PatchedNode;
+import gui.inspector.tree.PropertyNode;
 
 import java.util.*;
 
-public class PropertyTreeSettings implements SimpleEventSupport {
+public class TreeSettings implements SimpleEventSupport {
     public static int SORT_BY_NAME = 0;
     public static int SORT_BY_KIND = 1;
 
@@ -68,24 +71,30 @@ public class PropertyTreeSettings implements SimpleEventSupport {
         return nodeList.toArray(PropertyNode[]::new);
     }
 
-    public HashMap<String, List<PropertyNode>> groupNodes(PropertyNode[] nodes) {
+    public HashMap<String, List<PatchedNode>> groupPropertyNodes(PropertyNode[] nodes) {
+        HashMap<PatchedNode, Object> mapping = new HashMap<>();
+        for (PropertyNode node : nodes) mapping.put(node, node.editor.prop);
+        return this.groupNodes(mapping);
+    }
+
+    public HashMap<String, List<PatchedNode>> groupNodes(HashMap<PatchedNode, Object> nodes) {
         if (this.groupMode == GROUP_BY_NONE) return null;
-        TreeMap<Class<?>, List<PropertyNode>> groups = new TreeMap<>((a, b) -> {
+        TreeMap<Class<?>, List<PatchedNode>> groups = new TreeMap<>((a, b) -> {
             boolean x = a.isAssignableFrom(b);
             boolean y = b.isAssignableFrom(a);
             if (x && y) return 0;
             return x ? -1 : 1;
         });
-        for (PropertyNode node : nodes) {
-            PropertyInfo prop = node.editor.prop;
-            List<PropertyNode> group = groups.computeIfAbsent(prop.definer, (__) -> new ArrayList<>());
-            group.add(node);
+        for (Map.Entry<PatchedNode, Object> item : nodes.entrySet()) {
+            Class<?> key = null;
+            if (item.getValue() instanceof PropertyInfo) key = ((PropertyInfo) item.getValue()).definer;
+            if (item.getValue() instanceof MethodInfo) key = ((MethodInfo) item.getValue()).definer;
+            List<PatchedNode> group = groups.computeIfAbsent(key, (__) -> new ArrayList<>());
+            group.add(item.getKey());
         }
-        HashMap<String, List<PropertyNode>> result = new LinkedHashMap<>();
-        for (Map.Entry<Class<?>, List<PropertyNode>> group : groups.entrySet()) {
-            PropertyInfo prop = group.getValue().get(0).editor.prop;
+        HashMap<String, List<PatchedNode>> result = new LinkedHashMap<>();
+        for (Map.Entry<Class<?>, List<PatchedNode>> group : groups.entrySet()) {
             String title = group.getKey().getSimpleName();
-            if (group.getKey() != prop.target.getClass()) title += "!inherited";
             result.put(title, group.getValue());
         }
         return result;

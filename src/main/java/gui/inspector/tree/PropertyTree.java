@@ -1,34 +1,33 @@
-package gui.propeditor.tree;
+package gui.inspector.tree;
 
 import core.inspection.PropertyInfo;
 import gui.common.tree.PatchedNode;
 import gui.common.tree.PatchedTree;
-import gui.propeditor.editors.Editor;
+import gui.inspector.InspectorView;
+import gui.inspector.TreeSettings;
+import gui.inspector.editors.Editor;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.icons.AllIcons;
 
-import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicTreeUI;
-import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.TreePath;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.beans.*;
 import java.util.*;
 
 public class PropertyTree extends PatchedTree {
-    public PropertyTreeSettings settings = new PropertyTreeSettings();
     private List<Editor> editors = new ArrayList<>();
+    private TreeSettings settings;
     private Project project;
 
     public PropertyTree(Project project) {
         super(project);
+        this.settings = project.getService(InspectorView.class).settings;
         this.project = project;
         this.setEditable(true);
         this.setCellRenderer(new PropertyNodeRenderer());
@@ -88,22 +87,24 @@ public class PropertyTree extends PatchedTree {
                 .toArray(PropertyNode[]::new);
         nodes = this.settings.filterNodes(nodes);
         nodes = this.settings.sortNodes(nodes);
-        HashMap<String, List<PropertyNode>> groups = this.settings.groupNodes(nodes);
+        HashMap<String, List<PatchedNode>> groups = this.settings.groupPropertyNodes(nodes);
         if (groups == null) {
             root.removeAllChildren();
             Arrays.asList(nodes).forEach(root::add);
         } else {
             this.saveExpandedState();
             root.removeAllChildren();
-            for (Map.Entry<String, List<PropertyNode>> group : groups.entrySet()) {
-                String[] tokens = group.getKey().split("!");
-                PatchedNode groupNode = new PatchedNode(this.project, "!" + tokens[0]);
-                groupNode.setPrimaryText(tokens[0]);
-                if (tokens.length > 1) groupNode.setSecondaryText(tokens[1]);
+            PatchedNode lastNode = null;
+            for (Map.Entry<String, List<PatchedNode>> group : groups.entrySet()) {
+                PatchedNode groupNode = new PatchedNode(this.project, "!");
+                groupNode.setPrimaryText(group.getKey());
+                groupNode.setSecondaryText("inherited");
                 groupNode.setIcon(AllIcons.Nodes.Class);
-                for (PropertyNode node : group.getValue()) groupNode.add(node);
+                for (PatchedNode node : group.getValue()) groupNode.add(node);
                 root.add(groupNode);
+                lastNode = groupNode;
             }
+            if (lastNode != null) lastNode.setSecondaryText("own properties");
         }
         this.forceUpdate();
         this.restoreExpandedState();

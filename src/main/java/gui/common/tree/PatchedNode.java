@@ -16,7 +16,7 @@ public class PatchedNode extends DefaultMutableTreeNode {
     }
 
     public String getData() {
-        return (String) this.getRawData();
+        return this.getRawData().toString();
     }
 
     public Object getRawData() {

@@ -1,5 +1,6 @@
 package core;
 
+import core.inspection.InstanceInfo;
 import gui.common.SimpleEventSupport;
 import core.registry.Registry;
 import gui.canvas.CanvasItem;

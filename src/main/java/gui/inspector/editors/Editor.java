@@ -1,7 +1,7 @@
-package gui.propeditor.editors;
+package gui.inspector.editors;
 
-import gui.propeditor.actions.ShellInputAction;
-import gui.propeditor.tree.PropertyTree;
+import gui.inspector.actions.ShellInputAction;
+import gui.inspector.tree.PropertyTree;
 import core.inspection.PropertyInfo;
 
 import com.intellij.openapi.actionSystem.impl.ActionButton;

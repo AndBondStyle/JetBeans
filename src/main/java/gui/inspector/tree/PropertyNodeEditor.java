@@ -1,4 +1,4 @@
-package gui.propeditor.tree;
+package gui.inspector.tree;
 
 import gui.common.tree.PatchedNode;
 

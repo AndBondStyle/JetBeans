@@ -20,16 +20,17 @@ import org.jetbrains.annotations.NotNull;
 
 @Service
 public final class LibraryView implements ToolWindowFactory, DumbAware {
-    public static String TOOLBAR_KEY = "JetBeansLibraryToolbar";
+    public static String TOOLBAR_KEY = "JetBeans:LibraryToolbar";
     public static String CLASSES_TAB = "Classes";
     public static String INSTANCES_TAB = "Instances";
 
     public JetBeans core;
+    public ToolWindow toolWindow;
+
     public Content classesContent;
     public Content instancesContent;
     public ClassesPanel classes;
     public InstancesPanel instances;
-    public ToolWindow toolWindow;
 
     public LibraryView() {}
 
