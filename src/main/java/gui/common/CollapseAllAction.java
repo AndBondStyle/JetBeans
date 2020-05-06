@@ -8,12 +8,17 @@ import com.intellij.util.ui.tree.TreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.function.Supplier;
 
 public class CollapseAllAction extends AnAction implements DumbAware {
-    private JTree tree;
+    private Supplier<JTree> treeSupplier;
 
     public CollapseAllAction(JTree tree) {
-        this.tree = tree;
+        this(() -> tree);
+    }
+
+    public CollapseAllAction(Supplier<JTree> treeSupplier) {
+        this.treeSupplier = treeSupplier;
         this.getTemplatePresentation().setText("Collapse All");
         this.getTemplatePresentation().setIcon(AllIcons.Actions.Collapseall);
         this.getTemplatePresentation().setDescription("Collapse all");
@@ -21,6 +26,8 @@ public class CollapseAllAction extends AnAction implements DumbAware {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        TreeUtil.collapseAll(this.tree, 0);
+        JTree tree = this.treeSupplier.get();
+        if (tree == null) return;
+        TreeUtil.collapseAll(tree, 0);
     }
 }

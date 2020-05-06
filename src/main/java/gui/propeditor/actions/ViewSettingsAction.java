@@ -14,12 +14,12 @@ import javax.swing.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class PropertyTreeSettingsAction extends DefaultActionGroup implements DumbAware {
+public class ViewSettingsAction extends DefaultActionGroup implements DumbAware {
     private PropertyTreeSettings settings;
 
-    public PropertyTreeSettingsAction(PropertyTree tree) {
+    public ViewSettingsAction(PropertyTree tree) {
         this.settings = tree.settings;
-        this.getTemplatePresentation().setIcon(AllIcons.General.Filter);
+        this.getTemplatePresentation().setIcon(AllIcons.Actions.Show);
         this.setPopup(true);
 
         this.addSeparator("Group By");

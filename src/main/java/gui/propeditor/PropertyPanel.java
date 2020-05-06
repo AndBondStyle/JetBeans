@@ -10,7 +10,7 @@ import core.JetBeans;
 import gui.canvas.CanvasItem;
 import gui.propeditor.actions.BindAction;
 import gui.common.CollapseAllAction;
-import gui.propeditor.actions.PropertyTreeSettingsAction;
+import gui.propeditor.actions.ViewSettingsAction;
 import gui.propeditor.tree.PropertyTree;
 import gui.wrapper.Wrapper;
 
@@ -30,7 +30,7 @@ public class PropertyPanel extends SimpleToolWindowPanel {
     void initToolbar() {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.add(new BindAction(this.tree));
-        actionGroup.add(new PropertyTreeSettingsAction(this.tree));
+        actionGroup.add(new ViewSettingsAction(this.tree));
         actionGroup.add(new CollapseAllAction(this.tree));
         ActionToolbar toolbar = ActionManager.getInstance()
                 .createActionToolbar("JetBeansPropertyToolbar", actionGroup, false);

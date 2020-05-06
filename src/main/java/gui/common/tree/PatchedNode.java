@@ -16,7 +16,11 @@ public class PatchedNode extends DefaultMutableTreeNode {
     }
 
     public String getData() {
-        return (String) ((PatchedDescriptor) this.getUserObject()).getValue();
+        return (String) this.getRawData();
+    }
+
+    public Object getRawData() {
+        return ((PatchedDescriptor) this.getUserObject()).getValue();
     }
 
     public void setPrimaryText(String text) {

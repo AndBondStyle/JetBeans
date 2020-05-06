@@ -35,8 +35,8 @@ public final class LibraryView implements ToolWindowFactory, DumbAware {
 
     public LibraryView(Project project) {
         this.core = JetBeans.getInstance(project);
-        this.classes = new ClassesPanel(this, project);
-        this.instances = new InstancesPanel(this, project);
+        this.classes = new ClassesPanel(project);
+        this.instances = new InstancesPanel(project);
         this.classes.setToolbar(this.initToolbar().getComponent());
         this.instances.setToolbar(this.initToolbar().getComponent());
     }
@@ -64,7 +64,13 @@ public final class LibraryView implements ToolWindowFactory, DumbAware {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.add(new InstantiateAction());
         actionGroup.add(new LoadJarAction());
-        actionGroup.add(new CollapseAllAction(this.classes.tree));
+        actionGroup.add(new CollapseAllAction(() -> {
+            String tab = this.getActiveTab();
+            if (tab == null) return null;
+            if (tab.equals(CLASSES_TAB)) return this.classes.tree;
+            if (tab.equals(INSTANCES_TAB)) return this.instances.tree;
+            return null;
+        }));
         return ActionManager.getInstance().createActionToolbar(TOOLBAR_KEY, actionGroup, false);
     }
 

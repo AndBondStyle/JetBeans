@@ -6,6 +6,8 @@ import gui.canvas.helpers.*;
 
 import com.intellij.ui.components.JBScrollPane;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 
@@ -18,6 +20,7 @@ public class Canvas extends JPanel implements SimpleEventSupport {
     public Content content;
     public JBScrollPane scroll;
     public CanvasItem selection = null;
+    public List<CanvasItem> items = new ArrayList<>();
 
     public Cursor cursor;
     public Helper[] helpers = {
@@ -34,10 +37,12 @@ public class Canvas extends JPanel implements SimpleEventSupport {
         this.setLayout(new BorderLayout());
         this.add(this.scroll, BorderLayout.CENTER);
         for (Helper helper : this.helpers) helper.setParent(this);
+        this.scrollToPoint(new Point(CANVAS_SIZE.width / 2, CANVAS_SIZE.height / 2));
     }
 
     public void addItem(CanvasItem item) {
         Component comp = (Component) item;
+        this.items.add(item);
         this.content.add(comp);
         this.content.setLayer(comp, item.getPreferredLayer());
         this.content.revalidate();
@@ -45,6 +50,10 @@ public class Canvas extends JPanel implements SimpleEventSupport {
         // Expand element if preferred size is too small
         if (size.width < MIN_ITEM_SIZE.width) size.width = MIN_ITEM_SIZE.width;
         if (size.height < MIN_ITEM_SIZE.height) size.height = MIN_ITEM_SIZE.height;
+        Point location = this.getCenter();
+        location.x -= size.width / 2;
+        location.y -= size.height / 2;
+        comp.setLocation(location);
         comp.setSize(size);
     }
 
@@ -88,5 +97,30 @@ public class Canvas extends JPanel implements SimpleEventSupport {
 
     public CanvasItem getSelection() {
         return this.selection;
+    }
+
+    public Point getCenter() {
+        JViewport viewport = this.scroll.getViewport();
+        Dimension size = viewport.getExtentSize();
+        Point point = viewport.getViewPosition();
+        point.x += size.width / 2;
+        point.y += size.height / 2;
+        return point;
+    }
+
+    public void scrollToItem(CanvasItem item) {
+        Rectangle bounds = ((Component) item).getBounds();
+        Point point = new Point((int) bounds.getCenterX(), (int) bounds.getCenterY());
+        this.scrollToPoint(point);
+    }
+
+    public void scrollToPoint(Point point) {
+        JViewport viewport = this.scroll.getViewport();
+        Dimension size = viewport.getExtentSize();
+        point.x -= size.width / 2;
+        point.y -= size.height / 2;
+        point.x = Math.min(Math.max(point.x, 0), CANVAS_SIZE.width - viewport.getWidth());
+        point.y = Math.min(Math.max(point.y, 0), CANVAS_SIZE.height - viewport.getHeight());
+        viewport.setViewPosition(point);
     }
 }

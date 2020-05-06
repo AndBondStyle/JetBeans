@@ -20,13 +20,11 @@ import java.awt.event.MouseEvent;
 import java.util.*;
 
 public class ClassesPanel extends SimpleToolWindowPanel {
-    public LibraryView parent;
     public PatchedTree tree;
     public JetBeans core;
 
-    public ClassesPanel(LibraryView parent, Project project) {
+    public ClassesPanel(Project project) {
         super(false, true);
-        this.parent = parent;
         this.core = JetBeans.getInstance(project);
         this.core.getRegistry().addListener(e -> {
             if (e.getActionCommand().equals("update")) this.update();
@@ -36,10 +34,6 @@ public class ClassesPanel extends SimpleToolWindowPanel {
 
     void initContent() {
         this.tree = new PatchedTree(this.core.getProject());
-        this.tree.expandRow(0);
-        this.tree.setRootVisible(false);
-        this.tree.setShowsRootHandles(true);
-        this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.tree.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() != MouseEvent.BUTTON1 || e.getClickCount() != 2) return;

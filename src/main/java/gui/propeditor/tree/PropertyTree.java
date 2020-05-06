@@ -29,14 +29,10 @@ public class PropertyTree extends PatchedTree {
     public PropertyTree(Project project) {
         super(project);
         this.project = project;
+        this.setEditable(true);
         this.setCellRenderer(new PropertyNodeRenderer());
         this.setCellEditor(new PropertyNodeEditor());
         this.getExpandableItemsHandler().setEnabled(false);
-        this.setEditable(true);
-        this.expandRow(0);
-        this.setRootVisible(false);
-        this.setShowsRootHandles(true);
-        this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.settings.addListener((e) -> this.rebuild());
         this.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) { PropertyTree.this.forceResize(); }

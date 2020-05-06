@@ -1,17 +1,12 @@
 package gui.common.tree;
 
-import com.intellij.ide.util.treeView.PresentableNodeDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.util.ui.tree.TreeUtil;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 public class PatchedTree extends SimpleTree {
     private HashMap<String, Boolean> expandedState = new HashMap<>();
@@ -21,6 +16,10 @@ public class PatchedTree extends SimpleTree {
         this.project = project;
         DefaultTreeModel model = (DefaultTreeModel) this.getModel();
         model.setRoot(this.makeNode("__ROOT__"));
+        this.expandRow(0);
+        this.setRootVisible(false);
+        this.setShowsRootHandles(true);
+        this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     }
 
     public PatchedNode makeNode(Object data) {
