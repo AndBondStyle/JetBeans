@@ -20,6 +20,7 @@ public class ViewSettingsAction extends DefaultActionGroup implements DumbAware 
     public ViewSettingsAction(PropertyTree tree) {
         this.settings = tree.settings;
         this.getTemplatePresentation().setIcon(AllIcons.Actions.Show);
+        this.getTemplatePresentation().setText("Display Options");
         this.setPopup(true);
 
         this.addSeparator("Group By");

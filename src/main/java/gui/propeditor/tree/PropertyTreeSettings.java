@@ -1,6 +1,6 @@
 package gui.propeditor.tree;
 
-import core.PropertyInfo;
+import core.inspection.PropertyInfo;
 import gui.common.SimpleEventSupport;
 
 import java.util.*;

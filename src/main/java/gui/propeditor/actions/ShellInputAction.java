@@ -10,19 +10,17 @@ import gui.propeditor.tree.PropertyTree;
 import org.jetbrains.annotations.NotNull;
 
 public class ShellInputAction extends AnAction implements DumbAware {
-    private PropertyTree tree;
     private Editor editor;
 
     public ShellInputAction(Editor editor) {
         this.editor = editor;
         this.getTemplatePresentation().setIcon(AllIcons.Nodes.Console);
-        this.getTemplatePresentation().setDescription("Enter from shell");
+        this.getTemplatePresentation().setText("Enter From Shell");
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         ShellInputDialog dialog = new ShellInputDialog(e.getProject(), this.editor);
-        boolean ok = dialog.showAndGet();
-        System.out.println("OK: " + ok);
+        dialog.show();
     }
 }

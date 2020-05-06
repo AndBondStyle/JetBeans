@@ -2,7 +2,7 @@ package gui.propeditor.editors;
 
 import gui.propeditor.actions.ShellInputAction;
 import gui.propeditor.tree.PropertyTree;
-import core.PropertyInfo;
+import core.inspection.PropertyInfo;
 
 import com.intellij.openapi.actionSystem.impl.ActionButton;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -31,9 +31,7 @@ public abstract class Editor extends JPanel {
         Editor.editors.put(propClass, editorClass);
     }
 
-    public static Editor createEditor(PropertyTree parent, PropertyDescriptor descriptor, Object target) {
-        PropertyInfo prop = PropertyInfo.create(descriptor, target);
-        if (prop == null) return null;
+    public static Editor createEditor(PropertyTree parent, PropertyInfo prop) {
         Class<?> editorClass = Editor.editors.get(prop.type);
         if (editorClass == null) editorClass = Editor.editors.get(Object.class);
         try {

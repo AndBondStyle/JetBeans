@@ -4,14 +4,13 @@ import gui.propeditor.editors.Editor;
 
 import org.codehaus.commons.compiler.CompileException;
 import java.lang.reflect.InvocationTargetException;
-import com.intellij.lang.java.JShellLanguage;
+import com.intellij.ide.highlighter.JShellFileType;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 
 import org.codehaus.janino.*;
-import com.intellij.psi.*;
 import javax.swing.*;
 import java.awt.*;
 
@@ -29,8 +28,8 @@ public class ShellInputDialog extends DialogWrapper {
     private Editor editor;
 
     public ShellInputDialog(Project project, Editor editor) {
-        super(project, true, IdeModalityType.PROJECT);
-        this.setTitle("Shell Input");
+        super(project, true, IdeModalityType.MODELESS);
+        this.setTitle("Shell Input - Property \"" + editor.prop.name + "\" - " + editor.prop.type.getCanonicalName());
         this.setOKButtonText("Evaluate");
         this.project = project;
         this.editor = editor;
@@ -45,9 +44,8 @@ public class ShellInputDialog extends DialogWrapper {
     @Override
     protected JComponent createCenterPanel() {
         String text = ShellInputDialog.initialText + "\nreturn ;\n";
-        PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText(JShellLanguage.INSTANCE, text);
-        Document document = PsiDocumentManager.getInstance(this.project).getDocument(file);
-        this.code = EditorFactory.getInstance().createEditor(document, this.project, file.getVirtualFile().getFileType(), false);
+        Document document = EditorFactory.getInstance().createDocument(text);
+        this.code = EditorFactory.getInstance().createEditor(document, this.project, JShellFileType.INSTANCE, false);
         this.code.getCaretModel().moveToOffset(this.code.getDocument().getTextLength() - 2);
         this.code.getSettings().setLineMarkerAreaShown(false);
         JPanel panel = new JPanel(new BorderLayout());
@@ -58,6 +56,12 @@ public class ShellInputDialog extends DialogWrapper {
     @Override
     public JComponent getPreferredFocusedComponent() {
         return this.code.getContentComponent();
+    }
+
+    @Override
+    protected void dispose() {
+        EditorFactory.getInstance().releaseEditor(this.code);
+        super.dispose();
     }
 
     @Override

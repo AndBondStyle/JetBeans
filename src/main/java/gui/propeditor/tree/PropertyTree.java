@@ -1,5 +1,6 @@
 package gui.propeditor.tree;
 
+import core.inspection.PropertyInfo;
 import gui.common.tree.PatchedNode;
 import gui.common.tree.PatchedTree;
 import gui.propeditor.editors.Editor;
@@ -72,19 +73,8 @@ public class PropertyTree extends PatchedTree {
         this.editors.clear();
         this.rebuild();
         if (target == null) return;
-
-        PropertyDescriptor[] props;
-        try {
-            BeanInfo bi = Introspector.getBeanInfo(target.getClass());
-            props = bi.getPropertyDescriptors();
-        } catch (IntrospectionException e) {
-            String message = "Failed to analyze bean \"" + target + "\"";
-            throw new RuntimeException(message, e);
-        }
-
-        for (PropertyDescriptor prop : props) {
-            Editor editor = Editor.createEditor(this, prop, target);
-            if (editor == null) continue;
+        for (PropertyInfo prop : PropertyInfo.fetch(target)) {
+            Editor editor = Editor.createEditor(this, prop);
             this.editors.add(editor);
         }
         this.editors.forEach(Editor::init);

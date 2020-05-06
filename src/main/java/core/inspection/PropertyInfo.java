@@ -1,7 +1,12 @@
-package core;
+package core.inspection;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -13,6 +18,20 @@ public class PropertyInfo implements Cloneable {
     public Class<?> definer;
     public Class<?> type;
     public String name;
+
+    public static PropertyInfo[] fetch(Object target) {
+        try {
+            BeanInfo bi = Introspector.getBeanInfo(target.getClass());
+            PropertyDescriptor[] descriptors = bi.getPropertyDescriptors();
+            return Arrays.stream(descriptors)
+                    .map(x -> PropertyInfo.create(x, target))
+                    .filter(Objects::nonNull)
+                    .toArray(PropertyInfo[]::new);
+        } catch (IntrospectionException e) {
+            String message = "Failed to analyze bean \"" + target + "\"";
+            throw new RuntimeException(message, e);
+        }
+    }
 
     public static PropertyInfo create(PropertyDescriptor descriptor, Object target) {
         PropertyInfo info = new PropertyInfo();
