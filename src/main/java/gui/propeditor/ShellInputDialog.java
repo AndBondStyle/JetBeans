@@ -1,5 +1,7 @@
 package gui.propeditor;
 
+import com.intellij.psi.PsiFileFactory;
+import com.intellij.psi.PsiFile;
 import gui.propeditor.editors.Editor;
 
 import org.codehaus.commons.compiler.CompileException;
@@ -43,8 +45,13 @@ public class ShellInputDialog extends DialogWrapper {
 
     @Override
     protected JComponent createCenterPanel() {
+        // TODO: Research
         String text = ShellInputDialog.initialText + "\nreturn ;\n";
-        Document document = EditorFactory.getInstance().createDocument(text);
+        PsiFile psi = PsiFileFactory.getInstance(this.project).createFileFromText(text, JShellFileType.INSTANCE, text, 0, true);
+        Document document = psi.getViewProvider().getDocument();
+//        Document document = PsiDocumentManager.getInstance(this.project).getDocument(psi);
+//        Document document = EditorFactory.getInstance().createDocument(text);
+        assert document != null;
         this.code = EditorFactory.getInstance().createEditor(document, this.project, JShellFileType.INSTANCE, false);
         this.code.getCaretModel().moveToOffset(this.code.getDocument().getTextLength() - 2);
         this.code.getSettings().setLineMarkerAreaShown(false);

@@ -54,9 +54,9 @@ public class ViewSettingsAction extends DefaultActionGroup implements DumbAware 
                 (state) -> this.settings.toggleFilter(PropertyTreeSettings.SHOW_READONLY, state)
         ));
         this.add(this.makeToggleAction(
-                null, "Bound",
-                () -> (this.settings.filter & PropertyTreeSettings.SHOW_BOUND) != 0,
-                (state) -> this.settings.toggleFilter(PropertyTreeSettings.SHOW_BOUND, state)
+                null, "Non-bound",
+                () -> (this.settings.filter & PropertyTreeSettings.SHOW_NON_BOUND) != 0,
+                (state) -> this.settings.toggleFilter(PropertyTreeSettings.SHOW_NON_BOUND, state)
         ));
         this.add(this.makeToggleAction(
                 null, "Hidden",

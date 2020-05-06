@@ -8,13 +8,12 @@ import com.intellij.openapi.actionSystem.impl.ActionButton;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.ui.SimpleColoredComponent;
-import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.ui.JBSplitter;
+import com.intellij.util.ui.EmptyIcon;
+import com.intellij.util.IconUtil;
 import com.intellij.icons.AllIcons;
+import com.intellij.ui.*;
 
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import javax.swing.*;
 import java.awt.*;
@@ -87,11 +86,12 @@ public abstract class Editor extends JPanel {
         this.populateNamePanel();
         this.populateCenterPanel();
         this.populateButtonsPanel();
-
+        Icon icon = this.prop.isBound() ? AllIcons.Actions.Lightning : EmptyIcon.ICON_16;
         if (!this.prop.isSettable()) {
-            this.nameLabel.setIcon(AllIcons.Diff.Lock);
+            icon = LayeredIcon.create(icon, IconUtil.desaturate(AllIcons.Nodes.C_private));
             this.shellButton.setEnabled(false);
         }
+        this.nameLabel.setIcon(icon);
     }
 
     protected void buildPanels() {

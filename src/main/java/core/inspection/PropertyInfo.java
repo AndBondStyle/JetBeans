@@ -21,6 +21,7 @@ public class PropertyInfo implements Cloneable {
 
     public static PropertyInfo[] fetch(Object target) {
         try {
+            // TODO: Refactor
             BeanInfo bi = Introspector.getBeanInfo(target.getClass());
             PropertyDescriptor[] descriptors = bi.getPropertyDescriptors();
             return Arrays.stream(descriptors)
@@ -47,7 +48,7 @@ public class PropertyInfo implements Cloneable {
         return info;
     }
 
-    public static PropertyInfo rebind(PropertyInfo info, Object target) {
+    public static PropertyInfo bind(PropertyInfo info, Object target) {
         try {
             PropertyInfo copy = (PropertyInfo) info.clone();
             copy.target = target;

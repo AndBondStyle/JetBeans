@@ -1,7 +1,7 @@
 package ide;
 
 import gui.common.SimpleEventSupport;
-import gui.common.TestBean;
+import core.TestBean;
 import gui.wrapper.Wrapper;
 import gui.canvas.Canvas;
 import gui.link.Link;

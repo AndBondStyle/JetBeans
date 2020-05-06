@@ -12,15 +12,14 @@ public class PropertyTreeSettings implements SimpleEventSupport {
     public static int GROUP_BY_NONE = 0;
     public static int GROUP_BY_CLASS = 1;
 
-    public static int SHOW_BOUND = 1 << 2;
+    public static int SHOW_NON_BOUND = 1 << 2;
     public static int SHOW_HIDDEN = 1 << 3;
     public static int SHOW_EXPERT = 1 << 4;
     public static int SHOW_READONLY = 1 << 5;
 
-    private PropertyTree tree;
     public int sortMode = SORT_BY_NAME;
     public int groupMode = GROUP_BY_CLASS;
-    public int filter = SHOW_READONLY | SHOW_BOUND;
+    public int filter = SHOW_READONLY | SHOW_NON_BOUND;
 
     public void setSortMode(int sortMode) {
         this.sortMode = sortMode;
@@ -43,7 +42,7 @@ public class PropertyTreeSettings implements SimpleEventSupport {
         for (PropertyNode node : nodes) {
             PropertyInfo prop = node.editor.prop;
             if (!prop.isSettable() && (this.filter & SHOW_READONLY) == 0) continue;
-            if (prop.isBound() && (this.filter & SHOW_BOUND) == 0) continue;
+            if (!prop.isBound() && (this.filter & SHOW_NON_BOUND) == 0) continue;
             if (prop.isHidden() && (this.filter & SHOW_HIDDEN) == 0) continue;
             if (prop.isExpert() && (this.filter & SHOW_EXPERT) == 0) continue;
             result.add(node);
@@ -60,7 +59,7 @@ public class PropertyTreeSettings implements SimpleEventSupport {
                 PropertyInfo prop = node.editor.prop;
                 int result = 0;
                 if (prop.isSettable()) result += SHOW_READONLY;
-                if (prop.isBound()) result += SHOW_BOUND;
+                if (!prop.isBound()) result += SHOW_NON_BOUND;
                 if (prop.isHidden()) result += SHOW_HIDDEN;
                 if (prop.isExpert()) result += SHOW_EXPERT;
                 return result;
