@@ -3,8 +3,9 @@ package core;
 import core.inspection.EventInfo;
 import core.inspection.MethodInfo;
 import core.inspection.PropertyInfo;
+import gui.common.SimpleEventSupport;
 
-public class Linker {
+public class Linker implements SimpleEventSupport {
     public boolean active = false;
     public Object source = null;
     public Object destination = null;
@@ -26,10 +27,12 @@ public class Linker {
         if (!active) {
             this.active = true;
             this.source = item;
+            this.fireEvent("activate");
         } else {
             this.active = false;
             this.destination = item;
             this.link();
+            this.fireEvent("deactivate");
         }
     }
 

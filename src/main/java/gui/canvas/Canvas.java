@@ -1,5 +1,6 @@
 package gui.canvas;
 
+import com.intellij.openapi.project.Project;
 import gui.common.SimpleEventSupport;
 import gui.canvas.helpers.base.Helper;
 import gui.canvas.helpers.*;
@@ -17,6 +18,7 @@ public class Canvas extends JPanel implements SimpleEventSupport {
     static Dimension CANVAS_SIZE = new Dimension(5000, 5000);
     static Dimension MIN_ITEM_SIZE = new Dimension(20, 20);
 
+    public Project project;
     public Content content;
     public JBScrollPane scroll;
     public CanvasItem selection = null;
@@ -28,9 +30,11 @@ public class Canvas extends JPanel implements SimpleEventSupport {
             new SelectHelper(),
             new MoveHelper(),
             new ResizeHelper(),
+            new LinkingHelper(),
     };
 
-    public Canvas() {
+    public Canvas(Project project) {
+        this.project = project;
         this.content = new Content(this);
         this.content.setPreferredSize(CANVAS_SIZE);
         this.scroll = new JBScrollPane(this.content);
@@ -122,9 +126,5 @@ public class Canvas extends JPanel implements SimpleEventSupport {
         point.x = Math.min(Math.max(point.x, 0), CANVAS_SIZE.width - viewport.getWidth());
         point.y = Math.min(Math.max(point.y, 0), CANVAS_SIZE.height - viewport.getHeight());
         viewport.setViewPosition(point);
-    }
-
-    public void toggleLinking() {
-
     }
 }

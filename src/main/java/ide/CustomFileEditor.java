@@ -31,7 +31,7 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor, 
 
     public CustomFileEditor(Project project, VirtualFile file) {
         this.file = file;
-        this.canvas = new Canvas();
+        this.canvas = new Canvas(project);
         this.core = JetBeans.getInstance(project);
         this.core.registerEditor(this);
 

@@ -7,12 +7,12 @@ public class LinkEnd {
     // TODO: Move to constants
     static double CONTROL_SHIFT_RATIO = 0.5;
 
-    Link parent;
-    LinkManager manager = null;
-    int orientation = -1;
-    int distance = -1;
-    Point point = new Point();
-    Point control = new Point();
+    public Link parent;
+    public LinkManager manager = null;
+    public int orientation = -1;
+    public int distance = -1;
+    public Point point = new Point();
+    public Point control = new Point();
 
     public LinkEnd(Link parent) {
         this.parent = parent;

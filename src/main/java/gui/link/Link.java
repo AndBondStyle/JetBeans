@@ -46,6 +46,16 @@ public class Link extends JPanel implements CanvasItem {
         this.repaint();
     }
 
+    public void detach() {
+        for (LinkEnd end : this.ends) {
+            if (end.manager != null) {
+                end.manager.linkEnds.remove(end);
+                end.manager.update();
+                end.manager = null;
+            }
+        }
+    }
+
     public void update() {
         Point start = ends[0].point;
         Point end = ends[1].point;
@@ -66,6 +76,7 @@ public class Link extends JPanel implements CanvasItem {
 
     @Override
     public boolean contains(int x, int y) {
+        if (!this.isVisible()) return false;
         if (!super.contains(x, y)) return false;
         return Arrays.stream(this.points).anyMatch(p -> p.distance(x, y) <= CONTAINS_THRESHOLD);
     }

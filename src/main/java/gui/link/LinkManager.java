@@ -78,7 +78,7 @@ public class LinkManager extends ComponentAdapter {
         }
     }
 
-    void update() {
+    public void update() {
         // Assign position of own links
         this.assignOrigins();
         // Get unique set of related (opposite) managers
