@@ -21,6 +21,7 @@ import java.util.Objects;
 
 public abstract class Editor extends JPanel {
     private static HashMap<Class<?>, Class<?>> editors = new HashMap<>();
+    private static Icon LOCK = AllIcons.Nodes.C_private;
 
     static {
         Editor.registerEditor(Object.class, ObjectEditor.class);
@@ -86,9 +87,10 @@ public abstract class Editor extends JPanel {
         this.populateNamePanel();
         this.populateCenterPanel();
         this.populateButtonsPanel();
-        Icon icon = this.prop.isBound() ? AllIcons.Actions.Lightning : EmptyIcon.ICON_16;
+        Icon icon = AllIcons.Nodes.Property;
+        if (!this.prop.isBound()) icon = IconUtil.desaturate(icon);
         if (!this.prop.isSettable()) {
-            icon = LayeredIcon.create(icon, IconUtil.desaturate(AllIcons.Nodes.C_private));
+            icon = LayeredIcon.create(icon, LOCK);
             this.shellButton.setEnabled(false);
         }
         this.nameLabel.setIcon(icon);

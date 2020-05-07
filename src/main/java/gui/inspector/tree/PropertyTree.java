@@ -1,5 +1,6 @@
 package gui.inspector.tree;
 
+import core.inspection.InstanceInfo;
 import core.inspection.PropertyInfo;
 import gui.common.tree.PatchedNode;
 import gui.common.tree.PatchedTree;
@@ -9,6 +10,7 @@ import gui.inspector.editors.Editor;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.icons.AllIcons;
+import gui.wrapper.Wrapper;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -72,7 +74,7 @@ public class PropertyTree extends PatchedTree {
         this.editors.clear();
         this.rebuild();
         if (target == null) return;
-        for (PropertyInfo prop : PropertyInfo.fetch(target)) {
+        for (PropertyInfo prop : InstanceInfo.fetch(target).props) {
             Editor editor = Editor.createEditor(this, prop);
             this.editors.add(editor);
         }
@@ -96,7 +98,7 @@ public class PropertyTree extends PatchedTree {
             root.removeAllChildren();
             PatchedNode lastNode = null;
             for (Map.Entry<String, List<PatchedNode>> group : groups.entrySet()) {
-                PatchedNode groupNode = new PatchedNode(this.project, "!");
+                PatchedNode groupNode = new PatchedNode(this.project, group.getKey());
                 groupNode.setPrimaryText(group.getKey());
                 groupNode.setSecondaryText("inherited");
                 groupNode.setIcon(AllIcons.Nodes.Class);

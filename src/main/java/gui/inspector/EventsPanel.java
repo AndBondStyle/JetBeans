@@ -1,5 +1,6 @@
 package gui.inspector;
 
+import core.inspection.EventInfo;
 import core.inspection.EventSetInfo;
 import core.inspection.InstanceInfo;
 import gui.common.tree.PatchedTree;
@@ -23,7 +24,7 @@ public class EventsPanel extends SimpleToolWindowPanel {
     public EventsPanel(Project project) {
         super(false, true);
         this.core = JetBeans.getInstance(project);
-        this.tree = new PatchedTree(this.core.getProject());
+        this.tree = new PatchedTree(this.core.project);
         this.core.addListener(e -> { if (e.getActionCommand().equals("select")) this.update(); });
         JScrollPane scroll = ScrollPaneFactory.createScrollPane(this.tree);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -32,25 +33,24 @@ public class EventsPanel extends SimpleToolWindowPanel {
 
     public void update() {
         PatchedNode root = this.tree.getRoot();
-        CanvasItem selection = this.core.getSelection();
-        if (!(selection instanceof Wrapper)) {
+        if (!(this.core.selection instanceof Wrapper)) {
             root.removeAllChildren();
             return;
         }
         this.tree.saveExpandedState();
         root.removeAllChildren();
-        Object target = ((Wrapper) selection).getTarget();
+        Object target = ((Wrapper) this.core.selection).getTarget();
         InstanceInfo info = InstanceInfo.fetch(target);
 
         for (EventSetInfo eventSet : info.events) {
-            PatchedNode group = new PatchedNode(this.core.getProject(), eventSet.descriptor.getName());
+            PatchedNode group = new PatchedNode(this.core.project, eventSet.descriptor.getName());
             group.setPrimaryText(eventSet.descriptor.getDisplayName());
             group.setIcon(AllIcons.Nodes.ModuleGroup);
             group.setSecondaryText("Listeners: " + eventSet.getListenersCount());
 
-            for (MethodDescriptor method : eventSet.descriptor.getListenerMethodDescriptors()) {
-                PatchedNode node = new PatchedNode(this.core.getProject(), "");
-                node.setPrimaryText(method.getDisplayName());
+            for (EventInfo event : eventSet.events) {
+                PatchedNode node = new PatchedNode(this.core.project, event.method.getName(), event);
+                node.setPrimaryText(event.method.getName());
                 node.setIcon(AllIcons.Nodes.Enum);
                 group.add(node);
             }

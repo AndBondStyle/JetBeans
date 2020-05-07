@@ -4,7 +4,6 @@ import core.inspection.InstanceInfo;
 import core.inspection.MethodInfo;
 import gui.common.tree.PatchedTree;
 import gui.common.tree.PatchedNode;
-import gui.canvas.CanvasItem;
 import gui.wrapper.Wrapper;
 import core.JetBeans;
 
@@ -25,7 +24,7 @@ public class MethodsPanel extends SimpleToolWindowPanel {
     public MethodsPanel(Project project) {
         super(false, true);
         this.core = JetBeans.getInstance(project);
-        this.tree = new PatchedTree(this.core.getProject());
+        this.tree = new PatchedTree(this.core.project);
         this.settings = project.getService(InspectorView.class).settings;
         this.core.addListener(e -> { if (e.getActionCommand().equals("select")) this.update(); });
         this.settings.addListener(e -> { if (e.getActionCommand().equals("update")) this.update(); });
@@ -36,12 +35,11 @@ public class MethodsPanel extends SimpleToolWindowPanel {
 
     public void update() {
         PatchedNode root = this.tree.getRoot();
-        CanvasItem selection = this.core.getSelection();
-        if (!(selection instanceof Wrapper)) {
+        if (!(this.core.selection instanceof Wrapper)) {
             root.removeAllChildren();
             return;
         }
-        Object target = ((Wrapper) selection).getTarget();
+        Object target = ((Wrapper) this.core.selection).getTarget();
         InstanceInfo info = InstanceInfo.fetch(target);
 
         HashMap<PatchedNode, Object> nodes = new LinkedHashMap<>();
@@ -49,7 +47,8 @@ public class MethodsPanel extends SimpleToolWindowPanel {
                 .sorted(Comparator.comparing(x -> x.descriptor.getDisplayName()))
                 .collect(Collectors.toList());
         for (MethodInfo method : methods) {
-            PatchedNode node = new PatchedNode(this.core.getProject(), method);
+            String key = method.descriptor.getDisplayName() + " " + method.getSignature();
+            PatchedNode node = new PatchedNode(this.core.project, key, method);
             node.setPrimaryText(method.descriptor.getDisplayName());
             node.setSecondaryText(method.getSignature());
             node.setIcon(AllIcons.Nodes.Method);
@@ -65,8 +64,7 @@ public class MethodsPanel extends SimpleToolWindowPanel {
             root.removeAllChildren();
             PatchedNode lastNode = null;
             for (Map.Entry<String, List<PatchedNode>> group : groups.entrySet()) {
-                PatchedNode groupNode = new PatchedNode(this.core.getProject(), "");
-                groupNode.setPrimaryText(group.getKey());
+                PatchedNode groupNode = new PatchedNode(this.core.project, group.getKey());
                 groupNode.setSecondaryText("inherited");
                 groupNode.setIcon(AllIcons.Nodes.Class);
                 List<PatchedNode> items = this.groupOverloads(group.getValue());
@@ -84,11 +82,11 @@ public class MethodsPanel extends SimpleToolWindowPanel {
     public List<PatchedNode> groupOverloads(List<PatchedNode> nodes) {
         HashMap<String, PatchedNode> cache = new LinkedHashMap<>();
         for (PatchedNode node : nodes) {
-            MethodInfo method = (MethodInfo) node.getRawData();
+            MethodInfo method = (MethodInfo) node.getValue();
             String name = method.descriptor.getDisplayName();
             PatchedNode overloads = cache.get(name);
             if (overloads == null) {
-                overloads = new PatchedNode(this.core.getProject(), "");
+                overloads = new PatchedNode(this.core.project, name + " overloads");
                 overloads.setPrimaryText(name);
                 overloads.setIcon(AllIcons.Debugger.MultipleBreakpoints);
                 cache.put(name, overloads);

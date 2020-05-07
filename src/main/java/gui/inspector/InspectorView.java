@@ -1,7 +1,11 @@
 package gui.inspector;
 
+import core.inspection.EventInfo;
+import core.inspection.MethodInfo;
+import core.inspection.PropertyInfo;
+import gui.common.tree.PatchedNode;
 import gui.inspector.actions.ViewSettingsAction;
-import gui.inspector.actions.BindAction;
+import gui.inspector.actions.LinkAction;
 import gui.common.CollapseAllAction;
 import core.JetBeans;
 
@@ -17,6 +21,9 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+import javax.swing.tree.TreePath;
 
 @Service
 public final class InspectorView implements ToolWindowFactory, DumbAware {
@@ -49,13 +56,13 @@ public final class InspectorView implements ToolWindowFactory, DumbAware {
     }
 
     public void initToolWindow(ToolWindow toolWindow) {
-        this.props = new PropertyPanel(this.core.getProject());
-        this.events = new EventsPanel(this.core.getProject());
-        this.methods = new MethodsPanel(this.core.getProject());
+        this.toolWindow = toolWindow;
+        this.props = new PropertyPanel(this.core.project);
+        this.events = new EventsPanel(this.core.project);
+        this.methods = new MethodsPanel(this.core.project);
         this.props.setToolbar(this.initToolbar().getComponent());
         this.events.setToolbar(this.initToolbar().getComponent());
         this.methods.setToolbar(this.initToolbar().getComponent());
-        this.toolWindow = toolWindow;
 
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         this.propsContent = contentFactory.createContent(this.props, PROPERTIES_TAB, false);
@@ -72,16 +79,9 @@ public final class InspectorView implements ToolWindowFactory, DumbAware {
 
     public ActionToolbar initToolbar() {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
-        actionGroup.add(new BindAction());
+        actionGroup.add(new LinkAction());
         actionGroup.add(new ViewSettingsAction(this.settings));
-        actionGroup.add(new CollapseAllAction(() -> {
-            String tab = this.getActiveTab();
-            if (tab == null) return null;
-            if (tab.equals(PROPERTIES_TAB)) return this.props.tree;
-            if (tab.equals(EVENTS_TAB)) return this.events.tree;
-            if (tab.equals(METHODS_TAB)) return this.methods.tree;
-            return null;
-        }));
+        actionGroup.add(new CollapseAllAction(this.getActiveTree()));
         return ActionManager.getInstance().createActionToolbar(TOOLBAR_KEY, actionGroup, false);
     }
 
@@ -96,5 +96,25 @@ public final class InspectorView implements ToolWindowFactory, DumbAware {
         if (tab.equals(PROPERTIES_TAB)) manager.setSelectedContent(this.propsContent);
         if (tab.equals(EVENTS_TAB)) manager.setSelectedContent(this.eventsContent);
         if (tab.equals(METHODS_TAB)) manager.setSelectedContent(this.methodsContent);
+    }
+
+    public JTree getActiveTree() {
+        String tab = this.getActiveTab();
+        if (tab == null) return null;
+        if (tab.equals(PROPERTIES_TAB)) return this.props.tree;
+        if (tab.equals(EVENTS_TAB)) return this.events.tree;
+        if (tab.equals(METHODS_TAB)) return this.methods.tree;
+        return null;
+    }
+
+    public Object getActiveItem() {
+        JTree tree = this.getActiveTree();
+        if (tree == null) return null;
+        TreePath path = tree.getSelectionPath();
+        if (path == null) return null;
+        PatchedNode node = (PatchedNode) path.getLastPathComponent();
+        Object item = node.getValue();
+        if (item instanceof PropertyInfo || item instanceof EventInfo || item instanceof MethodInfo) return item;
+        return null;
     }
 }

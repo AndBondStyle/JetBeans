@@ -62,6 +62,22 @@ public class PropertyInfo implements Cloneable {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PropertyInfo that = (PropertyInfo) o;
+        if (!target.equals(that.target)) return false;
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = target.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
+    }
+
     public static Class<?> getDefiner(PropertyInfo info) {
         Class<?> getterDefiner = info.descriptor.getReadMethod().getDeclaringClass();
         if (!info.isSettable()) return getterDefiner;

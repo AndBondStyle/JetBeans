@@ -72,7 +72,7 @@ public class TreeSettings implements SimpleEventSupport {
     }
 
     public HashMap<String, List<PatchedNode>> groupPropertyNodes(PropertyNode[] nodes) {
-        HashMap<PatchedNode, Object> mapping = new HashMap<>();
+        HashMap<PatchedNode, Object> mapping = new LinkedHashMap<>();
         for (PropertyNode node : nodes) mapping.put(node, node.editor.prop);
         return this.groupNodes(mapping);
     }

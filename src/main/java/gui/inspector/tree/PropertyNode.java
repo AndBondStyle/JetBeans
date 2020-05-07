@@ -9,7 +9,7 @@ public class PropertyNode extends PatchedNode {
 
     public PropertyNode(Editor editor, Project project) {
         // TODO: Maybe generate ID for editor?
-        super(project, "");
+        super(project, editor.prop.name, editor.prop);
         this.editor = editor;
     }
 }

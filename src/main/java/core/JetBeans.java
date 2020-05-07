@@ -1,6 +1,5 @@
 package core;
 
-import core.inspection.InstanceInfo;
 import gui.common.SimpleEventSupport;
 import core.registry.Registry;
 import gui.canvas.CanvasItem;
@@ -20,9 +19,10 @@ import java.io.StringWriter;
 
 @Service
 public final class JetBeans implements SimpleEventSupport {
-    private Project project;
-    private Registry registry;
-    private CanvasItem selection;
+    public Project project;
+    public Registry registry;
+    public CanvasItem selection;
+    public Linker linker;
 
     private CustomFileEditor prevEditor;
     private CustomFileEditor currEditor;
@@ -30,22 +30,11 @@ public final class JetBeans implements SimpleEventSupport {
     public JetBeans(Project project) {
         this.project = project;
         this.registry = new Registry();
+        this.linker = new Linker();
     }
 
     public static JetBeans getInstance(Project project) {
         return project.getService(JetBeans.class);
-    }
-
-    public Project getProject() {
-        return this.project;
-    }
-
-    public Registry getRegistry() {
-        return this.registry;
-    }
-
-    public CanvasItem getSelection() {
-        return this.selection;
     }
 
     public void setSelection(CanvasItem selection) {
@@ -92,6 +81,7 @@ public final class JetBeans implements SimpleEventSupport {
         }
         if (this.currEditor != null) {
             CanvasItem selection = this.currEditor.getCanvas().getSelection();
+            if (this.linker.active) this.linker.accept(null);
             this.setSelection(selection);
             this.fireEvent("activate");
         } else {

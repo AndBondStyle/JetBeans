@@ -123,4 +123,8 @@ public class Canvas extends JPanel implements SimpleEventSupport {
         point.y = Math.min(Math.max(point.y, 0), CANVAS_SIZE.height - viewport.getHeight());
         viewport.setViewPosition(point);
     }
+
+    public void toggleLinking() {
+
+    }
 }

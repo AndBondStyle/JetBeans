@@ -22,15 +22,14 @@ public class PropertyPanel extends SimpleToolWindowPanel {
     }
 
     void initContent() {
-        this.tree = new PropertyTree(this.core.getProject());
+        this.tree = new PropertyTree(this.core.project);
         JScrollPane scroll = ScrollPaneFactory.createScrollPane(this.tree);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.setContent(scroll);
         this.core.addListener(e -> {
             if (e.getActionCommand().equals("select")) {
-                CanvasItem selection = this.core.getSelection();
-                if (!(selection instanceof Wrapper)) this.tree.setTarget(null);
-                else this.tree.setTarget(((Wrapper) selection).getTarget());
+                if (!(this.core.selection instanceof Wrapper)) this.tree.setTarget(null);
+                else this.tree.setTarget(((Wrapper) this.core.selection).getTarget());
             }
         });
     }

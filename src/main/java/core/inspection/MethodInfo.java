@@ -2,8 +2,10 @@ package core.inspection;
 
 import java.beans.MethodDescriptor;
 import java.beans.ParameterDescriptor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.List;
 
 public class MethodInfo implements Cloneable {
     public MethodDescriptor descriptor;
@@ -24,9 +26,30 @@ public class MethodInfo implements Cloneable {
             copy.target = target;
             return copy;
         } catch (CloneNotSupportedException ignored) {
-            System.err.println("BIND FAILED");
             return null;
         }
+    }
+
+    public static boolean isRedundant(MethodInfo method, List<PropertyInfo> props, List<EventSetInfo> eventSets) {
+        for (PropertyInfo prop : props) {
+            Method read = prop.descriptor.getReadMethod();
+            Method write = prop.descriptor.getWriteMethod();
+            if (read != null && read.equals(method.descriptor.getMethod())) return true;
+            if (write != null && write.equals(method.descriptor.getMethod())) return true;
+        }
+        for (EventSetInfo eventSet : eventSets) {
+            Method add = eventSet.descriptor.getAddListenerMethod();
+            Method remove = eventSet.descriptor.getRemoveListenerMethod();
+            Method get = eventSet.descriptor.getGetListenerMethod();
+            if (add != null && add.equals(method.descriptor.getMethod())) return true;
+            if (remove != null && remove.equals(method.descriptor.getMethod())) return true;
+            if (get != null && get.equals(method.descriptor.getMethod())) return true;
+        }
+        return false;
+    }
+
+    public String getName() {
+        return this.descriptor.getDisplayName();
     }
 
     public int getParameterCount() {

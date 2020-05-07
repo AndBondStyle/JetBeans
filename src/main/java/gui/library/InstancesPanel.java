@@ -11,7 +11,6 @@ import gui.canvas.Canvas;
 import gui.canvas.CanvasItem;
 import gui.common.tree.PatchedNode;
 import gui.common.tree.PatchedTree;
-import gui.link.Link;
 import gui.wrapper.Wrapper;
 
 import javax.swing.tree.TreePath;
@@ -35,15 +34,15 @@ public class InstancesPanel extends SimpleToolWindowPanel {
     }
 
     private void initContent() {
-        this.tree = new PatchedTree(this.core.getProject());
+        this.tree = new PatchedTree(this.core.project);
         this.tree.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() != MouseEvent.BUTTON1 || e.getClickCount() != 2) return;
                 PatchedNode node = (PatchedNode) tree.getLastSelectedPathComponent();
-                if (node == null || !(node.getRawData() instanceof CanvasItem)) return;
+                if (node == null || !(node.getValue() instanceof CanvasItem)) return;
                 Canvas canvas = core.getCanvas();
                 if (canvas != null) {
-                    CanvasItem item = (CanvasItem) node.getRawData();
+                    CanvasItem item = (CanvasItem) node.getValue();
                     canvas.setSelection(item);
                     canvas.scrollToItem(item);
                 }
@@ -61,8 +60,9 @@ public class InstancesPanel extends SimpleToolWindowPanel {
         if (canvas == null) return;
         for (CanvasItem item : canvas.items) {
             if (!(item instanceof Wrapper)) continue;
-            PatchedNode node = new PatchedNode(this.core.getProject(), item);
-            node.setPrimaryText(((Wrapper) item).getTarget().getClass().getSimpleName());
+            Object target = ((Wrapper) item).getTarget();
+            PatchedNode node = new PatchedNode(this.core.project, "" + target.hashCode(), item);
+            node.setPrimaryText(target.getClass().getSimpleName());
             node.setSecondaryText(item.toString());
             node.setIcon(AllIcons.Nodes.Class);
             root.add(node);
@@ -72,10 +72,9 @@ public class InstancesPanel extends SimpleToolWindowPanel {
     }
 
     private void reselect() {
-        CanvasItem selection = this.core.getSelection();
-        PatchedNode node = this.mapping.get(selection);
+        PatchedNode node = this.mapping.get(this.core.selection);
         this.tree.getSelectionModel().clearSelection();
-        if (!(selection instanceof Wrapper) || node == null) return;
+        if (!(this.core.selection instanceof Wrapper) || node == null) return;
         TreePath path = TreeUtil.getPathFromRoot(node);
         this.tree.getSelectionModel().setSelectionPath(path);
     }

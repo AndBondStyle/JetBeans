@@ -15,15 +15,11 @@ public class PatchedTree extends SimpleTree {
     public PatchedTree(Project project) {
         this.project = project;
         DefaultTreeModel model = (DefaultTreeModel) this.getModel();
-        model.setRoot(this.makeNode("__ROOT__"));
+        model.setRoot(new PatchedNode(this.project, "__ROOT__"));
         this.expandRow(0);
         this.setRootVisible(false);
         this.setShowsRootHandles(true);
         this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-    }
-
-    public PatchedNode makeNode(Object data) {
-        return new PatchedNode(this.project, data);
     }
 
     public PatchedNode getRoot() {
@@ -39,12 +35,12 @@ public class PatchedTree extends SimpleTree {
     public void saveExpandedState() {
         this.expandedState.clear();
         saveNodeState(this.getRoot());
-        this.expandedState.put(this.getRoot().getData(), false);
+        this.expandedState.put(this.getRoot().getKey(), false);
     }
 
     private void saveNodeState(PatchedNode node) {
         TreePath path = TreeUtil.getPathFromRoot(node);
-        this.expandedState.put(node.getData(), this.isExpanded(path));
+        this.expandedState.put(node.getKey(), this.isExpanded(path));
         for (TreeNode child : Collections.list(node.children())) saveNodeState((PatchedNode) child);
     }
 
@@ -54,7 +50,7 @@ public class PatchedTree extends SimpleTree {
 
     private void restoreNodeState(PatchedNode node) {
         TreePath path = TreeUtil.getPathFromRoot(node);
-        if (this.expandedState.getOrDefault(node.getData(), false)) this.expandPath(path);
+        if (this.expandedState.getOrDefault(node.getKey(), false)) this.expandPath(path);
         for (TreeNode child : Collections.list(node.children())) restoreNodeState((PatchedNode) child);
     }
 }

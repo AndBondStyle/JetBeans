@@ -1,8 +1,6 @@
 package gui.library.actions;
 
 import com.intellij.openapi.project.DumbAware;
-import com.intellij.ui.IconManager;
-import com.intellij.ui.JBColor;
 import gui.common.tree.PatchedNode;
 import gui.library.LibraryView;
 import core.JetBeans;
@@ -40,6 +38,6 @@ public class InstantiateAction extends AnAction implements DumbAware {
         TreePath path = view.classes.tree.getSelectionPath();
         if (path == null) return null;
         PatchedNode node = (PatchedNode) path.getLastPathComponent();
-        return node.getData().startsWith("!") ? null : node.getData();
+        return node.getKey().startsWith("!") ? null : node.getKey();
     }
 }

@@ -20,13 +20,8 @@ public class InstanceInfo implements Cloneable {
     public static InstanceInfo fetch(Object target) {
         Class<?> klass = target.getClass();
         InstanceInfo info = InstanceInfo.cache.get(klass);
-        if (info != null) {
-            System.out.println("CACHE HIT");
-            return InstanceInfo.bind(info, target);
-        }
+        if (info != null) return InstanceInfo.bind(info, target);
 
-        info = new InstanceInfo();
-        info.target = target;
         BeanInfo bi = null;
         try {
             bi = Introspector.getBeanInfo(target.getClass());
@@ -35,17 +30,23 @@ public class InstanceInfo implements Cloneable {
             throw new RuntimeException(message, e);
         }
 
-        info.props = Arrays.stream(bi.getPropertyDescriptors())
+        List<PropertyInfo> props = Arrays.stream(bi.getPropertyDescriptors())
                 .map(x -> PropertyInfo.create(x, target))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        info.events = Arrays.stream(bi.getEventSetDescriptors())
+        List<EventSetInfo> events = Arrays.stream(bi.getEventSetDescriptors())
                 .map(x -> EventSetInfo.create(x, target))
                 .collect(Collectors.toList());
-        info.methods = Arrays.stream(bi.getMethodDescriptors())
+        List<MethodInfo> methods = Arrays.stream(bi.getMethodDescriptors())
                 .map(x -> MethodInfo.create(x, target))
+                .filter(x -> !MethodInfo.isRedundant(x, props, events))
                 .collect(Collectors.toList());
 
+        info = new InstanceInfo();
+        info.target = target;
+        info.props = props;
+        info.events = events;
+        info.methods = methods;
         InstanceInfo.cache.put(klass, InstanceInfo.bind(info, null));
         return info;
     }

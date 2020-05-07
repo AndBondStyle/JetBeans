@@ -23,7 +23,7 @@ public class LoadJarAction extends AnAction implements DumbAware {
         FileChooserDescriptor d = new FileChooserDescriptor(true, false, true, true, false, false);
         FileChooser.chooseFile(d, e.getProject(), null, file -> {
             JarLoader loader = new JarLoader(file.getPath());
-            core.getRegistry().add(loader);
+            core.registry.add(loader);
             LibraryView view = e.getProject().getService(LibraryView.class);
             view.setActiveTab(LibraryView.CLASSES_TAB);
         });
