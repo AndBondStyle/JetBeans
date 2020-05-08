@@ -11,7 +11,6 @@ import gui.wrapper.Wrapper;
 
 import com.intellij.ui.JBColor;
 import java.awt.event.MouseEvent;
-import java.awt.*;
 
 public class LinkingHelper extends Helper {
     public MockWrapper boop = new MockWrapper();
@@ -39,7 +38,6 @@ public class LinkingHelper extends Helper {
         if (this.parent.selection == null || this.parent.selection == this.source) {
             this.point.translate(-this.boop.getWidth() / 2, -this.boop.getHeight() / 2);
             this.boop.setLocation(this.point);
-            System.out.println(this.point);
         }
     }
 
@@ -61,7 +59,6 @@ public class LinkingHelper extends Helper {
             this.boop.setLocation(((Wrapper) this.source).getLocation());
             this.boop.attachLink(this.link, 1);
             this.link.autoUpdate();
-            System.out.println(this.boop.getLocation());
         }
     }
 }

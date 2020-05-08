@@ -64,10 +64,13 @@ public final class JetBeans implements SimpleEventSupport {
             }
         });
         editor.getCanvas().addListener(e -> {
-            if (e.getActionCommand().equals("select")) {
-                if (this.currEditor == editor) {
+            if (this.currEditor == editor) {
+                if (e.getActionCommand().equals("select")) {
                     CanvasItem selection = editor.getCanvas().getSelection();
                     this.setSelection(selection);
+                }
+                if (e.getActionCommand().equals("itemsChanged")) {
+                    this.fireEvent("itemsChanged");
                 }
             }
         });

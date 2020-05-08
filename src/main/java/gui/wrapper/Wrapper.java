@@ -1,8 +1,5 @@
 package gui.wrapper;
 
-import com.intellij.openapi.editor.colors.EditorColors;
-import com.intellij.openapi.editor.colors.EditorColorsUtil;
-import com.intellij.ui.ColorUtil;
 import gui.canvas.CanvasItem;
 import gui.link.LinkManager;
 import gui.link.Link;
@@ -18,9 +15,9 @@ public abstract class Wrapper extends JPanel implements CanvasItem {
     static int SEL_BORDER_WIDTH = 2;
     static int SEL_BORDER_EXTRA = 2;
 
-    private LinkManager linkManager = new LinkManager(this);
-    protected Object target;
-    private Component view;
+    public LinkManager linkManager = new LinkManager(this);
+    public Object target;
+    public Component view;
 
     public Wrapper(Object target) {
         this.target = target;

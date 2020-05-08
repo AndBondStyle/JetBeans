@@ -11,6 +11,8 @@ import gui.canvas.Canvas;
 import gui.canvas.CanvasItem;
 import gui.common.tree.PatchedNode;
 import gui.common.tree.PatchedTree;
+import gui.link.Link;
+import gui.link.LinkEnd;
 import gui.wrapper.Wrapper;
 
 import javax.swing.tree.TreePath;
@@ -27,7 +29,7 @@ public class InstancesPanel extends SimpleToolWindowPanel {
         super(false, true);
         this.core = JetBeans.getInstance(project);
         this.core.addListener(e -> {
-            if (e.getActionCommand().equals("instantiate")) this.rebuild();
+            if (e.getActionCommand().equals("itemsChanged")) this.rebuild();
             if (e.getActionCommand().equals("select")) this.reselect();
         });
         this.initContent();
@@ -38,6 +40,7 @@ public class InstancesPanel extends SimpleToolWindowPanel {
         this.tree.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() != MouseEvent.BUTTON1 || e.getClickCount() != 2) return;
+                e.consume();
                 PatchedNode node = (PatchedNode) tree.getLastSelectedPathComponent();
                 if (node == null || !(node.getValue() instanceof CanvasItem)) return;
                 Canvas canvas = core.getCanvas();
@@ -60,13 +63,25 @@ public class InstancesPanel extends SimpleToolWindowPanel {
         if (canvas == null) return;
         for (CanvasItem item : canvas.items) {
             if (!(item instanceof Wrapper)) continue;
-            Object target = ((Wrapper) item).getTarget();
-            PatchedNode node = new PatchedNode(this.core.project, "" + target.hashCode(), item);
-            node.setPrimaryText(target.getClass().getSimpleName());
-            node.setSecondaryText(item.toString());
-            node.setIcon(AllIcons.Nodes.Class);
-            root.add(node);
-            this.mapping.put(item, node);
+            Wrapper wrapper = (Wrapper) item;
+            Object target = wrapper.getTarget();
+            PatchedNode instanceNode = new PatchedNode(this.core.project, "" + target.hashCode(), item);
+            instanceNode.setPrimaryText(target.getClass().getSimpleName());
+            instanceNode.setSecondaryText(item.toString());
+            instanceNode.setIcon(AllIcons.Nodes.Class);
+            for (LinkEnd le : wrapper.linkManager.linkEnds) {
+                if (!le.parent.isSelectable()) continue;
+                Link link = le.parent;
+                boolean isSource = le == link.ends[0];
+                PatchedNode linkNode = new PatchedNode(this.core.project, isSource ? "" + link.hashCode() : "", link);
+                linkNode.setPrimaryText("Link " + (isSource ? "(source)" : "(destination)"));
+                linkNode.setSecondaryText(link.descriptor.toString());
+                linkNode.setIcon(isSource ? AllIcons.Actions.StepOut : AllIcons.Actions.TraceInto);
+                instanceNode.add(linkNode);
+                if (isSource) this.mapping.put(link, linkNode);
+            }
+            root.add(instanceNode);
+            this.mapping.put(item, instanceNode);
         }
         this.tree.forceUpdate();
     }
@@ -74,7 +89,7 @@ public class InstancesPanel extends SimpleToolWindowPanel {
     private void reselect() {
         PatchedNode node = this.mapping.get(this.core.selection);
         this.tree.getSelectionModel().clearSelection();
-        if (!(this.core.selection instanceof Wrapper) || node == null) return;
+        if (node == null) return;
         TreePath path = TreeUtil.getPathFromRoot(node);
         this.tree.getSelectionModel().setSelectionPath(path);
     }

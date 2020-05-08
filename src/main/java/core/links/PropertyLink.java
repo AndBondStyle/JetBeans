@@ -53,28 +53,32 @@ public class PropertyLink implements SimpleEventSupport {
         }
     }
 
+    @Override
+    public String toString() {
+        String result = "Property \"" + this.src.name + "\" -> ";
+        if (this.dst instanceof PropertyInfo) return result + "Property \"" + ((PropertyInfo) this.dst).name + "\"";
+        return result + "Method \"" + ((MethodInfo) this.dst).name + "\"";
+    }
+
     private void prepareDialog() {
         this.dialog = new ShellInputDialog(this.project, "");
         this.evaluator = this.dialog.evaluator;
         this.dialog.execute = false;
-        String title = "Shell Input - Link Property \"" + this.src.name + "\" -> ";
-        Object destination = null;
+        this.dialog.setTitle("Shell Input - Link " + this.toString());
+        Object destination;
 
         if (this.dst instanceof PropertyInfo) {
             PropertyInfo info = (PropertyInfo) this.dst;
             destination = info.target;
-            title += "Property \"" + info.name + "\"";
             this.evaluator.setBody("\nreturn" + (this.src.type.equals(info.type) ? " curr" : "") + ";\n");
             this.evaluator.setReturnType(info.type);
         } else {
             MethodInfo info = (MethodInfo) this.dst;
             destination = info.target;
-            title += "Method \"" + info.name + "\"";
             this.evaluator.setBody("\n// Method signature: " + info.getSignature() + "\ndst." + info.name + "();\n");
             this.evaluator.setReturnType(null);
         }
 
-        this.dialog.setTitle(title);
         this.evaluator.setParameters(
                 new String[] {"src", "dst", "prev", "curr"},
                 new String[] {"source object", "destination object", "old property value", "new property value"},

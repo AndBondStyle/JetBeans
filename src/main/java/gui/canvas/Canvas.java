@@ -61,6 +61,7 @@ public class Canvas extends JPanel implements SimpleEventSupport {
         location.y -= size.height / 2;
         comp.setLocation(location);
         comp.setSize(size);
+        this.fireEvent("itemsChanged");
     }
 
     public Wrapper findWrapper(Object object) {

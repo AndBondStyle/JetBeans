@@ -12,9 +12,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LinkManager extends ComponentAdapter {
-    List<LinkEnd> linkEnds = new ArrayList<>();
-    boolean updated = false;
-    Component parent;
+    public List<LinkEnd> linkEnds = new ArrayList<>();
+    public boolean updated = false;
+    public Component parent;
 
     public LinkManager(Component parent) {
         this.parent = parent;
