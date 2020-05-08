@@ -78,9 +78,9 @@ public class Linker implements SimpleEventSupport {
                 Link canvasLink = new Link(JBColor.MAGENTA, link);
                 source.attachLink(canvasLink, 0);
                 destination.attachLink(canvasLink, 1);
-                canvasLink.autoUpdate();
                 canvas.addItem(canvasLink);
                 canvas.setSelection(canvasLink);
+                canvasLink.autoUpdate();
             }
         };
     }

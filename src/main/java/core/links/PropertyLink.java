@@ -9,6 +9,7 @@ import core.Evaluator;
 import com.intellij.openapi.project.Project;
 import org.codehaus.commons.compiler.CompileException;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -113,5 +114,8 @@ public class PropertyLink implements SimpleEventSupport {
         else this.fireEvent("created");
         comp.addPropertyChangeListener(this.src.name, listener);
         this.listener = listener;
+        Object currentValue = this.src.getter.get();
+        PropertyChangeEvent event = new PropertyChangeEvent(this.src.target, this.src.name, currentValue, currentValue);
+        this.listener.propertyChange(event);
     }
 }
