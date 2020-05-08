@@ -93,13 +93,6 @@ public final class InspectorView implements ToolWindowFactory, DumbAware {
         return content.getTabName();
     }
 
-    public void setActiveTab(String tab) {
-        ContentManager manager = this.toolWindow.getContentManager();
-        if (tab.equals(PROPERTIES_TAB)) manager.setSelectedContent(this.propsContent);
-        if (tab.equals(EVENTS_TAB)) manager.setSelectedContent(this.eventsContent);
-        if (tab.equals(METHODS_TAB)) manager.setSelectedContent(this.methodsContent);
-    }
-
     public JTree getActiveTree() {
         String tab = this.getActiveTab();
         if (tab == null) return null;

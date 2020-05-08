@@ -15,7 +15,7 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.Content;
 import gui.common.CollapseAllAction;
 import gui.library.actions.InstantiateAction;
-import gui.library.actions.LoadJarAction;
+import gui.library.actions.ImportAction;
 import org.jetbrains.annotations.NotNull;
 
 @Service
@@ -64,7 +64,7 @@ public final class LibraryView implements ToolWindowFactory, DumbAware {
     public ActionToolbar initToolbar() {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.add(new InstantiateAction());
-        actionGroup.add(new LoadJarAction());
+        actionGroup.add(new ImportAction());
         actionGroup.add(new CollapseAllAction(() -> {
             String tab = this.getActiveTab();
             if (tab == null) return null;

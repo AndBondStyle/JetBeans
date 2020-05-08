@@ -76,6 +76,7 @@ public class EventSetInfo implements Cloneable {
     public int getListenersCount() {
         try {
             Method m = this.descriptor.getGetListenerMethod();
+            if (m == null) return 0;
             return ((Object[]) m.invoke(this.target)).length;
         } catch (ReflectiveOperationException ignored) {
             return 0;

@@ -34,24 +34,6 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor, 
         this.canvas = new Canvas(project);
         this.core = JetBeans.getInstance(project);
         this.core.registerEditor(this);
-
-        // ====== TEMP ======
-//        Component temp = new TestBean();
-//        Wrapper wrapper = Wrapper.autowrap(temp);
-//        this.canvas.addItem(wrapper);
-//        wrapper.setLocation(100, 100);
-//
-        for (int i = 0; i < 10; i++) {
-            Component temp2 = new TestBean();
-            Wrapper wrapper2 = Wrapper.autowrap(temp2);
-            this.canvas.addItem(wrapper2);
-            wrapper2.setLocation(100, 200 + 100 * i);
-
-//            Link link = new Link(JBColor.MAGENTA);
-//            this.canvas.addItem(link);
-//            wrapper.attachLink(link, 0);
-//            wrapper2.attachLink(link, 1);
-        }
     }
 
     public Canvas getCanvas() {

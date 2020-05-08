@@ -27,6 +27,7 @@ public class ShellExecuteAction extends DumbAwareAction {
         JetBeans core = JetBeans.getInstance(e.getProject());
         List<Object> context = core.getCanvas().items.stream()
                 .filter(x -> x instanceof Wrapper)
+                .map(x -> ((Wrapper) x).getTarget())
                 .collect(Collectors.toList());
         if (core.selection instanceof Wrapper) {
             Object target = ((Wrapper) core.selection).getTarget();

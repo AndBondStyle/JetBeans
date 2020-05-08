@@ -1,5 +1,6 @@
 package core.links;
 
+import core.JetBeans;
 import core.inspection.EventInfo;
 
 import com.intellij.openapi.project.Project;
@@ -64,9 +65,8 @@ public class EventLink extends LinkBase {
         final Object source = this.src.target;
         final Function<Object[], Object> lambda = this.lambda;
         final Object destination = this.destinationObject;
-        // TODO: Master class loader
         Object listener = Proxy.newProxyInstance(
-                ClassLoader.getPlatformClassLoader(),
+                JetBeans.getInstance(this.project).loader,
                 new Class[] {this.src.listenerClass},
                 (proxy, method, args) -> {
                     if (!method.getName().equals(this.src.name)) return null;

@@ -1,6 +1,8 @@
 package gui.inspector.editors;
 
+import gui.common.tree.PatchedNode;
 import gui.inspector.actions.ShellInputAction;
+import gui.inspector.tree.PropertyNode;
 import gui.inspector.tree.PropertyTree;
 import core.inspection.PropertyInfo;
 
@@ -13,9 +15,13 @@ import com.intellij.util.IconUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.*;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.Objects;
 
@@ -87,6 +93,20 @@ public abstract class Editor extends JPanel {
         this.populateNamePanel();
         this.populateCenterPanel();
         this.populateButtonsPanel();
+
+        MouseListener listener = new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1)
+                    Editor.this.mainAction();
+            }
+        };
+        this.addMouseListener(listener);
+        this.namePanel.addMouseListener(listener);
+        this.nameLabel.addMouseListener(listener);
+        this.centerPanel.addMouseListener(listener);
+        this.buttonsPanel.addMouseListener(listener);
+        this.splitter.addMouseListener(listener);
+
         Icon icon = AllIcons.Nodes.Property;
         if (!this.prop.isBound()) icon = IconUtil.desaturate(icon);
         if (!this.prop.isSettable()) {
@@ -164,6 +184,10 @@ public abstract class Editor extends JPanel {
 
     public void updateSplitter(float proportion) {
         this.splitter.setProportion(proportion);
+    }
+
+    public void mainAction() {
+        this.shellButton.click();
     }
 
     protected void populateCenterPanel() {

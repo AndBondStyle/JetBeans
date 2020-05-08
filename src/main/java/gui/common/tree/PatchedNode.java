@@ -8,7 +8,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.*;
 
 public class PatchedNode extends DefaultMutableTreeNode {
-    PresentationData presentation;
+    public PresentationData presentation;
 
     public PatchedNode(Project project, String key) {
         this(project, key, null);

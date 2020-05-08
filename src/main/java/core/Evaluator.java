@@ -23,8 +23,8 @@ public class Evaluator extends ScriptEvaluator {
     private JetBeans core;
 
     public Evaluator(Project project, String body, boolean useHeader) {
-        // TODO: Master class loader
         this.core = JetBeans.getInstance(project);
+        this.setParentClassLoader(this.core.loader);
         if (body != null) this.body = body;
         if (useHeader) this.header = Evaluator.staticHeader;
     }

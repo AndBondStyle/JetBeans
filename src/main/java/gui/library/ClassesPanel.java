@@ -1,5 +1,8 @@
 package gui.library;
 
+import com.intellij.ide.projectView.PresentationData;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.util.Pair;
 import gui.common.tree.PatchedNode;
 import gui.common.tree.PatchedTree;
 import core.registry.loaders.Loader;
@@ -21,8 +24,8 @@ public class ClassesPanel extends SimpleToolWindowPanel {
     public ClassesPanel(Project project) {
         super(false, true);
         this.core = JetBeans.getInstance(project);
-        this.core.registry.addListener(e -> {
-            if (e.getActionCommand().equals("update")) this.update();
+        this.core.loader.addListener(e -> {
+            if (e.getActionCommand().equals("updated")) this.update();
         });
         this.initContent();
     }
@@ -45,19 +48,12 @@ public class ClassesPanel extends SimpleToolWindowPanel {
         PatchedNode root = this.tree.getRoot();
         this.tree.saveExpandedState();
         root.removeAllChildren();
-        for (Map.Entry<String, Loader> loader : this.core.registry.getLoaders().entrySet()) {
-            PatchedNode groupNode = new PatchedNode(this.core.project, "!" + loader.getKey());
-            groupNode.setPrimaryText(loader.getValue().getPrimaryText());
-            groupNode.setSecondaryText(loader.getValue().getSecondaryText());
-            groupNode.setIcon(loader.getValue().getIcon());
-            for (Map.Entry<String, String> klass : loader.getValue().getClasses().entrySet()) {
-                List<String> tokens = new ArrayList<>(Arrays.asList(klass.getKey().split("\\.")));
-                String name = tokens.remove(tokens.size() - 1);
-                String pkg = String.join(".", tokens);
-                PatchedNode childNode = new PatchedNode(this.core.project, klass.getValue());
-                childNode.setPrimaryText(name);
-                if (!pkg.equals("")) childNode.setSecondaryText(pkg);
-                childNode.setIcon(AllIcons.Nodes.Class);
+        for (Map.Entry<PresentationData, List<Pair<String, PresentationData>>> group : this.core.loader.groups.entrySet()) {
+            PatchedNode groupNode = new PatchedNode(this.core.project, "!" + group.getKey().getPresentableText());
+            groupNode.presentation.copyFrom(group.getKey());
+            for (Pair<String, PresentationData> item : group.getValue()) {
+                PatchedNode childNode = new PatchedNode(this.core.project, item.getFirst());
+                childNode.presentation.copyFrom(item.getSecond());
                 groupNode.add(childNode);
             }
             root.add(groupNode);

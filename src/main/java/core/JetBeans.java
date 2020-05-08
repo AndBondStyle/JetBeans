@@ -1,8 +1,8 @@
 package core;
 
 import core.links.Linker;
+import core.registry.MasterLoader;
 import gui.common.SimpleEventSupport;
-import core.registry.Registry;
 import gui.canvas.CanvasItem;
 import gui.canvas.Canvas;
 import gui.wrapper.Wrapper;
@@ -20,18 +20,20 @@ import java.io.StringWriter;
 
 @Service
 public final class JetBeans implements SimpleEventSupport {
+    public static String PLUGIN_ID = "jetbeans.jetbeans";
+
     public Project project;
-    public Registry registry;
     public CanvasItem selection;
     public Linker linker;
+    public MasterLoader loader;
 
     private CustomFileEditor prevEditor;
     private CustomFileEditor currEditor;
 
     public JetBeans(Project project) {
         this.project = project;
-        this.registry = new Registry();
         this.linker = new Linker(this);
+        this.loader = new MasterLoader();
     }
 
     public static JetBeans getInstance(Project project) {
@@ -94,15 +96,17 @@ public final class JetBeans implements SimpleEventSupport {
         }
     }
 
-    public void instantiate(String id) {
+    public void instantiate(String name) {
         try {
-            Object instance = this.registry.instantiate(id);
+            Class<?> klass = this.loader.loadClass(name);
+            Object instance = klass.getDeclaredConstructor().newInstance();
             Wrapper wrapper = Wrapper.autowrap(instance);
             this.getCanvas().addItem(wrapper);
             this.getCanvas().setSelection(wrapper);
             this.fireEvent("instantiate");
-        } catch (RuntimeException e) {
-            this.logException(e);
+        } catch (Exception e) {
+            this.logException(new RuntimeException("Failed to instantiate class \"" + name + "\"", e));
+            throw new RuntimeException("Failed to instantiate class \"" + name + "\"", e);
         }
     }
 
