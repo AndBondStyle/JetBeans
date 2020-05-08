@@ -58,6 +58,7 @@ public class EventsPanel extends SimpleToolWindowPanel {
             root.add(group);
         }
 
+        this.tree.autoSort(null);
         this.tree.forceUpdate();
         this.tree.restoreExpandedState();
     }

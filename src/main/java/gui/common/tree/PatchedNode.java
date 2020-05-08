@@ -35,6 +35,10 @@ public class PatchedNode extends DefaultMutableTreeNode {
         this.presentation.setPresentableText(text);
     }
 
+    public String getPrimaryText() {
+        return this.presentation.getPresentableText();
+    }
+
     public void setSecondaryText(String text) {
         this.presentation.setLocationString(text);
     }

@@ -5,8 +5,7 @@ import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.util.ui.tree.TreeUtil;
 
 import javax.swing.tree.*;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 public class PatchedTree extends SimpleTree {
     private HashMap<String, Boolean> expandedState = new HashMap<>();
@@ -52,5 +51,14 @@ public class PatchedTree extends SimpleTree {
         TreePath path = TreeUtil.getPathFromRoot(node);
         if (this.expandedState.getOrDefault(node.getKey(), false)) this.expandPath(path);
         for (TreeNode child : Collections.list(node.children())) restoreNodeState((PatchedNode) child);
+    }
+
+    public void autoSort(PatchedNode node) {
+        if (node == null) node = this.getRoot();
+        List<PatchedNode> children = new ArrayList<>();
+        for (int i = 0; i < node.getChildCount(); i++) children.add((PatchedNode) node.getChildAt(i));
+        children.sort(Comparator.comparing(PatchedNode::getPrimaryText));
+        node.removeAllChildren();
+        children.forEach(node::add);
     }
 }
