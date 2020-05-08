@@ -1,31 +1,19 @@
 package core.links;
 
 import gui.common.ShellInputDialog;
-import gui.common.SimpleEventSupport;
 import core.inspection.MethodInfo;
 import core.inspection.PropertyInfo;
-import core.Evaluator;
 
 import com.intellij.openapi.project.Project;
-import org.codehaus.commons.compiler.CompileException;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.awt.*;
 
-public class PropertyLink implements SimpleEventSupport {
-    public Project project;
-    public PropertyInfo src;
-    public Object dst;
-
-    public ShellInputDialog dialog;
-    public Evaluator evaluator;
+public class PropertyLink extends LinkBase {
     public PropertyChangeListener listener;
-    public Function<Object[], Object> lambda;
-    public boolean isCurrentSession = true;
-    public String script;
+    public PropertyInfo src;
 
     public PropertyLink(Project project, PropertyInfo src, Object dst) {
         this.project = project;
@@ -33,61 +21,28 @@ public class PropertyLink implements SimpleEventSupport {
         this.dst = dst;
     }
 
-    public void init(String script) {
-        this.prepareDialog();
-        if (script != null) {
-            this.script = script;
-            this.isCurrentSession = false;
-            this.evaluator.setBody(this.script);
-            try {
-                this.evaluator.cook();
-                this.update();
-            } catch (CompileException e) {
-                throw new RuntimeException("Failed to restore link", e);
-            }
-        } else {
-            if (this.script != null) this.evaluator.setScript(this.script);
-            this.dialog.callback = this::update;
-            this.dialog.init();
-            this.dialog.show();
-        }
-    }
-
     @Override
     public String toString() {
-        String result = "Property \"" + this.src.name + "\" -> ";
-        if (this.dst instanceof PropertyInfo) return result + "Property \"" + ((PropertyInfo) this.dst).name + "\"";
-        return result + "Method \"" + ((MethodInfo) this.dst).name + "\"";
+        return "Property \"" + this.src.name + "\"";
     }
 
-    private void prepareDialog() {
-        this.dialog = new ShellInputDialog(this.project, "");
-        this.evaluator = this.dialog.evaluator;
-        this.dialog.execute = false;
-        this.dialog.setTitle("Shell Input - Link " + this.toString());
-        Object destination;
-
-        if (this.dst instanceof PropertyInfo) {
-            PropertyInfo info = (PropertyInfo) this.dst;
-            destination = info.target;
-            this.evaluator.setBody("\nreturn" + (this.src.type.equals(info.type) ? " curr" : "") + ";\n");
-            this.evaluator.setReturnType(info.type);
-        } else {
-            MethodInfo info = (MethodInfo) this.dst;
-            destination = info.target;
-            this.evaluator.setBody("\n// Method signature: " + info.getSignature() + "\ndst." + info.name + "();\n");
-            this.evaluator.setReturnType(null);
+    public void prepareDialog() {
+        super.prepareDialog();
+        if (this.dst instanceof PropertyInfo && this.src.type.equals(((PropertyInfo) this.dst).type)) {
+            String body = this.evaluator.getBody();
+            body = body.substring(0, body.length() - 3);
+            this.evaluator.setBody(body + "curr);\n");
         }
-
+        this.evaluator.setReturnType(null);
         this.evaluator.setParameters(
-                new String[] {"src", "dst", "prev", "curr"},
-                new String[] {"source object", "destination object", "old property value", "new property value"},
-                new Class[] {this.src.target.getClass(), destination.getClass(), this.src.type, this.src.type},
+                new String[] {"src", "dst", "prev", "curr", "event"},
+                new String[] {"source object", "destination object", "old property value", "new property value", "event object"},
+                new Class[] {this.src.target.getClass(), this.destinationObject.getClass(), this.src.type, this.src.type, PropertyChangeEvent.class},
                 null
         );
     }
 
-    private void update() {
+    public void update() {
         this.script = this.evaluator.getScript();
         this.lambda = this.evaluator.makeLabmda();
         Object target = this.src.target;
@@ -96,23 +51,8 @@ public class PropertyLink implements SimpleEventSupport {
 
         final Object source = this.src.target;
         final Function<Object[], Object> lambda = this.lambda;
-        PropertyChangeListener listener;
-        if (this.dst instanceof PropertyInfo) {
-            PropertyInfo info = (PropertyInfo) this.dst;
-            final Object destination = info.target;
-            final Consumer<Object> setter = info.setter;
-            listener = (e) -> {
-                Object[] args = new Object[] {source, destination, e.getOldValue(), e.getNewValue()};
-                setter.accept(lambda.apply(args));
-            };
-        } else {
-            MethodInfo info = (MethodInfo) this.dst;
-            final Object destination = info.target;
-            listener = (e) -> {
-                Object[] args = new Object[] {source, destination, e.getOldValue(), e.getNewValue()};
-                lambda.apply(args);
-            };
-        }
+        final Object destination = this.destinationObject;
+        PropertyChangeListener listener = (e) -> lambda.apply(new Object[] {source, destination, e.getOldValue(), e.getNewValue(), e});
 
         if (this.listener != null) comp.removePropertyChangeListener(this.src.name, this.listener);
         else this.fireEvent("created");

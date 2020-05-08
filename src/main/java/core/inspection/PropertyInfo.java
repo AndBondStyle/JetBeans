@@ -20,21 +20,6 @@ public class PropertyInfo implements Cloneable {
     public Class<?> type;
     public String name;
 
-    public static List<PropertyInfo> fetch(Object target) {
-        try {
-            // TODO: Refactor
-            BeanInfo bi = Introspector.getBeanInfo(target.getClass());
-            PropertyDescriptor[] descriptors = bi.getPropertyDescriptors();
-            return Arrays.stream(bi.getPropertyDescriptors())
-                    .map(x -> PropertyInfo.create(x, target))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        } catch (IntrospectionException e) {
-            String message = "Failed to analyze bean \"" + target + "\"";
-            throw new RuntimeException(message, e);
-        }
-    }
-
     public static PropertyInfo create(PropertyDescriptor descriptor, Object target) {
         PropertyInfo info = new PropertyInfo();
         info.descriptor = descriptor;

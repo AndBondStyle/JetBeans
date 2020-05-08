@@ -12,6 +12,10 @@ import gui.link.Link;
 import gui.wrapper.Wrapper;
 
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 public class Linker implements SimpleEventSupport {
     public JetBeans core;
@@ -50,26 +54,28 @@ public class Linker implements SimpleEventSupport {
     }
 
     private void link() {
-        Object source = this.source;
-        Object destination = this.destination;
+        if (this.destination != null) {
+            LinkBase link = this.source instanceof PropertyInfo
+                    ? new PropertyLink(this.core.project, ((PropertyInfo) this.source), this.destination)
+                    : new EventLink(this.core.project, (EventInfo) this.source, this.destination);
+            link.addListener(this.makeCallback(
+                    link,
+                    this.source instanceof PropertyInfo
+                            ? ((PropertyInfo) this.source).target
+                            : ((EventInfo) this.source).target,
+                    this.destination instanceof PropertyInfo
+                            ? ((PropertyInfo) this.destination).target
+                            : ((MethodInfo) this.destination).target
+            ));
+            link.init(null);
+        }
         this.source = null;
         this.destination = null;
-        if (destination != null) {
-            if (source instanceof PropertyInfo) {
-                PropertyLink link = new PropertyLink(this.core.project, (PropertyInfo) source, destination);
-                Object srcObject = ((PropertyInfo) source).target;
-                Object dstObject = destination instanceof PropertyInfo ?
-                        ((PropertyInfo) destination).target : ((MethodInfo) destination).target;
-                link.addListener(this.makeCallback(srcObject, dstObject, link));
-                link.init(null);
-            } else {
-                System.err.println("Not supported");
-            }
-        }
     }
 
-    private ActionListener makeCallback(Object src, Object dst, Object link) {
+    private ActionListener makeCallback(Object link, Object src, Object dst) {
         final Canvas canvas = this.core.getCanvas();
+        if (canvas == null) return null;
         final Wrapper source = canvas.findWrapper(src);
         final Wrapper destination = canvas.findWrapper(dst);
         if (source == null || destination == null) return null;

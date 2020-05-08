@@ -23,7 +23,7 @@ public class Evaluator extends ScriptEvaluator {
     private JetBeans core;
 
     public Evaluator(Project project, String body, boolean useHeader) {
-        // TODO: Set master loader
+        // TODO: Master class loader
         this.core = JetBeans.getInstance(project);
         if (body != null) this.body = body;
         if (useHeader) this.header = Evaluator.staticHeader;
@@ -31,7 +31,7 @@ public class Evaluator extends ScriptEvaluator {
 
     public String getScript() { return this.header + this.body; }
     public void setScript(String script) { this.header = ""; this.body = script; }
-    public void setHeader(String header) { this.header = header; }
+    public String getBody() { return this.body; }
     public void setBody(String body) { this.body = body; }
     public void cook() throws CompileException { this.cook(this.getScript()); }
     public Object evaluate() throws InvocationTargetException { return this.evaluate(this.arguments); }
