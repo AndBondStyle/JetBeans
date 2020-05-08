@@ -1,7 +1,6 @@
 package core.links;
 
-import gui.common.ShellInputDialog;
-import core.inspection.MethodInfo;
+import core.JetBeans;
 import core.inspection.PropertyInfo;
 
 import com.intellij.openapi.project.Project;
@@ -52,7 +51,15 @@ public class PropertyLink extends LinkBase {
         final Object source = this.src.target;
         final Function<Object[], Object> lambda = this.lambda;
         final Object destination = this.destinationObject;
-        PropertyChangeListener listener = (e) -> lambda.apply(new Object[] {source, destination, e.getOldValue(), e.getNewValue(), e});
+        final CascadeManager cascade = JetBeans.getInstance(this.project).cascade;
+        PropertyChangeListener listener = (e) -> {
+            if (!cascade.begin(e, destination)) return;
+            System.err.println("EVENT: " + e + " SRC: " + source + " DST: " + destination);
+            Object[] args = new Object[] {source, destination, e.getOldValue(), e.getNewValue(), e};
+            try { lambda.apply(args); }
+            catch (Throwable ignored) {}
+            finally { cascade.end(e, destination); }
+        };
 
         if (this.listener != null) comp.removePropertyChangeListener(this.src.name, this.listener);
         else this.fireEvent("created");

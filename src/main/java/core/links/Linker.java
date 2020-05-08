@@ -6,16 +6,13 @@ import core.inspection.EventInfo;
 import core.inspection.MethodInfo;
 import core.inspection.PropertyInfo;
 import gui.canvas.Canvas;
-import gui.canvas.CanvasItem;
 import gui.common.SimpleEventSupport;
 import gui.link.Link;
 import gui.wrapper.Wrapper;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Arrays;
+import javax.swing.*;
 
 public class Linker implements SimpleEventSupport {
     public JetBeans core;
@@ -73,20 +70,23 @@ public class Linker implements SimpleEventSupport {
         this.destination = null;
     }
 
-    private ActionListener makeCallback(Object link, Object src, Object dst) {
+    private ActionListener makeCallback(LinkBase link, Object src, Object dst) {
         final Canvas canvas = this.core.getCanvas();
         if (canvas == null) return null;
         final Wrapper source = canvas.findWrapper(src);
         final Wrapper destination = canvas.findWrapper(dst);
         if (source == null || destination == null) return null;
-        return e -> {
-            if (e.getActionCommand().equals("created")) {
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!e.getActionCommand().equals("created")) return;
                 Link canvasLink = new Link(JBColor.MAGENTA, link);
                 source.attachLink(canvasLink, 0);
                 destination.attachLink(canvasLink, 1);
                 canvas.addItem(canvasLink);
                 canvas.setSelection(canvasLink);
                 canvasLink.autoUpdate();
+                SwingUtilities.invokeLater(() -> link.removeListener(this));
             }
         };
     }

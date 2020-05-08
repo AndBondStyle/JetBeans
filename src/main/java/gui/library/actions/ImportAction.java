@@ -37,15 +37,12 @@ public class ImportAction extends AnAction implements DumbAware {
                 });
         FileChooser.chooseFile(d, e.getProject(), null, file -> {
             try {
-                try {
-                    core.loader.loadFile(file.getPath());
-                    LibraryView view = e.getProject().getService(LibraryView.class);
-                    view.setActiveTab(LibraryView.CLASSES_TAB);
-                } catch (Exception err) {
-                    core.logException(new RuntimeException("Failed to load " + file.getPath(), err));
-                }
-            } catch (RuntimeException err) {
-                core.logException(err);
+                core.loader.loadFile(file.getPath());
+                LibraryView view = e.getProject().getService(LibraryView.class);
+                view.setActiveTab(LibraryView.CLASSES_TAB);
+            } catch (Exception err) {
+                err = new RuntimeException("Failed to load " + file.getPath(), err);
+                core.logException(err, "Import error");
             }
         });
     }

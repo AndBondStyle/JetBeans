@@ -67,7 +67,7 @@ public class InstancesPanel extends SimpleToolWindowPanel {
             Object target = wrapper.getTarget();
             PatchedNode instanceNode = new PatchedNode(this.core.project, "" + target.hashCode(), item);
             instanceNode.setPrimaryText(target.getClass().getSimpleName());
-            instanceNode.setSecondaryText(item.toString());
+            instanceNode.setSecondaryText(target.toString());
             instanceNode.setIcon(AllIcons.Nodes.Class);
             for (LinkEnd le : wrapper.linkManager.linkEnds) {
                 if (!le.parent.isSelectable()) continue;

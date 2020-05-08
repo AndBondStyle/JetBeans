@@ -53,7 +53,7 @@ public class Evaluator extends ScriptEvaluator {
     public Function<Object[], Object> makeLabmda() {
         return (Object[] arguments) -> {
             try { return this.evaluate(arguments); }
-            catch (InvocationTargetException e) { this.core.logException(e); }
+            catch (InvocationTargetException e) { this.core.logException(e, "Exception in lambda"); }
             return null;
         };
     }

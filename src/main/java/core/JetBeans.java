@@ -1,5 +1,6 @@
 package core;
 
+import core.links.CascadeManager;
 import core.links.Linker;
 import core.registry.MasterLoader;
 import gui.common.SimpleEventSupport;
@@ -26,6 +27,7 @@ public final class JetBeans implements SimpleEventSupport {
     public CanvasItem selection;
     public Linker linker;
     public MasterLoader loader;
+    public CascadeManager cascade;
 
     private CustomFileEditor prevEditor;
     private CustomFileEditor currEditor;
@@ -34,6 +36,7 @@ public final class JetBeans implements SimpleEventSupport {
         this.project = project;
         this.linker = new Linker(this);
         this.loader = new MasterLoader();
+        this.cascade = new CascadeManager(this);
     }
 
     public static JetBeans getInstance(Project project) {
@@ -105,19 +108,21 @@ public final class JetBeans implements SimpleEventSupport {
             this.getCanvas().setSelection(wrapper);
             this.fireEvent("instantiate");
         } catch (Exception e) {
-            this.logException(new RuntimeException("Failed to instantiate class \"" + name + "\"", e));
-            throw new RuntimeException("Failed to instantiate class \"" + name + "\"", e);
+            e = new RuntimeException("Failed to instantiate class \"" + name + "\"", e);
+            this.logException(e, "Bean instantiation failed");
         }
     }
 
-    public void logException(Exception e) {
+    public void logException(Exception e, String title) {
         Notification n = new Notification("JetBeans", null, NotificationType.ERROR);
-        n.setTitle("Bean instantiation failed");
-        n.setContent(e.getMessage());
-        StringWriter writer = new StringWriter();
-        PrintWriter printer = new PrintWriter(writer);
-        e.printStackTrace(printer);
-        n.setSubtitle(writer.toString());
+        n.setTitle(title);
+        if (e != null) {
+            n.setDropDownText(e.getMessage());
+            StringWriter writer = new StringWriter();
+            PrintWriter printer = new PrintWriter(writer);
+            e.printStackTrace(printer);
+            n.setSubtitle(writer.toString());
+        }
         Notifications.Bus.notify(n, this.project);
     }
 }
