@@ -16,7 +16,6 @@ import java.awt.*;
 
 // Main canvas widget, handling move/select/resize actions
 public class Canvas extends JPanel implements SimpleEventSupport {
-    // TODO: Move to constants
     public static Dimension CANVAS_SIZE = new Dimension(5000, 5000);
     public static Dimension MIN_ITEM_SIZE = new Dimension(20, 20);
 

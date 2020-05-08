@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GUIWrapper extends Wrapper {
-    // TODO: Move to constants?
     static int BG_STRIPES_WIDTH = 8;
     static int BG_STRIPES_SPACING = 12;
     static int BG_STRIPES_ALPHA = 128;

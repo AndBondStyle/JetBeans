@@ -30,7 +30,6 @@ public class ResizeHelper extends ToggleHelper {
     public Point offset;            // Offset from origin point (see getOrigin)
     public int mode;                // Aka index of LOCATIONS / CURSORS element
 
-    // TODO: Move to utilities
     Rectangle rectFromPoints(int x1, int y1, int x2, int y2) {
         return new Rectangle(x1, y1, x2 - x1, y2 - y1);
     }
@@ -74,7 +73,6 @@ public class ResizeHelper extends ToggleHelper {
 
     // Gets point that should remain stationary during resize
     Point getOrigin(Rectangle target) {
-        // TODO: Utility function: rect -> [top, left, right, bottom]
         int left = target.x;
         int top = target.y;
         int right = target.x + target.width;
@@ -97,7 +95,6 @@ public class ResizeHelper extends ToggleHelper {
     }
 
     Rectangle getNewBounds(Rectangle oldBounds) {
-        // TODO: Utility function: rect -> [top, left, right, bottom]
         int left = oldBounds.x;
         int top = oldBounds.y;
         int right = oldBounds.x + oldBounds.width;

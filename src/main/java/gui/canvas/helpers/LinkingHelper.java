@@ -4,7 +4,6 @@ import core.JetBeans;
 import gui.canvas.Canvas;
 import gui.canvas.CanvasItem;
 import gui.canvas.helpers.base.Helper;
-import gui.link.AnimatedLink;
 import gui.link.Link;
 import gui.wrapper.MockWrapper;
 import gui.wrapper.Wrapper;
@@ -14,7 +13,9 @@ import java.awt.event.MouseEvent;
 
 public class LinkingHelper extends Helper {
     public MockWrapper boop = new MockWrapper();
-    public Link link = new AnimatedLink(JBColor.ORANGE);
+    public Link link = new Link(JBColor.LIGHT_GRAY, null) {
+        public boolean isSelectable() { return false; }
+    };
     public CanvasItem source = null;
     public boolean active = false;
     public JetBeans core;
@@ -24,6 +25,7 @@ public class LinkingHelper extends Helper {
         super.setParent(parent);
         this.parent.addItem(this.boop);
         this.parent.addItem(this.link);
+        this.link.setSelected(true);
         this.core = JetBeans.getInstance(this.parent.project);
         this.core.linker.addListener(e -> this.toggle(e.getActionCommand().equals("activate")));
         this.parent.addListener(e -> { if (e.getActionCommand().equals("select")) this.pin(); });
@@ -45,20 +47,22 @@ public class LinkingHelper extends Helper {
         if (!this.active) return;
         CanvasItem selection = this.parent.selection;
         if (selection == null || selection == this.source) this.boop.attachLink(this.link, 1);
-        else ((Wrapper) selection).attachLink(this.link, 1);
+        else if (selection instanceof Wrapper) ((Wrapper) selection).attachLink(this.link, 1);
         this.link.autoUpdate();
     }
 
     private void toggle(boolean active) {
         this.active = active;
         this.link.setVisible(false);
+        if (!this.active) {
+            this.link.detach();
+            return;
+        }
         this.source = this.core.selection;
         if (!(this.source instanceof Wrapper)) return;
-        if (this.active) {
-            ((Wrapper) this.source).attachLink(this.link, 0);
-            this.boop.setLocation(((Wrapper) this.source).getLocation());
-            this.boop.attachLink(this.link, 1);
-            this.link.autoUpdate();
-        }
+        ((Wrapper) this.source).attachLink(this.link, 0);
+        this.boop.setLocation(((Wrapper) this.source).getLocation());
+        this.boop.attachLink(this.link, 1);
+        this.link.autoUpdate();
     }
 }

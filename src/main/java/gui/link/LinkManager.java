@@ -5,11 +5,13 @@ import java.awt.event.ComponentEvent;
 import java.awt.geom.Line2D;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.stream.IntStream;
 
 public class LinkManager extends ComponentAdapter {
     public List<LinkEnd> linkEnds = new ArrayList<>();
@@ -37,17 +39,33 @@ public class LinkManager extends ComponentAdapter {
             if (location == 2) south.add(le);
             if (location == 3) west.add(le);
         }
-        // Compute center points
-        // TODO: Even distribution within each side
-        Point northCenter = new Point((int) bounds.getCenterX(), (int) bounds.getMinY());
-        Point eastCenter = new Point((int) bounds.getMaxX(), (int) bounds.getCenterY());
-        Point southCenter = new Point((int) bounds.getCenterX(), (int) bounds.getMaxY());
-        Point westCenter = new Point((int) bounds.getMinX(), (int) bounds.getCenterY());
-        // Assign points + directions
-        for (LinkEnd le : north) le.arrange(northCenter, SwingUtilities.NORTH, null);
-        for (LinkEnd le : east) le.arrange(eastCenter, SwingUtilities.EAST, null);
-        for (LinkEnd le : south) le.arrange(southCenter, SwingUtilities.SOUTH, null);
-        for (LinkEnd le : west) le.arrange(westCenter, SwingUtilities.WEST, null);
+        // Distribute within sides
+        this.distribute(bounds, north, SwingUtilities.NORTH);
+        this.distribute(bounds, east, SwingUtilities.EAST);
+        this.distribute(bounds, south, SwingUtilities.SOUTH);
+        this.distribute(bounds, west, SwingUtilities.WEST);
+    }
+
+    void distribute(Rectangle bounds, List<LinkEnd> ends, int orientation) {
+        if (orientation == SwingUtilities.NORTH || orientation == SwingUtilities.SOUTH) {
+            ends.sort(Comparator.comparing(le -> le.opposite().manager.parent.getBounds().getCenterX()));
+            double step = bounds.getWidth() / (ends.size() + 1);
+            double y = orientation == SwingUtilities.NORTH ? bounds.getMinY() : bounds.getMaxY();
+            double x = bounds.getMinX() + step;
+            for (LinkEnd le : ends) {
+                le.arrange(new Point((int) x, (int) y), orientation, null);
+                x += step;
+            }
+        } else {
+            ends.sort(Comparator.comparing(le -> le.opposite().manager.parent.getBounds().getCenterY()));
+            double step = bounds.getHeight() / (ends.size() + 1);
+            double x = orientation == SwingUtilities.WEST ? bounds.getMinX() : bounds.getMaxX();
+            double y = bounds.getMinY() + step;
+            for (LinkEnd le : ends) {
+                le.arrange(new Point((int) x, (int) y), orientation, null);
+                y += step;
+            }
+        }
     }
 
     int getLocation(Rectangle a, Rectangle b) {

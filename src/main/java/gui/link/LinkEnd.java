@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LinkEnd {
-    // TODO: Move to constants
     static double CONTROL_SHIFT_RATIO = 0.5;
 
     public Link parent;

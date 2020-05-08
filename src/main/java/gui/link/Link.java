@@ -10,10 +10,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Link extends JPanel implements CanvasItem {
-    // TODO: Move to constants
     static int THICKNESS = 2;
     static int CONTAINS_THRESHOLD = 8;
-    static int INACTIVE_ALPHA = 170;
+    static int INACTIVE_ALPHA = 200;
+    static int DASH_LENGTH = 10;
+    static int UPDATE_DELAY = 100;
+    static int UPDATE_STEP = 2;
+    static int OFFSET_MOD = DASH_LENGTH * 2;
 
     public LinkEnd[] ends = {new LinkEnd(this), new LinkEnd(this)};
     public boolean isSelected = false;
@@ -21,11 +24,18 @@ public class Link extends JPanel implements CanvasItem {
     public Point[] points = {};
     public Color color;
     public Object descriptor;
+    public Timer timer;
+    public int offset;
 
     public Link(Color color, Object descriptor) {
         this.color = color;
         this.descriptor = descriptor;
         this.setOpaque(false);
+        this.timer = new Timer(UPDATE_DELAY, (__) -> {
+            this.offset = (this.offset + UPDATE_STEP) % OFFSET_MOD;
+            this.repaint();
+        });
+        this.timer.start();
     }
 
     // CanvasItem implementation
@@ -43,12 +53,24 @@ public class Link extends JPanel implements CanvasItem {
 
     public void setSelected(boolean selected) {
         this.isSelected = selected;
+        this.timer.stop();
+        if (selected) this.timer.start();
         this.repaint();
     }
 
     public void autoUpdate() {
         this.ends[0].manager.update();
         this.ends[1].manager.update();
+    }
+
+    public void detach() {
+        for (LinkEnd end : this.ends) {
+            if (end.manager != null) {
+                end.manager.linkEnds.remove(end);
+                end.manager.update();
+                end.manager = null;
+            }
+        }
     }
 
     public void update() {
@@ -87,7 +109,12 @@ public class Link extends JPanel implements CanvasItem {
         if (this.curve == null || !this.isVisible()) return;
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setStroke(new BasicStroke(THICKNESS, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        Stroke stroke = this.isSelected
+                ? new BasicStroke(
+                    THICKNESS, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+                    1.0f, new float[] {DASH_LENGTH}, OFFSET_MOD - this.offset
+                ) : new BasicStroke(THICKNESS, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        g2.setStroke(stroke);
         g2.setColor(getColor());
         g2.draw(this.curve);
     }

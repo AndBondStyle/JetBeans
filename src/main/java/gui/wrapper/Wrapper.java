@@ -10,7 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public abstract class Wrapper extends JPanel implements CanvasItem {
-    // TODO: Move to constants
     static Color SEL_BORDER_COLOR = JBColor.CYAN;
     static int SEL_BORDER_WIDTH = 2;
     static int SEL_BORDER_EXTRA = 2;

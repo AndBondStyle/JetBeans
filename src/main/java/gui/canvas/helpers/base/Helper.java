@@ -26,7 +26,6 @@ public abstract class Helper {
         this.point = e.getPoint();
     }
 
-    // TODO: Move to "utils" or something
     public boolean checkEvent(Integer button, Integer action) {
         if (button != null) {
             if (action != MouseEvent.MOUSE_RELEASED && action != MouseEvent.MOUSE_CLICKED) {
