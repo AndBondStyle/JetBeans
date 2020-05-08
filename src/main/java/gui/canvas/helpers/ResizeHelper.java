@@ -1,5 +1,6 @@
 package gui.canvas.helpers;
 
+import gui.canvas.Canvas;
 import gui.canvas.CanvasItem;
 import gui.canvas.helpers.base.ToggleHelper;
 
@@ -157,7 +158,7 @@ public class ResizeHelper extends ToggleHelper {
         Rectangle oldBounds = this.resizeTarget.getBounds();
         Rectangle newBounds = getNewBounds(oldBounds);
         Dimension size = newBounds.getSize();
-        Dimension minSize = this.resizeTarget.getMinimumSize();
+        Dimension minSize = Canvas.MIN_ITEM_SIZE;
         Point oldOrigin = getOrigin(oldBounds);
         if (size.width < minSize.width) this.point.x = oldOrigin.x;
         if (size.height < minSize.height) this.point.y = oldOrigin.y;

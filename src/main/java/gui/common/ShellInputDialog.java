@@ -12,6 +12,7 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
+import org.codehaus.commons.compiler.InternalCompilerException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -88,6 +89,8 @@ public class ShellInputDialog extends DialogWrapper {
             this.setErrorText("Compile error: " + e.getMessage());
         } catch (InvocationTargetException e) {
             this.setErrorText("Evaluation error: " + e.getMessage());
+        } catch (InternalCompilerException e) {
+            this.setErrorText("Fatal compile error: " + e.getMessage());
         }
     }
 }
