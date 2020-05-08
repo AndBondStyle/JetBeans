@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MockWrapper extends JPanel implements CanvasItem {
-    private LinkManager linkManager = new LinkManager(this);
+    public LinkManager linkManager = new LinkManager(this);
 
     public MockWrapper() {
         this.setOpaque(false);

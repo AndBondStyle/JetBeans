@@ -54,7 +54,7 @@ public class ClassesPanel extends SimpleToolWindowPanel {
                 List<String> tokens = new ArrayList<>(Arrays.asList(klass.getKey().split("\\.")));
                 String name = tokens.remove(tokens.size() - 1);
                 String pkg = String.join(".", tokens);
-                PatchedNode childNode = new PatchedNode(this.core.project, "", klass.getValue());
+                PatchedNode childNode = new PatchedNode(this.core.project, klass.getValue());
                 childNode.setPrimaryText(name);
                 if (!pkg.equals("")) childNode.setSecondaryText(pkg);
                 childNode.setIcon(AllIcons.Nodes.Class);

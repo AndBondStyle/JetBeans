@@ -35,6 +35,7 @@ public class EventsPanel extends SimpleToolWindowPanel {
         PatchedNode root = this.tree.getRoot();
         if (!(this.core.selection instanceof Wrapper)) {
             root.removeAllChildren();
+            this.tree.forceUpdate();
             return;
         }
         this.tree.saveExpandedState();

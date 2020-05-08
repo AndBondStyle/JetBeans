@@ -37,6 +37,7 @@ public class MethodsPanel extends SimpleToolWindowPanel {
         PatchedNode root = this.tree.getRoot();
         if (!(this.core.selection instanceof Wrapper)) {
             root.removeAllChildren();
+            this.tree.forceUpdate();
             return;
         }
         Object target = ((Wrapper) this.core.selection).getTarget();

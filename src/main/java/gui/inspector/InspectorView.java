@@ -4,6 +4,7 @@ import core.inspection.EventInfo;
 import core.inspection.MethodInfo;
 import core.inspection.PropertyInfo;
 import gui.common.tree.PatchedNode;
+import gui.inspector.actions.ShellExecuteAction;
 import gui.inspector.actions.ViewSettingsAction;
 import gui.inspector.actions.LinkAction;
 import gui.common.CollapseAllAction;
@@ -80,6 +81,7 @@ public final class InspectorView implements ToolWindowFactory, DumbAware {
     public ActionToolbar initToolbar() {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.add(new LinkAction());
+        actionGroup.add(new ShellExecuteAction());
         actionGroup.add(new ViewSettingsAction(this.settings));
         actionGroup.add(new CollapseAllAction(this.getActiveTree()));
         return ActionManager.getInstance().createActionToolbar(TOOLBAR_KEY, actionGroup, false);

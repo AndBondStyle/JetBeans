@@ -10,10 +10,12 @@ public interface SimpleEventSupport {
     HashMap<Class, List<ActionListener>> registry = new HashMap<>();
 
     default void addListener(ActionListener listener) {
+        if (listener == null) return;
         this.registry.computeIfAbsent(this.getClass(), __ -> new ArrayList<>()).add(listener);
     }
 
     default void removeListener(ActionListener listener) {
+        if (listener == null) return;
         this.registry.computeIfAbsent(this.getClass(), __ -> new ArrayList<>()).remove(listener);
     }
 

@@ -6,6 +6,8 @@ import gui.canvas.helpers.base.Helper;
 import gui.canvas.helpers.*;
 
 import com.intellij.ui.components.JBScrollPane;
+import gui.wrapper.Wrapper;
+
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +61,15 @@ public class Canvas extends JPanel implements SimpleEventSupport {
         location.y -= size.height / 2;
         comp.setLocation(location);
         comp.setSize(size);
+    }
+
+    public Wrapper findWrapper(Object object) {
+        for (CanvasItem item : this.items) {
+            if (!(item instanceof Wrapper)) continue;
+            Object target = ((Wrapper) item).getTarget();
+            if (object == target) return (Wrapper) item;
+        }
+        return null;
     }
 
     public void processMouseEvent(MouseEvent e) {

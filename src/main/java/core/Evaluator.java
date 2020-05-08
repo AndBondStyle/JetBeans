@@ -2,20 +2,39 @@ package core;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
+import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.ScriptEvaluator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 public class Evaluator extends ScriptEvaluator {
-    public String script = "";
-    public Object[] arguments;
-    public JetBeans core;
+    private static String DEFAULT_HEADER_TEXT = "" +
+            "// Execute arbitrary java code optionally ending with return statement\n" +
+            "// First consecutive non-empty lines are persistent:\n" +
+            "// use them to store import statements you're frequently using\n" +
+            "import javax.swing.*;\nimport java.awt.*;\n" +
+            "// --- End of persistent section ---\n";
+    private static String staticHeader = DEFAULT_HEADER_TEXT;
 
-    public Evaluator(Project project) {
+    private String header = "";
+    private String body = "\nreturn ;\n";
+    private Object[] arguments = new Object[0];
+    private JetBeans core;
+
+    public Evaluator(Project project, String body, boolean useHeader) {
         // TODO: Set master loader
         this.core = JetBeans.getInstance(project);
+        if (body != null) this.body = body;
+        if (useHeader) this.header = Evaluator.staticHeader;
     }
+
+    public String getScript() { return this.header + this.body; }
+    public void setScript(String script) { this.header = ""; this.body = script; }
+    public void setHeader(String header) { this.header = header; }
+    public void setBody(String body) { this.body = body; }
+    public void cook() throws CompileException { this.cook(this.getScript()); }
+    public Object evaluate() throws InvocationTargetException { return this.evaluate(this.arguments); }
 
     public void setParameters(String[] names, String[] descriptions, Class<?>[] types, Object[] values) {
         this.setParameters(names, types);
@@ -28,7 +47,7 @@ public class Evaluator extends ScriptEvaluator {
             if (descriptions[i] != null) placeholder.append(" (").append(descriptions[i]).append(")");
             placeholder.append("\n");
         }
-        this.script = placeholder.toString() + this.script;
+        this.body = placeholder.toString() + this.body;
     }
 
     public Function<Object[], Object> makeLabmda() {
@@ -37,6 +56,12 @@ public class Evaluator extends ScriptEvaluator {
             catch (InvocationTargetException e) { this.core.logException(e); }
             return null;
         };
+    }
+
+    public void updateHeader() {
+        Pair<String, String> parts = Evaluator.splitHeader(this.getScript());
+        if (parts.getFirst().equals("")) return;
+        Evaluator.staticHeader = parts.getFirst();
     }
 
     public static Pair<String, String> splitHeader(String text) {

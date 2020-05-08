@@ -1,21 +1,21 @@
 package core.inspection;
 
 import java.beans.MethodDescriptor;
-import java.beans.ParameterDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
 import java.util.List;
 
 public class MethodInfo implements Cloneable {
     public MethodDescriptor descriptor;
     public Object target;
+    public String name;
     public Class<?> definer;
 
     public static MethodInfo create(MethodDescriptor descriptor, Object target) {
         MethodInfo info = new MethodInfo();
         info.descriptor = descriptor;
         info.target = target;
+        info.name = descriptor.getName();
         info.definer = descriptor.getMethod().getDeclaringClass();
         return info;
     }

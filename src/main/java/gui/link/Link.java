@@ -16,13 +16,15 @@ public class Link extends JPanel implements CanvasItem {
     static int INACTIVE_ALPHA = 170;
 
     public LinkEnd[] ends = {new LinkEnd(this), new LinkEnd(this)};
-    boolean isSelected = false;
-    CubicCurve2D curve = null;
-    Point[] points = {};
-    Color color;
+    public boolean isSelected = false;
+    public CubicCurve2D curve = null;
+    public Point[] points = {};
+    public Color color;
+    public Object descriptor;
 
-    public Link(Color color) {
+    public Link(Color color, Object descriptor) {
         this.color = color;
+        this.descriptor = descriptor;
         this.setOpaque(false);
     }
 
@@ -33,9 +35,7 @@ public class Link extends JPanel implements CanvasItem {
     public boolean isMovable() {
         return false;
     }
-    public boolean isSelectable() {
-        return true;
-    }
+    public boolean isSelectable() { return true; }
     public boolean isDeletable() {
         return true;
     }
@@ -46,14 +46,9 @@ public class Link extends JPanel implements CanvasItem {
         this.repaint();
     }
 
-    public void detach() {
-        for (LinkEnd end : this.ends) {
-            if (end.manager != null) {
-                end.manager.linkEnds.remove(end);
-                end.manager.update();
-                end.manager = null;
-            }
-        }
+    public void autoUpdate() {
+        this.ends[0].manager.update();
+        this.ends[1].manager.update();
     }
 
     public void update() {
@@ -92,7 +87,7 @@ public class Link extends JPanel implements CanvasItem {
         if (this.curve == null || !this.isVisible()) return;
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setStroke(new BasicStroke(THICKNESS));
+        g2.setStroke(new BasicStroke(THICKNESS, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2.setColor(getColor());
         g2.draw(this.curve);
     }

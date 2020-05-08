@@ -1,5 +1,6 @@
 package core;
 
+import core.links.Linker;
 import gui.common.SimpleEventSupport;
 import core.registry.Registry;
 import gui.canvas.CanvasItem;
@@ -30,7 +31,7 @@ public final class JetBeans implements SimpleEventSupport {
     public JetBeans(Project project) {
         this.project = project;
         this.registry = new Registry();
-        this.linker = new Linker();
+        this.linker = new Linker(this);
     }
 
     public static JetBeans getInstance(Project project) {
@@ -98,14 +99,18 @@ public final class JetBeans implements SimpleEventSupport {
             this.getCanvas().setSelection(wrapper);
             this.fireEvent("instantiate");
         } catch (RuntimeException e) {
-            Notification n = new Notification("JetBeans", null, NotificationType.ERROR);
-            n.setTitle("Bean instantiation failed");
-            n.setContent(e.getMessage());
-            StringWriter writer = new StringWriter();
-            PrintWriter printer = new PrintWriter(writer);
-            e.printStackTrace(printer);
-            n.setSubtitle(writer.toString());
-            Notifications.Bus.notify(n, this.project);
+            this.logException(e);
         }
+    }
+
+    public void logException(Exception e) {
+        Notification n = new Notification("JetBeans", null, NotificationType.ERROR);
+        n.setTitle("Bean instantiation failed");
+        n.setContent(e.getMessage());
+        StringWriter writer = new StringWriter();
+        PrintWriter printer = new PrintWriter(writer);
+        e.printStackTrace(printer);
+        n.setSubtitle(writer.toString());
+        Notifications.Bus.notify(n, this.project);
     }
 }

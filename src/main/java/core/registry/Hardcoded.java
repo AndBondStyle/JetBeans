@@ -1,5 +1,6 @@
 package core.registry;
 
+import core.TestBean;
 import core.registry.loaders.CoreLoader;
 import core.registry.loaders.Loader;
 
@@ -10,9 +11,10 @@ public final class Hardcoded {
         swingLoader.add("JLabel");
         registry.add(swingLoader);
 
-        Loader testLoader = new CoreLoader("Test", "java.lang");
-        testLoader.add("String");
+        Loader testLoader = new CoreLoader("Test", "");
+        testLoader.add("java.lang.String");
         testLoader.add("NonExistentClass");
+        testLoader.add(TestBean.class.getCanonicalName());
         registry.add(testLoader);
     }
 }

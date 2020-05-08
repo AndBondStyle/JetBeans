@@ -99,6 +99,10 @@ public class LinkManager extends ComponentAdapter {
     }
 
     public void add(LinkEnd linkEnd) {
+        if (linkEnd.manager != null) {
+            linkEnd.manager.linkEnds.remove(linkEnd);
+            linkEnd.manager.update();
+        }
         this.linkEnds.add(linkEnd);
         linkEnd.manager = this;
     }

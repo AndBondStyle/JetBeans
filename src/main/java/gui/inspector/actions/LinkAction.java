@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import core.JetBeans;
-import core.Linker;
+import core.links.Linker;
 import gui.inspector.InspectorView;
 import org.jetbrains.annotations.NotNull;
 
