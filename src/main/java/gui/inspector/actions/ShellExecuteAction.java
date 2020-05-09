@@ -25,6 +25,7 @@ public class ShellExecuteAction extends DumbAwareAction {
         dialog.offset = 1;
         dialog.callback = () -> this.actionPerformed(e);
         JetBeans core = JetBeans.getInstance(e.getProject());
+        if (core.getCanvas() == null) return;
         List<Object> context = core.getCanvas().items.stream()
                 .filter(x -> x instanceof Wrapper)
                 .map(x -> ((Wrapper) x).getTarget())

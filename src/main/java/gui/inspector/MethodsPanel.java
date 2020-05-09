@@ -1,5 +1,6 @@
 package gui.inspector;
 
+import com.intellij.ui.LayeredIcon;
 import core.inspection.InstanceInfo;
 import core.inspection.MethodInfo;
 import gui.common.tree.PatchedTree;
@@ -13,6 +14,9 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.icons.AllIcons;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,6 +29,18 @@ public class MethodsPanel extends SimpleToolWindowPanel {
         super(false, true);
         this.core = JetBeans.getInstance(project);
         this.tree = new PatchedTree(this.core.project);
+        this.tree.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() != MouseEvent.BUTTON1 || e.getClickCount() != 2) return;
+                Object selection = project.getService(InspectorView.class).getActiveItem();
+                if (selection instanceof MethodInfo) {
+                    MethodInfo info = (MethodInfo) selection;
+                    if (!info.isSimple()) return;
+                    try { info.method.invoke(info.target); }
+                    catch (Exception err) { JetBeans.getInstance(project).logException(err, "Failed to invoke method"); }
+                }
+            }
+        });
         this.settings = project.getService(InspectorView.class).settings;
         this.core.addListener(e -> { if (e.getActionCommand().equals("select")) this.update(); });
         this.settings.addListener(e -> { if (e.getActionCommand().equals("update")) this.update(); });
@@ -52,7 +68,9 @@ public class MethodsPanel extends SimpleToolWindowPanel {
             PatchedNode node = new PatchedNode(this.core.project, key, method);
             node.setPrimaryText(method.descriptor.getDisplayName());
             node.setSecondaryText(method.getSignature());
-            node.setIcon(AllIcons.Nodes.Method);
+            Icon icon = AllIcons.Nodes.Method;
+            if (method.isSimple()) icon = LayeredIcon.create(icon, AllIcons.Actions.Lightning);
+            node.setIcon(icon);
             nodes.put(node, method);
         }
         HashMap<String, List<PatchedNode>> groups = this.settings.groupNodes(nodes);

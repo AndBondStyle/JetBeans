@@ -107,6 +107,7 @@ public final class JetBeans implements SimpleEventSupport {
 
     public void instantiate(String name, String initializer, boolean quick) {
         try {
+            if (this.getCanvas() == null) return;
             ShellInputDialog dialog = new ShellInputDialog(this.project, "Shell Input - New Instance");
             dialog.evaluator.setReturnType(Object.class);
             dialog.offset = 2;

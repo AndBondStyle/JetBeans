@@ -21,19 +21,26 @@ public class ColorEditor extends Editor {
         this.colorDot.setBorder(BorderFactory.createEmptyBorder());
         this.colorDot.setPreferredSize(new Dimension(14, 14));
         this.colorDot.setMaximumSize(new Dimension(14, 14));
-        this.colorDot.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) { ColorEditor.this.pick(); }
-        });
         this.text = new JTextField();
         this.text.setOpaque(false);
         this.text.setBorder(BorderFactory.createEmptyBorder());
         this.text.setEnabled(false);
-        this.text.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) { ColorEditor.this.pick(); }
-        });
         this.centerPanel.add(Box.createHorizontalStrut(6));
         this.centerPanel.add(this.colorDot);
         this.centerPanel.add(this.text);
+
+        if (this.prop.isSettable()) {
+            this.colorDot.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    ColorEditor.this.pick();
+                }
+            });
+            this.text.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    ColorEditor.this.pick();
+                }
+            });
+        }
     }
 
     private void pick() {

@@ -64,4 +64,8 @@ public class MethodInfo implements Cloneable {
         result.append(this.method.getReturnType().getSimpleName());
         return result.toString();
     }
+
+    public boolean isSimple() {
+        return this.method.getParameters().length == 0;
+    }
 }

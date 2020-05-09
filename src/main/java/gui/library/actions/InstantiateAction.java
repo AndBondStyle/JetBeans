@@ -18,7 +18,15 @@ public class InstantiateAction extends AnAction implements DumbAware {
     public void actionPerformed(@NotNull AnActionEvent e) {
         if (e.getProject() == null) return;
         JetBeans core = JetBeans.getInstance(e.getProject());
+        if (core.getCanvas() == null) return;
         String klass = LibraryView.getClassName(e.getProject());
         core.instantiate(klass, null, false);
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        if (e.getProject() == null) return;
+        JetBeans core = JetBeans.getInstance(e.getProject());
+        e.getPresentation().setEnabled(core.getCanvas() != null);
     }
 }

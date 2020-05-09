@@ -30,6 +30,14 @@ public abstract class Editor extends JPanel {
     private static Icon LOCK = AllIcons.Nodes.C_private;
 
     static {
+        Editor.registerEditor(float.class, DoubleEditor.class);
+        Editor.registerEditor(Float.class, DoubleEditor.class);
+        Editor.registerEditor(double.class, DoubleEditor.class);
+        Editor.registerEditor(Double.class, DoubleEditor.class);
+        Editor.registerEditor(int.class, IntegerEditor.class);
+        Editor.registerEditor(Integer.class, IntegerEditor.class);
+        Editor.registerEditor(long.class, IntegerEditor.class);
+        Editor.registerEditor(Long.class, IntegerEditor.class);
         Editor.registerEditor(boolean.class, BooleanEditor.class);
         Editor.registerEditor(Boolean.class, BooleanEditor.class);
         Editor.registerEditor(Color.class, ColorEditor.class);
