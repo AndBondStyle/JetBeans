@@ -25,7 +25,7 @@ import java.util.*;
 
 public class MasterLoader extends ClassLoader implements SimpleEventSupport {
     public HashMap<PresentationData, List<Pair<String, PresentationData>>> groups = new LinkedHashMap<>();
-    public List<ClassLoader> loaders = new ArrayList<>();
+    public List<ClassLoader> loaders = new LinkedList<>();
     public PresentationData unsorted;
 
     public MasterLoader() {
@@ -72,13 +72,13 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
                 String name = item.getName().substring(0, item.getName().length() - 6);
                 items.add(this.makeClassPresentation(name.replace("/", "."), ""));
             }
-            this.loaders.add(loader);
+            this.loaders.add(0, loader);
         } else if (ext.equals("class")) {
             URL url = pathObject.getParent().getParent().toUri().toURL();
             ClassLoader loader = URLClassLoader.newInstance(new URL[]{url});
             String name = pathObject.getName(pathObject.getNameCount() - 2) + "." + filename.substring(0, filename.length() - 6);
             this.groups.get(this.unsorted).add(this.makeClassPresentation(name, path));
-            this.loaders.add(loader);
+            this.loaders.add(0, loader);
         }
         this.fireEvent("updated");
     }

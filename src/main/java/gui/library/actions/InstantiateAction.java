@@ -22,35 +22,9 @@ public class InstantiateAction extends AnAction implements DumbAware {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        String klass = this.getClassID(e.getProject());
-        if (klass == null) return;
-        ShellInputDialog dialog = new ShellInputDialog(e.getProject(), "Shell Input - New Instance");
-        dialog.evaluator.setReturnType(Object.class);
-        dialog.evaluator.setBody("\nreturn new " + klass + "();\n");
-        dialog.offset = 3;
+        if (e.getProject() == null) return;
         JetBeans core = JetBeans.getInstance(e.getProject());
-        dialog.callback = () -> {
-            Wrapper wrapper = Wrapper.autowrap(dialog.result);
-            core.getCanvas().addItem(wrapper);
-            core.getCanvas().setSelection(wrapper);
-            core.fireEvent("instantiate");
-        };
-        dialog.init();
-        dialog.show();
-    }
-
-    @Override
-    public void update(@NotNull AnActionEvent e) {
-        String klass = this.getClassID(e.getProject());
-        e.getPresentation().setEnabled(klass != null);
-    }
-
-    private String getClassID(Project project) {
-        LibraryView view = project.getService(LibraryView.class);
-        if (!view.getActiveTab().equals(LibraryView.CLASSES_TAB)) return null;
-        TreePath path = view.classes.tree.getSelectionPath();
-        if (path == null) return null;
-        PatchedNode node = (PatchedNode) path.getLastPathComponent();
-        return node.getKey().startsWith("!") ? null : node.getKey();
+        String klass = LibraryView.getClassID(e.getProject());
+        core.instantiate(klass, null, false);
     }
 }

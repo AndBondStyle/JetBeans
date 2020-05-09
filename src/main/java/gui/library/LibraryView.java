@@ -14,9 +14,12 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.Content;
 import gui.common.CollapseAllAction;
+import gui.common.tree.PatchedNode;
 import gui.library.actions.InstantiateAction;
 import gui.library.actions.ImportAction;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.tree.TreePath;
 
 @Service
 public final class LibraryView implements ToolWindowFactory, DumbAware {
@@ -85,5 +88,14 @@ public final class LibraryView implements ToolWindowFactory, DumbAware {
         ContentManager manager = this.toolWindow.getContentManager();
         if (tab.equals(CLASSES_TAB)) manager.setSelectedContent(this.classesContent);
         if (tab.equals(INSTANCES_TAB)) manager.setSelectedContent(this.instancesContent);
+    }
+
+    public static String getClassID(Project project) {
+        LibraryView view = project.getService(LibraryView.class);
+        if (!view.getActiveTab().equals(LibraryView.CLASSES_TAB)) return null;
+        TreePath path = view.classes.tree.getSelectionPath();
+        if (path == null) return null;
+        PatchedNode node = (PatchedNode) path.getLastPathComponent();
+        return node.getKey().startsWith("!") ? null : node.getKey();
     }
 }

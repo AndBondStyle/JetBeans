@@ -1,6 +1,8 @@
 package gui.library;
 
 import com.intellij.ide.projectView.PresentationData;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.util.Pair;
 import gui.common.tree.PatchedNode;
@@ -12,6 +14,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.icons.AllIcons;
+import gui.library.actions.InstantiateAction;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -35,9 +38,8 @@ public class ClassesPanel extends SimpleToolWindowPanel {
         this.tree.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() != MouseEvent.BUTTON1 || e.getClickCount() != 2) return;
-                PatchedNode node = (PatchedNode) tree.getLastSelectedPathComponent();
-                if (node == null || node.getKey().startsWith("!")) return;
-                core.instantiate(node.getKey());
+                String klass = LibraryView.getClassID(ClassesPanel.this.core.project);
+                ClassesPanel.this.core.instantiate(klass, null, true);
             }
         });
         this.setContent(ScrollPaneFactory.createScrollPane(this.tree));

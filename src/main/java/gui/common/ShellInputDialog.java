@@ -22,6 +22,7 @@ public class ShellInputDialog extends DialogWrapper {
     public int offset = 2;
     public Runnable callback = null;
     public boolean execute = true;
+    public boolean autoclose = false;
 
     public com.intellij.openapi.editor.Editor code;
     public Evaluator evaluator;
@@ -38,6 +39,12 @@ public class ShellInputDialog extends DialogWrapper {
     @Override
     public void init() {
         super.init();
+    }
+
+    @Override
+    public void show() {
+        if (this.autoclose) this.doOKAction();
+        else super.show();
     }
 
     @Override

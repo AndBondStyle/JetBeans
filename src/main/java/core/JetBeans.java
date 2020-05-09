@@ -3,6 +3,7 @@ package core;
 import core.linking.CascadeManager;
 import core.linking.Linker;
 import core.registry.MasterLoader;
+import gui.common.ShellInputDialog;
 import gui.common.SimpleEventSupport;
 import gui.canvas.CanvasItem;
 import gui.canvas.Canvas;
@@ -99,14 +100,34 @@ public final class JetBeans implements SimpleEventSupport {
         }
     }
 
-    public void instantiate(String name) {
+    public void instantiate(String name, String initializer, boolean quick) {
         try {
-            Class<?> klass = this.loader.loadClass(name);
-            Object instance = klass.getDeclaredConstructor().newInstance();
-            Wrapper wrapper = Wrapper.autowrap(instance);
-            this.getCanvas().addItem(wrapper);
-            this.getCanvas().setSelection(wrapper);
-            this.fireEvent("instantiate");
+            ShellInputDialog dialog = new ShellInputDialog(this.project, "Shell Input - New Instance");
+            dialog.evaluator.setReturnType(Object.class);
+            dialog.offset = 2;
+            if (name != null) {
+                dialog.evaluator.setBody("\nreturn new " + name + "();\n");
+                Class<?> klass = this.loader.loadClass(name);
+                if (quick && klass != null) {
+                    dialog.autoclose = true;
+                    try { klass.getDeclaredConstructor(); }
+                    catch (NoSuchMethodException ignored) { dialog.autoclose = false; }
+                }
+                dialog.offset = 3;
+            }
+            if (initializer != null) {
+                dialog.autoclose = true;
+                dialog.evaluator.setScript(initializer);
+            }
+            dialog.callback = () -> {
+                if (this.getCanvas() == null) return;
+                Wrapper wrapper = Wrapper.autowrap(dialog.result);
+                this.getCanvas().addItem(wrapper);
+                this.getCanvas().setSelection(wrapper);
+                this.fireEvent("instantiate");
+            };
+            dialog.init();
+            dialog.show();
         } catch (Exception e) {
             e = new RuntimeException("Failed to instantiate class \"" + name + "\"", e);
             this.logException(e, "Bean instantiation failed");
@@ -120,7 +141,7 @@ public final class JetBeans implements SimpleEventSupport {
             n.setDropDownText(e.getMessage());
             StringWriter writer = new StringWriter();
             PrintWriter printer = new PrintWriter(writer);
-            e.printStackTrace(printer);
+            e.getCause().printStackTrace(printer);
             n.setSubtitle(writer.toString());
         }
         Notifications.Bus.notify(n, this.project);
