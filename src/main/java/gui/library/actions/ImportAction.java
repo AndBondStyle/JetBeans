@@ -1,20 +1,17 @@
 package gui.library.actions;
 
-import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.FileTypeRegistry;
 import gui.library.LibraryView;
-import core.registry.loaders.JarLoader;
 import core.JetBeans;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.FileTypeRegistry;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.jar.JarFile;
 
 public class ImportAction extends AnAction implements DumbAware {
     public static FileType JAR = FileTypeRegistry.getInstance().getFileTypeByExtension("jar");

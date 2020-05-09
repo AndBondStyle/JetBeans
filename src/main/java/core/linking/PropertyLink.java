@@ -31,6 +31,7 @@ public class PropertyLink extends LinkBase {
             String body = this.evaluator.getBody();
             body = body.substring(0, body.length() - 3);
             this.evaluator.setBody(body + "curr);\n");
+            if (this.listener == null) this.dialog.autoclose = true;
         }
         this.evaluator.setReturnType(null);
         this.evaluator.setParameters(
@@ -54,7 +55,6 @@ public class PropertyLink extends LinkBase {
         final CascadeManager cascade = JetBeans.getInstance(this.project).cascade;
         PropertyChangeListener listener = (e) -> {
             if (!cascade.begin(e, destination)) return;
-            System.err.println("EVENT: " + e + " SRC: " + source + " DST: " + destination);
             Object[] args = new Object[] {source, destination, e.getOldValue(), e.getNewValue(), e};
             try { lambda.apply(args); }
             catch (Throwable ignored) {}

@@ -7,6 +7,8 @@ import gui.common.ShellInputDialog;
 import gui.common.SimpleEventSupport;
 import gui.canvas.CanvasItem;
 import gui.canvas.Canvas;
+import gui.link.Link;
+import gui.link.LinkEnd;
 import gui.wrapper.Wrapper;
 
 import com.intellij.notification.Notification;
@@ -19,6 +21,9 @@ import ide.CustomFileEditor;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 public final class JetBeans implements SimpleEventSupport {
@@ -35,7 +40,7 @@ public final class JetBeans implements SimpleEventSupport {
     public JetBeans(Project project) {
         this.project = project;
         this.linker = new Linker(this);
-        this.loader = new MasterLoader();
+        this.loader = new MasterLoader(this);
         this.cascade = new CascadeManager(this);
         this.keyboard = new KeyboardHelper(this);
     }
@@ -145,5 +150,28 @@ public final class JetBeans implements SimpleEventSupport {
             n.setSubtitle(writer.toString());
         }
         Notifications.Bus.notify(n, this.project);
+    }
+
+    public void autoRemove(CanvasItem item) {
+        if (item instanceof Wrapper) {
+            Wrapper wrapper = (Wrapper) item;
+            HashSet<Link> seen = new HashSet<>();
+            List<LinkEnd> ends = new ArrayList<>(wrapper.linkManager.linkEnds);
+            for (LinkEnd le : ends) {
+                if (seen.contains(le.parent)) continue;
+                this.removeLink(le.parent);
+                seen.add(le.parent);
+            }
+            if (this.getCanvas() == null) return;
+            this.getCanvas().removeItem(wrapper);
+        }
+        if (item instanceof Link) this.removeLink((Link) item);
+    }
+
+    public void removeLink(Link link) {
+        link.descriptor.destroy();
+        link.detach();
+        if (this.getCanvas() == null) return;
+        this.getCanvas().removeItem(link);
     }
 }

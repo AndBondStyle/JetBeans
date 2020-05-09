@@ -15,8 +15,10 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.Content;
 import gui.common.CollapseAllAction;
 import gui.common.tree.PatchedNode;
+import gui.library.actions.DeleteAction;
 import gui.library.actions.InstantiateAction;
 import gui.library.actions.ImportAction;
+import gui.library.actions.ReloadAction;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.TreePath;
@@ -68,6 +70,8 @@ public final class LibraryView implements ToolWindowFactory, DumbAware {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.add(new InstantiateAction());
         actionGroup.add(new ImportAction());
+        actionGroup.add(new ReloadAction());
+        actionGroup.add(new DeleteAction());
         actionGroup.add(new CollapseAllAction(() -> {
             String tab = this.getActiveTab();
             if (tab == null) return null;
@@ -78,9 +82,13 @@ public final class LibraryView implements ToolWindowFactory, DumbAware {
         return ActionManager.getInstance().createActionToolbar(TOOLBAR_KEY, actionGroup, false);
     }
 
+    public static LibraryView getInstance(Project project) {
+        return project.getService(LibraryView.class);
+    }
+
     public String getActiveTab() {
         Content content = this.toolWindow.getContentManager().getSelectedContent();
-        if (content == null) return null;
+        if (content == null) return "";
         return content.getTabName();
     }
 
@@ -90,12 +98,19 @@ public final class LibraryView implements ToolWindowFactory, DumbAware {
         if (tab.equals(INSTANCES_TAB)) manager.setSelectedContent(this.instancesContent);
     }
 
-    public static String getClassID(Project project) {
+    public static PatchedNode getActiveNode(Project project) {
         LibraryView view = project.getService(LibraryView.class);
         if (!view.getActiveTab().equals(LibraryView.CLASSES_TAB)) return null;
         TreePath path = view.classes.tree.getSelectionPath();
         if (path == null) return null;
-        PatchedNode node = (PatchedNode) path.getLastPathComponent();
-        return node.getKey().startsWith("!") ? null : node.getKey();
+        return (PatchedNode) path.getLastPathComponent();
+    }
+
+    public static String getClassName(Project project) {
+        PatchedNode node = LibraryView.getActiveNode(project);
+        if (node == null) return null;
+        if (node.getKey().startsWith("!")) return null;
+        if (node.getKey().contains("/")) return null;
+        return node.getKey();
     }
 }

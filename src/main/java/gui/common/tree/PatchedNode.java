@@ -46,4 +46,8 @@ public class PatchedNode extends DefaultMutableTreeNode {
     public void setIcon(Icon icon) {
         this.presentation.setIcon(icon);
     }
+
+    public void setTooltip(String tooltip) {
+        this.presentation.setTooltip(tooltip);
+    }
 }
