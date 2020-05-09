@@ -27,7 +27,7 @@ import java.util.*;
 public class PropertyTree extends PatchedTree {
     private List<Editor> editors = new ArrayList<>();
     private TreeSettings settings;
-    private Project project;
+    public Project project;
 
     public PropertyTree(Project project) {
         super(project);

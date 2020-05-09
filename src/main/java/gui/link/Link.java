@@ -66,7 +66,7 @@ public class Link extends JPanel implements CanvasItem {
 
     public void detach() {
         if (this.ends[0].manager != null) this.ends[0].manager.linkEnds.remove(this.ends[0]);
-        if (this.ends[1].manager != null) this.ends[1].manager.linkEnds.remove(this.ends[0]);
+        if (this.ends[1].manager != null) this.ends[1].manager.linkEnds.remove(this.ends[1]);
         this.autoUpdate();
     }
 

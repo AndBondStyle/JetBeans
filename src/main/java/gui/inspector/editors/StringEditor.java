@@ -2,7 +2,7 @@ package gui.inspector.editors;
 
 import javax.swing.*;
 
-public class ObjectEditor extends Editor {
+public class StringEditor extends Editor {
     private JTextField text;
 
     @Override
@@ -10,13 +10,14 @@ public class ObjectEditor extends Editor {
         this.text = new JTextField();
         this.text.setOpaque(false);
         this.text.setBorder(BorderFactory.createEmptyBorder());
-        this.text.setEnabled(false);
+        this.text.addActionListener((e) -> this.accept(this.text.getText(), true));
         this.centerPanel.add(this.text);
+        if (!this.prop.isSettable()) this.text.setEnabled(false);
     }
 
     @Override
     protected void update() {
-        this.text.setText("" + this.value);
+        this.text.setText((String) this.value);
         this.parent.repaint();
     }
 }

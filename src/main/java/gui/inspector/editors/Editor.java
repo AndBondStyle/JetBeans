@@ -30,6 +30,10 @@ public abstract class Editor extends JPanel {
     private static Icon LOCK = AllIcons.Nodes.C_private;
 
     static {
+        Editor.registerEditor(boolean.class, BooleanEditor.class);
+        Editor.registerEditor(Boolean.class, BooleanEditor.class);
+        Editor.registerEditor(Color.class, ColorEditor.class);
+        Editor.registerEditor(String.class, StringEditor.class);
         Editor.registerEditor(Object.class, ObjectEditor.class);
     }
 
@@ -85,6 +89,7 @@ public abstract class Editor extends JPanel {
         if (Objects.equals(value, this.value)) return;
         this.value = value;
         if (forward) this.prop.setter.accept(value);
+        if (this.prop.target instanceof Component) ((Component) this.prop.target).repaint();
         this.update();
     }
 

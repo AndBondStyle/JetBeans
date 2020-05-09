@@ -59,6 +59,7 @@ public class PropertyLink extends LinkBase {
             try { lambda.apply(args); }
             catch (Throwable ignored) {}
             finally { cascade.end(e, destination); }
+            if (destination instanceof Component) ((Component) destination).repaint();
         };
 
         if (this.listener != null) comp.removePropertyChangeListener(this.src.name, this.listener);

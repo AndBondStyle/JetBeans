@@ -1,11 +1,25 @@
 package gui.common;
 
+import com.intellij.ide.highlighter.JavaFileType;
+import com.intellij.lang.java.JShellLanguage;
+import com.intellij.lang.java.JavaLanguage;
+import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiManager;
+import com.intellij.remoteServer.util.ApplicationActionUtils;
 import core.Evaluator;
 
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiFile;
 
 import org.codehaus.commons.compiler.CompileException;
+
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import com.intellij.ide.highlighter.JShellFileType;
 import com.intellij.openapi.editor.EditorFactory;
@@ -13,6 +27,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import org.codehaus.commons.compiler.InternalCompilerException;
+import org.jetbrains.io.LocalFileFinder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,13 +80,7 @@ public class ShellInputDialog extends DialogWrapper {
 
     @Override
     protected JComponent createCenterPanel() {
-        PsiFile psi = PsiFileFactory.getInstance(this.project)
-                .createFileFromText("_", JShellFileType.INSTANCE, this.evaluator.getScript(), 0, true);
-        Document document = psi.getViewProvider().getDocument();
-        // TODO: Fix document / PSI mismatch error
-        // Document document = PsiDocumentManager.getInstance(this.project).getDocument(psi);
-        // Document document = EditorFactory.getInstance().createDocument(text);
-        assert document != null;
+        Document document = EditorFactory.getInstance().createDocument(this.evaluator.getScript());
         this.code = EditorFactory.getInstance().createEditor(document, this.project, JShellFileType.INSTANCE, false);
         this.code.getCaretModel().moveToOffset(this.code.getDocument().getTextLength() - this.offset);
         this.code.getSettings().setLineMarkerAreaShown(false);
