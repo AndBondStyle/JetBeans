@@ -5,7 +5,7 @@ import core.inspection.MethodInfo;
 import core.inspection.PropertyInfo;
 import gui.common.ShellInputDialog;
 import gui.common.SimpleEventSupport;
-import core.Evaluator;
+import core.main.Evaluator;
 
 import org.codehaus.commons.compiler.CompileException;
 import java.util.function.Function;

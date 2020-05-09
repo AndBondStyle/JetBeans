@@ -1,4 +1,4 @@
-package gui.common;
+package core.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;

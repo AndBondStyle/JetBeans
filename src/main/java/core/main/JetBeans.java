@@ -1,8 +1,7 @@
-package core;
+package core.main;
 
 import core.linking.CascadeManager;
 import core.linking.Linker;
-import core.registry.MasterLoader;
 import gui.common.ShellInputDialog;
 import gui.common.SimpleEventSupport;
 import gui.canvas.CanvasItem;

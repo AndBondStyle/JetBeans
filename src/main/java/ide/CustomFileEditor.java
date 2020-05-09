@@ -1,14 +1,9 @@
 package ide;
 
 import gui.common.SimpleEventSupport;
-import core.TestBean;
-import gui.wrapper.Wrapper;
 import gui.canvas.Canvas;
-import gui.link.Link;
-import core.JetBeans;
+import core.main.JetBeans;
 
-import com.intellij.ui.JBIntSpinner;
-import com.intellij.ui.JBColor;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorLocation;
@@ -21,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
-import java.awt.*;
 
 public class CustomFileEditor extends UserDataHolderBase implements FileEditor, SimpleEventSupport {
     private boolean isActive = false;

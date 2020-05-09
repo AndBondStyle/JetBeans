@@ -1,7 +1,7 @@
 package core.linking;
 
 import com.intellij.ui.JBColor;
-import core.JetBeans;
+import core.main.JetBeans;
 import core.inspection.EventInfo;
 import core.inspection.MethodInfo;
 import core.inspection.PropertyInfo;

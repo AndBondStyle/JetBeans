@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.ui.content.ContentManager;
-import core.JetBeans;
+import core.main.JetBeans;
 
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.DumbAware;
@@ -13,12 +13,12 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.Content;
-import gui.common.CollapseAllAction;
+import core.actions.CollapseAllAction;
 import gui.common.tree.PatchedNode;
-import gui.library.actions.DeleteAction;
-import gui.library.actions.InstantiateAction;
-import gui.library.actions.ImportAction;
-import gui.library.actions.ReloadAction;
+import core.actions.DeleteAction;
+import core.actions.InstantiateAction;
+import core.actions.ImportAction;
+import core.actions.ReloadAction;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.TreePath;

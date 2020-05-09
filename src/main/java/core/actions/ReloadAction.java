@@ -1,9 +1,9 @@
-package gui.library.actions;
+package core.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
-import core.JetBeans;
+import core.main.JetBeans;
 import gui.common.tree.PatchedNode;
 import gui.library.LibraryView;
 import org.jetbrains.annotations.NotNull;

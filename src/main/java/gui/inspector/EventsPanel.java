@@ -5,9 +5,8 @@ import core.inspection.EventSetInfo;
 import core.inspection.InstanceInfo;
 import gui.common.tree.PatchedTree;
 import gui.common.tree.PatchedNode;
-import gui.canvas.CanvasItem;
 import gui.wrapper.Wrapper;
-import core.JetBeans;
+import core.main.JetBeans;
 
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.openapi.project.Project;
@@ -15,7 +14,6 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.icons.AllIcons;
 
 import javax.swing.*;
-import java.beans.*;
 
 public class EventsPanel extends SimpleToolWindowPanel {
     public PatchedTree tree;

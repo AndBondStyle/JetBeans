@@ -1,7 +1,7 @@
-package gui.library.actions;
+package core.actions;
 
 import gui.library.LibraryView;
-import core.JetBeans;
+import core.main.JetBeans;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.fileTypes.FileType;

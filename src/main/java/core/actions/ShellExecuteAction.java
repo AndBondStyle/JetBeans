@@ -1,9 +1,9 @@
-package gui.inspector.actions;
+package core.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
-import core.JetBeans;
+import core.main.JetBeans;
 import gui.common.ShellInputDialog;
 import gui.wrapper.Wrapper;
 import org.jetbrains.annotations.NotNull;

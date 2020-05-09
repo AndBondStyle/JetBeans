@@ -3,7 +3,7 @@ package gui.library;
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.util.ui.tree.TreeUtil;
-import core.JetBeans;
+import core.main.JetBeans;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;

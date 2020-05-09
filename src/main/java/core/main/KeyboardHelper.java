@@ -1,4 +1,4 @@
-package core;
+package core.main;
 
 import gui.canvas.Canvas;
 import gui.canvas.CanvasItem;

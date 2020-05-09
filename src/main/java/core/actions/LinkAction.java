@@ -1,10 +1,10 @@
-package gui.inspector.actions;
+package core.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
-import core.JetBeans;
+import core.main.JetBeans;
 import core.linking.LinkBase;
 import core.linking.Linker;
 import gui.inspector.InspectorView;

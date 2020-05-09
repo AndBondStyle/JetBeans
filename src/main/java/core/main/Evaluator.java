@@ -1,4 +1,4 @@
-package core;
+package core.main;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;

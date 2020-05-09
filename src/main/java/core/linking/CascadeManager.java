@@ -1,6 +1,6 @@
 package core.linking;
 
-import core.JetBeans;
+import core.main.JetBeans;
 
 import javax.swing.*;
 import java.beans.PropertyChangeEvent;

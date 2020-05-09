@@ -1,6 +1,6 @@
 package gui.common;
 
-import core.Evaluator;
+import core.main.Evaluator;
 
 import java.lang.reflect.InvocationTargetException;
 import com.intellij.ide.highlighter.JShellFileType;

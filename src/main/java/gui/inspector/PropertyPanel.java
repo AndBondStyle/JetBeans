@@ -1,9 +1,8 @@
 package gui.inspector;
 
 import gui.inspector.tree.PropertyTree;
-import gui.canvas.CanvasItem;
 import gui.wrapper.Wrapper;
-import core.JetBeans;
+import core.main.JetBeans;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;

@@ -2,7 +2,7 @@ package gui.library;
 
 import gui.common.tree.PatchedNode;
 import gui.common.tree.PatchedTree;
-import core.JetBeans;
+import core.main.JetBeans;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
@@ -10,7 +10,6 @@ import com.intellij.ui.ScrollPaneFactory;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
 
 public class ClassesPanel extends SimpleToolWindowPanel {
     public PatchedTree tree;

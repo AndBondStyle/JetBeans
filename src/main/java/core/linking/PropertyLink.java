@@ -1,6 +1,6 @@
 package core.linking;
 
-import core.JetBeans;
+import core.main.JetBeans;
 import core.inspection.PropertyInfo;
 
 import com.intellij.openapi.project.Project;

@@ -1,8 +1,6 @@
 package gui.inspector.editors;
 
-import gui.common.tree.PatchedNode;
-import gui.inspector.actions.ShellInputAction;
-import gui.inspector.tree.PropertyNode;
+import core.actions.ShellInputAction;
 import gui.inspector.tree.PropertyTree;
 import core.inspection.PropertyInfo;
 
@@ -10,7 +8,6 @@ import com.intellij.openapi.actionSystem.impl.ActionButton;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.IconUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.*;
@@ -21,7 +18,6 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import javax.swing.*;
-import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.Objects;
 

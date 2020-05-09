@@ -1,6 +1,6 @@
 package gui.canvas.helpers;
 
-import core.JetBeans;
+import core.main.JetBeans;
 import gui.canvas.Canvas;
 import gui.canvas.CanvasItem;
 import gui.canvas.helpers.base.Helper;

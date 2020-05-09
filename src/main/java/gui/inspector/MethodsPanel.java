@@ -6,7 +6,7 @@ import core.inspection.MethodInfo;
 import gui.common.tree.PatchedTree;
 import gui.common.tree.PatchedNode;
 import gui.wrapper.Wrapper;
-import core.JetBeans;
+import core.main.JetBeans;
 
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.openapi.project.Project;
@@ -14,7 +14,6 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.icons.AllIcons;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;

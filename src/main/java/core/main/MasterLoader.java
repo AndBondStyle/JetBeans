@@ -1,13 +1,10 @@
-package core.registry;
+package core.main;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
-import com.intellij.ide.projectView.PresentationData;
 import com.intellij.openapi.extensions.PluginId;
-import com.intellij.openapi.util.Pair;
 import com.intellij.util.ui.tree.TreeUtil;
-import core.JetBeans;
 import gui.common.SimpleEventSupport;
 import gui.common.tree.PatchedNode;
 import org.jetbrains.annotations.Nullable;
