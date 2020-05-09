@@ -21,13 +21,12 @@ import java.io.StringWriter;
 
 @Service
 public final class JetBeans implements SimpleEventSupport {
-    public static String PLUGIN_ID = "jetbeans.jetbeans";
-
     public Project project;
     public CanvasItem selection;
     public Linker linker;
     public MasterLoader loader;
     public CascadeManager cascade;
+    public KeyboardHelper keyboard;
 
     private CustomFileEditor prevEditor;
     private CustomFileEditor currEditor;
@@ -37,6 +36,7 @@ public final class JetBeans implements SimpleEventSupport {
         this.linker = new Linker(this);
         this.loader = new MasterLoader();
         this.cascade = new CascadeManager(this);
+        this.keyboard = new KeyboardHelper(this);
     }
 
     public static JetBeans getInstance(Project project) {

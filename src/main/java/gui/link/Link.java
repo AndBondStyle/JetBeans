@@ -1,6 +1,7 @@
 package gui.link;
 
 import com.intellij.ui.ColorUtil;
+import core.linking.LinkBase;
 import gui.canvas.CanvasItem;
 
 import java.awt.geom.CubicCurve2D;
@@ -23,11 +24,11 @@ public class Link extends JPanel implements CanvasItem {
     public CubicCurve2D curve = null;
     public Point[] points = {};
     public Color color;
-    public Object descriptor;
+    public LinkBase descriptor;
     public Timer timer;
     public int offset;
 
-    public Link(Color color, Object descriptor) {
+    public Link(Color color, LinkBase descriptor) {
         this.color = color;
         this.descriptor = descriptor;
         this.setOpaque(false);

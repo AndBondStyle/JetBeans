@@ -41,6 +41,8 @@ public abstract class LinkBase implements SimpleEventSupport {
 
     public void update() {}
 
+    public void destroy() {}
+
     public void init(String script) {
         this.prepareDialog();
         if (script != null) {
@@ -59,5 +61,11 @@ public abstract class LinkBase implements SimpleEventSupport {
             this.dialog.init();
             this.dialog.show();
         }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("LinkBase finalized");
+        super.finalize();
     }
 }

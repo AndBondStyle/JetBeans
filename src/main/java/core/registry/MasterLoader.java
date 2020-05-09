@@ -109,7 +109,7 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        System.out.println("[TRACE] loadClass: name = " + name + " resolve = " + resolve);
+//        System.out.println("[TRACE] loadClass: name = " + name + " resolve = " + resolve);
         for (ClassLoader loader : this.loaders) {
             try { return loader.loadClass(name); }
             catch (Throwable ignored) {}
@@ -120,20 +120,20 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
     @Nullable
     @Override
     public URL getResource(String name) {
-        System.out.println("[TRACE] getResource: name = " + name);
+//        System.out.println("[TRACE] getResource: name = " + name);
         return super.getResource(name);
     }
 
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
-        System.out.println("[TRACE] getResources: name = " + name);
+//        System.out.println("[TRACE] getResources: name = " + name);
         return super.getResources(name);
     }
 
     @Nullable
     @Override
     public InputStream getResourceAsStream(String name) {
-        System.out.println("[TRACE] getResourceAsStream: name = " + name);
+//        System.out.println("[TRACE] getResourceAsStream: name = " + name);
         return super.getResourceAsStream(name);
     }
 }

@@ -63,6 +63,15 @@ public class Canvas extends JPanel implements SimpleEventSupport {
         this.fireEvent("itemsChanged");
     }
 
+    public void removeItem(CanvasItem item) {
+        this.items.remove(item);
+        this.content.remove((Component) item);
+        this.content.revalidate();
+        if (item == this.selection) this.setSelection(null);
+        this.fireEvent("itemsChanged");
+        this.repaint();
+    }
+
     public Wrapper findWrapper(Object object) {
         for (CanvasItem item : this.items) {
             if (!(item instanceof Wrapper)) continue;

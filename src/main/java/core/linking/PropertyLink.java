@@ -69,4 +69,11 @@ public class PropertyLink extends LinkBase {
         PropertyChangeEvent event = new PropertyChangeEvent(this.src.target, this.src.name, currentValue, currentValue);
         this.listener.propertyChange(event);
     }
+
+    public void destroy() {
+        if (this.listener != null) {
+            Component target = (Component) this.src.target;
+            target.removePropertyChangeListener(this.src.name, this.listener);
+        }
+    }
 }
