@@ -1,4 +1,4 @@
-package core.links;
+package core.linking;
 
 import com.intellij.openapi.project.Project;
 import core.inspection.MethodInfo;

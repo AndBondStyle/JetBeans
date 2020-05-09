@@ -1,7 +1,7 @@
 package core;
 
-import core.links.CascadeManager;
-import core.links.Linker;
+import core.linking.CascadeManager;
+import core.linking.Linker;
 import core.registry.MasterLoader;
 import gui.common.SimpleEventSupport;
 import gui.canvas.CanvasItem;

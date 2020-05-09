@@ -1,4 +1,4 @@
-package core.links;
+package core.linking;
 
 import com.intellij.ui.JBColor;
 import core.JetBeans;
@@ -80,7 +80,7 @@ public class Linker implements SimpleEventSupport {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!e.getActionCommand().equals("created")) return;
-                Link canvasLink = new Link(JBColor.MAGENTA, link);
+                Link canvasLink = new Link(JBColor.CYAN, link);
                 source.attachLink(canvasLink, 0);
                 destination.attachLink(canvasLink, 1);
                 canvas.addItem(canvasLink);

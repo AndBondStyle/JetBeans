@@ -13,7 +13,7 @@ import java.awt.event.MouseEvent;
 
 public class LinkingHelper extends Helper {
     public MockWrapper boop = new MockWrapper();
-    public Link link = new Link(JBColor.LIGHT_GRAY, null) {
+    public Link link = new Link(JBColor.ORANGE, null) {
         public boolean isSelectable() { return false; }
     };
     public CanvasItem source = null;

@@ -1,4 +1,4 @@
-package core.links;
+package core.linking;
 
 import core.JetBeans;
 import core.inspection.EventInfo;
