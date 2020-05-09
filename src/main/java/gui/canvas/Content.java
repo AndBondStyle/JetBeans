@@ -23,12 +23,11 @@ public class Content extends JLayeredPane {
             }
         };
         // Add mock listeners to enable processMouseEvent calls
-        glass.addMouseListener(new MouseAdapter() {
-        });
-        glass.addMouseMotionListener(new MouseAdapter() {
-        });
+        glass.addMouseListener(new MouseAdapter() {});
+        glass.addMouseMotionListener(new MouseAdapter() {});
         glass.setOpaque(false);
         glass.setFocusable(false);
+        glass.setMixingCutoutShape(new Rectangle());
 
         this.setLayout(null);
         this.setOpaque(true);

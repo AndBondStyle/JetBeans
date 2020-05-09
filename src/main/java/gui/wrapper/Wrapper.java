@@ -20,12 +20,7 @@ public abstract class Wrapper extends JPanel implements CanvasItem {
 
     public Wrapper(Object target) {
         this.target = target;
-        this.view = this.initView();
-        this.setOpaque(false);
-        this.setLayout(new BorderLayout());
-        this.add(this.view, BorderLayout.CENTER);
-        this.setSelected(false);
-        this.revalidate();
+        this.initView();
     }
 
     public static Wrapper autowrap(Object object) {
@@ -36,7 +31,13 @@ public abstract class Wrapper extends JPanel implements CanvasItem {
         }
     }
 
-    protected abstract Component initView();
+    protected void initView() {
+        this.setOpaque(false);
+        this.setLayout(new BorderLayout());
+        this.add(this.view, BorderLayout.CENTER);
+        this.setSelected(false);
+        this.revalidate();
+    };
 
     public void attachLink(Link link, int end) {
         this.linkManager.add(link.ends[end]);

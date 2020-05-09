@@ -12,12 +12,13 @@ public class APIWrapper extends Wrapper {
     }
 
     @Override
-    protected Component initView() {
+    protected void initView() {
         String name = this.target.getClass().getSimpleName();
         JLabel title = new JLabel(name, AllIcons.Nodes.Class, SwingConstants.CENTER);
         JPanel view = new JPanel(new BorderLayout());
         view.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
         view.add(title, BorderLayout.CENTER);
-        return view;
+        this.view = view;
+        super.initView();
     }
 }

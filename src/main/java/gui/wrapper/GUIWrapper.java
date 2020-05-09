@@ -17,8 +17,9 @@ public class GUIWrapper extends Wrapper {
     }
 
     @Override
-    protected Component initView() {
-        return (Component) this.target;
+    protected void initView() {
+        this.view = (Component) this.target;
+        super.initView();
     }
 
     public Color getStripesColor() {
