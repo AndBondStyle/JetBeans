@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.function.Function;
 import java.awt.*;
 

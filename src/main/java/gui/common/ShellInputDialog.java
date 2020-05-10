@@ -85,10 +85,13 @@ public class ShellInputDialog extends DialogWrapper {
             super.doOKAction();
         } catch (CompileException e) {
             this.setErrorText("Compile error: " + e.getMessage());
+            if (this.autoclose) throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
             this.setErrorText("Evaluation error: " + e.getMessage());
+            if (this.autoclose) throw new RuntimeException(e);
         } catch (InternalCompilerException e) {
             this.setErrorText("Fatal compile error: " + e.getMessage());
+            if (this.autoclose) throw new RuntimeException(e);
         }
     }
 }

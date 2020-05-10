@@ -7,8 +7,8 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.util.ui.tree.TreeUtil;
 import gui.common.SimpleEventSupport;
 import gui.common.tree.PatchedNode;
-import org.jetbrains.annotations.Nullable;
 
+import javax.swing.tree.TreeNode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -19,10 +19,12 @@ import java.net.URLClassLoader;
 import java.net.URL;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MasterLoader extends ClassLoader implements SimpleEventSupport {
     public List<PatchedNode> groups = new ArrayList<>();
     public List<ClassLoader> loaders = new LinkedList<>();
+    public HashMap<Integer, String> origins = new HashMap<>();
     public PatchedNode unsorted;
     public JetBeans core;
 
@@ -72,6 +74,7 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
     }
 
     public void loadFile(String path) throws Exception {
+        if (this.origins.containsValue(path)) this.delete(path);
         Path pathObject = Paths.get(path);
         String filename = pathObject.getFileName().toString();
         String[] tokens = filename.split("\\.");
@@ -91,12 +94,14 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
             this.groupByPackage(children, group);
             this.groups.add(group);
             this.loaders.add(0, loader);
+            this.origins.put(loader.hashCode(), path);
         } else if (ext.equals("class")) {
             URL url = pathObject.getParent().getParent().toUri().toURL();
             ClassLoader loader = URLClassLoader.newInstance(new URL[]{url});
             String name = pathObject.getName(pathObject.getNameCount() - 2) + "." + filename.substring(0, filename.length() - 6);
             this.unsorted.add(this.makeClassNode(name, "", path, null));
             this.loaders.add(0, loader);
+            this.origins.put(loader.hashCode(), path);
         }
         this.fireEvent("updated");
     }
@@ -116,6 +121,24 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
         }
         if (grouped.containsKey("")) {
             TreeUtil.listChildren(grouped.get("")).forEach(x -> parent.add((PatchedNode) x));
+        }
+    }
+
+    public void delete(String path) {
+        List<PatchedNode> roots = new ArrayList<>(this.groups);
+        roots.add(this.unsorted);
+        for (PatchedNode group : roots) {
+            List<TreeNode> nodes = TreeUtil.listChildren(group);
+            nodes.add(group);
+            nodes = nodes.stream().filter(x -> {
+                PatchedNode node = (PatchedNode) x;
+                String value = node.presentation.getTooltip();
+                return value != null && value.equals(path);
+            }).collect(Collectors.toList());
+            if (nodes.size() != 0) {
+                this.delete((PatchedNode) nodes.get(0));
+                return;
+            }
         }
     }
 
@@ -159,31 +182,15 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-//        System.out.println("[TRACE] loadClass: name = " + name + " resolve = " + resolve);
+        System.out.println("[TRACE] loadClass: name = " + name + " resolve = " + resolve);
         for (ClassLoader loader : this.loaders) {
-            try { return loader.loadClass(name); }
+            try {
+                Class<?> l = loader.loadClass(name);
+                System.out.println("LOADED BY " + l);
+                return l;
+            }
             catch (Throwable ignored) {}
         }
         return super.loadClass(name, resolve);
-    }
-
-    @Nullable
-    @Override
-    public URL getResource(String name) {
-//        System.out.println("[TRACE] getResource: name = " + name);
-        return super.getResource(name);
-    }
-
-    @Override
-    public Enumeration<URL> getResources(String name) throws IOException {
-//        System.out.println("[TRACE] getResources: name = " + name);
-        return super.getResources(name);
-    }
-
-    @Nullable
-    @Override
-    public InputStream getResourceAsStream(String name) {
-//        System.out.println("[TRACE] getResourceAsStream: name = " + name);
-        return super.getResourceAsStream(name);
     }
 }

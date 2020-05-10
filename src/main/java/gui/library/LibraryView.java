@@ -87,6 +87,7 @@ public final class LibraryView implements ToolWindowFactory, DumbAware {
     }
 
     public String getActiveTab() {
+        if (this.toolWindow == null) return "";
         Content content = this.toolWindow.getContentManager().getSelectedContent();
         if (content == null) return "";
         return content.getTabName();

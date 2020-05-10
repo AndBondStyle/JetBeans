@@ -33,15 +33,15 @@ public class ShellExecuteAction extends DumbAwareAction {
         if (core.selection instanceof Wrapper) {
             Object target = ((Wrapper) core.selection).getTarget();
             dialog.evaluator.setParameters(
-                    new String[] {"selection", "context"},
-                    new String[] {"currently selected object", "access other objects via context.get(<index>)"},
-                    new Class[] {target.getClass(), context.getClass()},
-                    new Object[] {target, context}
+                    new String[] {"scene", "bean"},
+                    new String[] {"references to all items on the scene", "currently selected bean"},
+                    new Class[] {context.getClass(), target.getClass()},
+                    new Object[] {context, target}
             );
         } else {
             dialog.evaluator.setParameters(
-                    new String[] {"context"},
-                    new String[] {"access other objects via \"context.get(<index>)\""},
+                    new String[] {"scene"},
+                    new String[] {"references to all items on the scene"},
                     new Class[] {context.getClass()},
                     new Object[] {context}
             );

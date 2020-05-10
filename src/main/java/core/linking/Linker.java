@@ -55,23 +55,26 @@ public class Linker implements SimpleEventSupport {
             LinkBase link = this.source instanceof PropertyInfo
                     ? new PropertyLink(this.core.project, ((PropertyInfo) this.source), this.destination)
                     : new EventLink(this.core.project, (EventInfo) this.source, this.destination);
-            link.addListener(this.makeCallback(
-                    link,
-                    this.source instanceof PropertyInfo
-                            ? ((PropertyInfo) this.source).target
-                            : ((EventInfo) this.source).target,
-                    this.destination instanceof PropertyInfo
-                            ? ((PropertyInfo) this.destination).target
-                            : ((MethodInfo) this.destination).target
-            ));
-            link.init(null);
+            Linker.autoLink(this.core.getCanvas(), this.source, this.destination, link, null);
         }
         this.source = null;
         this.destination = null;
     }
 
-    private ActionListener makeCallback(LinkBase link, Object src, Object dst) {
-        final Canvas canvas = this.core.getCanvas();
+    public static void autoLink(Canvas canvas, Object src, Object dst, LinkBase link, String script) {
+        link.addListener(Linker.makeCallback(
+                canvas, link,
+                src instanceof PropertyInfo
+                        ? ((PropertyInfo) src).target
+                        : ((EventInfo) src).target,
+                dst instanceof PropertyInfo
+                        ? ((PropertyInfo) dst).target
+                        : ((MethodInfo) dst).target
+        ));
+        link.init(script);
+    }
+
+    private static ActionListener makeCallback(Canvas canvas, LinkBase link, Object src, Object dst) {
         if (canvas == null) return null;
         final Wrapper source = canvas.findWrapper(src);
         final Wrapper destination = canvas.findWrapper(dst);

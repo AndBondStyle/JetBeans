@@ -1,5 +1,10 @@
 package ide;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
+import com.intellij.openapi.application.WriteAction;
+import core.serialization.SceneState;
 import gui.common.SimpleEventSupport;
 import gui.canvas.Canvas;
 import core.main.JetBeans;
@@ -15,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import javax.swing.*;
 
 public class CustomFileEditor extends UserDataHolderBase implements FileEditor, SimpleEventSupport {
@@ -28,6 +34,18 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor, 
         this.canvas = new Canvas(project);
         this.core = JetBeans.getInstance(project);
         this.core.registerEditor(this);
+        this.load();
+    }
+
+    public void load() {
+        try {
+            SceneState state = new SceneState();
+            byte[] content = this.file.contentsToByteArray();
+            state.load(content, this.canvas, this.core);
+        } catch (Exception e) {
+            e = new RuntimeException("Scene import failed", e);
+            this.core.logException(e, "Scene import failed");
+        }
     }
 
     public Canvas getCanvas() {
@@ -72,6 +90,22 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor, 
         return "JetBeans Editor";
     }
 
+    public void dispose() {
+        WriteAction.run(() -> {
+            try {
+                SceneState state = new SceneState();
+                byte[] content = state.dump(this.canvas, this.core);
+                this.file.setBinaryContent(content);
+                Notification n = new Notification("JetBeans", null, NotificationType.INFORMATION);
+                n.setTitle("Scene serialized successfully");
+                Notifications.Bus.notify(n, this.core.project);
+            } catch (Exception e) {
+                e = new RuntimeException("Scene export failed", e);
+                this.core.logException(e, "Scene export failed");
+            }
+        });
+    }
+
     // NOT USED (YET)
 
     public void addPropertyChangeListener(@NotNull PropertyChangeListener listener) {}
@@ -81,5 +115,4 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor, 
     public void setState(@NotNull FileEditorState state) { }
     public boolean isModified() { return false; }
     public boolean isValid() { return true; }
-    public void dispose() {}
 }

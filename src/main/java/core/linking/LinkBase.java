@@ -62,10 +62,4 @@ public abstract class LinkBase implements SimpleEventSupport {
             this.dialog.show();
         }
     }
-
-    @Override
-    protected void finalize() throws Throwable {
-        System.out.println("LinkBase finalized");
-        super.finalize();
-    }
 }

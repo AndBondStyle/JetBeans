@@ -16,6 +16,7 @@ import gui.link.LinkEnd;
 import gui.wrapper.Wrapper;
 
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -61,13 +62,18 @@ public class InstancesPanel extends SimpleToolWindowPanel {
         this.mapping.clear();
         Canvas canvas = this.core.getCanvas();
         if (canvas == null) return;
+        int index = 0;
         for (CanvasItem item : canvas.items) {
             if (!(item instanceof Wrapper)) continue;
             Wrapper wrapper = (Wrapper) item;
             Object target = wrapper.getTarget();
             PatchedNode instanceNode = new PatchedNode(this.core.project, "" + target.hashCode(), item);
-            instanceNode.setPrimaryText(target.getClass().getSimpleName());
-            instanceNode.setSecondaryText(target.toString());
+            String text = "[" + index + "]";
+            if (wrapper.getTarget() instanceof Component && ((Component) wrapper.getTarget()).getName() != null) {
+                text += " " + ((Component) wrapper.getTarget()).getName();
+            }
+            instanceNode.setPrimaryText(text);
+            instanceNode.setSecondaryText(target.getClass().getName());
             instanceNode.setIcon(AllIcons.Nodes.Class);
             for (LinkEnd le : wrapper.linkManager.linkEnds) {
                 if (!le.parent.isSelectable()) continue;
@@ -82,6 +88,7 @@ public class InstancesPanel extends SimpleToolWindowPanel {
             }
             root.add(instanceNode);
             this.mapping.put(item, instanceNode);
+            index += 1;
         }
         this.tree.forceUpdate();
     }
