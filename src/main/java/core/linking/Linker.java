@@ -62,7 +62,7 @@ public class Linker implements SimpleEventSupport {
     }
 
     public static void autoLink(Canvas canvas, Object src, Object dst, LinkBase link, String script) {
-        link.addListener(Linker.makeCallback(
+        link.callback = Linker.makeCallback(
                 canvas, link,
                 src instanceof PropertyInfo
                         ? ((PropertyInfo) src).target
@@ -70,27 +70,22 @@ public class Linker implements SimpleEventSupport {
                 dst instanceof PropertyInfo
                         ? ((PropertyInfo) dst).target
                         : ((MethodInfo) dst).target
-        ));
+        );
         link.init(script);
     }
 
-    private static ActionListener makeCallback(Canvas canvas, LinkBase link, Object src, Object dst) {
+    private static Runnable makeCallback(Canvas canvas, LinkBase link, Object src, Object dst) {
         if (canvas == null) return null;
         final Wrapper source = canvas.findWrapper(src);
         final Wrapper destination = canvas.findWrapper(dst);
         if (source == null || destination == null) return null;
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!e.getActionCommand().equals("created")) return;
-                Link canvasLink = new Link(JBColor.CYAN, link);
-                source.attachLink(canvasLink, 0);
-                destination.attachLink(canvasLink, 1);
-                canvas.addItem(canvasLink);
-                canvas.setSelection(canvasLink);
-                canvasLink.autoUpdate();
-                SwingUtilities.invokeLater(() -> link.removeListener(this));
-            }
+        return () -> {
+            Link canvasLink = new Link(JBColor.CYAN, link);
+            source.attachLink(canvasLink, 0);
+            destination.attachLink(canvasLink, 1);
+            canvas.addItem(canvasLink);
+            canvas.setSelection(canvasLink);
+            canvasLink.autoUpdate();
         };
     }
 }

@@ -54,17 +54,22 @@ public class PropertyLink extends LinkBase {
         final Function<Object[], Object> lambda = this.lambda;
         final Object destination = this.destinationObject;
         final CascadeManager cascade = JetBeans.getInstance(this.project).cascade;
+        final JetBeans core = JetBeans.getInstance(this.project);
         PropertyChangeListener listener = (e) -> {
             if (!cascade.begin(e, destination)) return;
             Object[] args = new Object[] {source, destination, e.getOldValue(), e.getNewValue(), e};
             try { lambda.apply(args); }
-            catch (Throwable ignored) {}
+            catch (Exception err) { core.logException(err, "Exception in lambda"); }
             finally { cascade.end(e, destination); }
             if (destination instanceof Component) ((Component) destination).repaint();
         };
 
-        if (this.listener != null) comp.removePropertyChangeListener(this.src.name, this.listener);
-        else this.fireEvent("created");
+        if (this.listener != null) {
+            comp.removePropertyChangeListener(this.src.name, this.listener);
+        } else {
+            if (this.callback != null) this.callback.run();
+            this.callback = null;
+        }
         comp.addPropertyChangeListener(this.src.name, listener);
         this.listener = listener;
         Object currentValue = this.src.getter.get();

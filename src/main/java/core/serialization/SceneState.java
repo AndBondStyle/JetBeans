@@ -1,5 +1,12 @@
 package core.serialization;
 
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileTypes.FileTypeRegistry;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.MessageDialogBuilder;
+import com.intellij.openapi.vfs.VirtualFile;
+import core.actions.ImportAction;
 import core.inspection.*;
 import core.linking.EventLink;
 import core.linking.LinkBase;
@@ -12,12 +19,10 @@ import gui.link.Link;
 import gui.wrapper.Wrapper;
 import org.apache.commons.io.input.ClassLoaderObjectInputStream;
 
-import java.io.*;
-import java.lang.reflect.Executable;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
-import java.util.*;
 import java.util.stream.Collectors;
+import java.util.*;
+import java.io.*;
 
 public class SceneState implements Serializable {
     public InstanceToken[] instances;
@@ -26,14 +31,15 @@ public class SceneState implements Serializable {
     public byte[] dump(Canvas canvas, JetBeans core) {
         List<InstanceToken> instances = new ArrayList<>();
         List<LinkToken> links = new ArrayList<>();
+        HashSet<LinkBase> seenLinks = new HashSet<>();
         for (CanvasItem item : canvas.items) {
             if (item instanceof Wrapper)
                 instances.add(this.dumpInstance((Wrapper) item, core));
             if (item instanceof Link && item.isSelectable())
-                links.add(this.dumpLink((Link) item));
+                links.add(this.dumpLink((Link) item, seenLinks));
         }
         this.instances = instances.toArray(InstanceToken[]::new);
-        this.links = links.toArray(LinkToken[]::new);
+        this.links = links.stream().filter(Objects::nonNull).toArray(LinkToken[]::new);
         List<String> origins = instances.stream().map(x -> x.origin)
                 .filter(Objects::nonNull).distinct().collect(Collectors.toList());
         try {
@@ -83,8 +89,9 @@ public class SceneState implements Serializable {
         return token;
     }
 
-    public LinkToken dumpLink(Link link) {
+    public LinkToken dumpLink(Link link, HashSet<LinkBase> seenLinks) {
         LinkBase lb = link.descriptor;
+        if (seenLinks.contains(lb)) return null;
         LinkToken token = new LinkToken();
         boolean a = lb instanceof PropertyLink;
         boolean b = lb.dst instanceof PropertyInfo;
@@ -185,7 +192,7 @@ public class SceneState implements Serializable {
             if (!new File(origin).exists()) origin = this.findMissing(origin, core);
             if (origin == null) continue;
             try {
-                core.loader.loadFile(origin);
+                core.loader.loadFile(origin, false);
             } catch (Exception e) {
                 e = new RuntimeException("Failed to load " + origin, e);
                 core.logException(e, "Import error");
@@ -194,7 +201,14 @@ public class SceneState implements Serializable {
     }
 
     public String findMissing(String path, JetBeans core) {
-        System.err.println("MISSING IMPORT: " + path);
+        String message = "Required file \"" + path + "\" is missing. Would you like to replace it?";
+        MessageDialogBuilder.YesNo prompt = MessageDialogBuilder.yesNo("Find Missing Files", message);
+        boolean yes = prompt.yesText("Find").noText("Skip").isYes();
+        if (yes) {
+            FileChooserDescriptor d = ImportAction.getFileChooserDescriptor();
+            VirtualFile file = FileChooser.chooseFile(d, core.project, null);
+            return file == null ? null : file.getPath();
+        }
         return null;
     }
 

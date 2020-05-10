@@ -25,7 +25,7 @@ public class DeleteAction extends DumbAwareAction {
         } else {
             JetBeans core =  JetBeans.getInstance(e.getProject());
             if (core.selection != null && core.getCanvas() != null) {
-                core.getCanvas().removeItem(core.selection);
+                core.autoRemove(core.selection);
             }
         }
     }

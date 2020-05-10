@@ -81,17 +81,23 @@ public class ShellInputDialog extends DialogWrapper {
                 this.result = this.evaluator.evaluate();
                 this.evaluator.updateHeader();
             }
-            if (this.callback != null) this.callback.run();
-            super.doOKAction();
+            if (this.callback != null) {
+                try {
+                    this.callback.run();
+                    super.doOKAction();
+                } catch (RuntimeException e) {
+                    this.setErrorText("Runtime error: " + e.getMessage());
+                }
+            }
         } catch (CompileException e) {
             this.setErrorText("Compile error: " + e.getMessage());
-            if (this.autoclose) throw new RuntimeException(e);
+            if (this.autoclose) super.show();
         } catch (InvocationTargetException e) {
             this.setErrorText("Evaluation error: " + e.getMessage());
-            if (this.autoclose) throw new RuntimeException(e);
+            if (this.autoclose) super.show();
         } catch (InternalCompilerException e) {
             this.setErrorText("Fatal compile error: " + e.getMessage());
-            if (this.autoclose) throw new RuntimeException(e);
+            if (this.autoclose) super.show();
         }
     }
 }

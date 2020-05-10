@@ -79,8 +79,12 @@ public class EventLink extends LinkBase {
                 }
         );
 
-        if (this.listener != null) this.src.group.removeListener.accept(listener);
-        else this.fireEvent("created");
+        if (this.listener != null) {
+            this.src.group.removeListener.accept(listener);
+        } else {
+            if (this.callback != null) this.callback.run();
+            this.callback = null;
+        }
         this.src.group.addListener.accept(listener);
         this.listener = listener;
     }

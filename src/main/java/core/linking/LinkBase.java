@@ -10,8 +10,9 @@ import core.main.Evaluator;
 import org.codehaus.commons.compiler.CompileException;
 import java.util.function.Function;
 
-public abstract class LinkBase implements SimpleEventSupport {
+public abstract class LinkBase {
     public Project project;
+    public Runnable callback;
     public Object dst;
 
     public ShellInputDialog dialog;

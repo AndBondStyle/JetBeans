@@ -25,6 +25,7 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
     public List<PatchedNode> groups = new ArrayList<>();
     public List<ClassLoader> loaders = new LinkedList<>();
     public HashMap<Integer, String> origins = new HashMap<>();
+    public HashSet<String> visibleOrigins = new HashSet<>();
     public PatchedNode unsorted;
     public JetBeans core;
 
@@ -73,8 +74,20 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
         return node;
     }
 
-    public void loadFile(String path) throws Exception {
-        if (this.origins.containsValue(path)) this.delete(path);
+    public void loadFile(String path, boolean reload) throws Exception {
+        System.out.println("LOAD: " + path + " RELOAD: " + reload);
+        if (this.visibleOrigins.contains(path)) {
+            if (reload) {
+                PatchedNode node = this.findNodeForPath(path);
+                if (node == null) return;
+                this.reload(node);
+            }
+            return;
+        }
+        this.forceLoad(path);
+    }
+
+    public void forceLoad(String path) throws Exception {
         Path pathObject = Paths.get(path);
         String filename = pathObject.getFileName().toString();
         String[] tokens = filename.split("\\.");
@@ -95,13 +108,15 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
             this.groups.add(group);
             this.loaders.add(0, loader);
             this.origins.put(loader.hashCode(), path);
+            this.visibleOrigins.add(path);
         } else if (ext.equals("class")) {
             URL url = pathObject.getParent().getParent().toUri().toURL();
             ClassLoader loader = URLClassLoader.newInstance(new URL[]{url});
             String name = pathObject.getName(pathObject.getNameCount() - 2) + "." + filename.substring(0, filename.length() - 6);
-            this.unsorted.add(this.makeClassNode(name, "", path, null));
+            this.unsorted.add(this.makeClassNode(name, "", path, loader));
             this.loaders.add(0, loader);
             this.origins.put(loader.hashCode(), path);
+            this.visibleOrigins.add(path);
         }
         this.fireEvent("updated");
     }
@@ -124,7 +139,7 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
         }
     }
 
-    public void delete(String path) {
+    public PatchedNode findNodeForPath(String path) {
         List<PatchedNode> roots = new ArrayList<>(this.groups);
         roots.add(this.unsorted);
         for (PatchedNode group : roots) {
@@ -136,13 +151,16 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
                 return value != null && value.equals(path);
             }).collect(Collectors.toList());
             if (nodes.size() != 0) {
-                this.delete((PatchedNode) nodes.get(0));
-                return;
+                return (PatchedNode) nodes.get(0);
             }
         }
+        return null;
     }
 
     public void delete(PatchedNode node) {
+        System.out.println("DELETE: " + node.presentation.getTooltip());
+        String path = node.presentation.getTooltip();
+        if (path != null) this.visibleOrigins.remove(path);
         if (node.getValue() == null) return;
         if (this.groups.contains(node)) this.groups.remove(node);
         if (TreeUtil.isAncestor(this.unsorted, node)) this.unsorted.remove(node);
@@ -151,10 +169,11 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
     }
 
     public void reload(PatchedNode node) throws Exception {
+        System.out.println("RELOAD: " + node.presentation.getTooltip());
         if (node.getValue() == null) return;
         String path = node.presentation.getTooltip();
         this.delete(node);
-        this.loadFile(path);
+        this.forceLoad(path);
     }
 
     public void registerHardcodedClasses() {
@@ -182,13 +201,9 @@ public class MasterLoader extends ClassLoader implements SimpleEventSupport {
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        System.out.println("[TRACE] loadClass: name = " + name + " resolve = " + resolve);
+        // System.out.println("[TRACE] loadClass: name = " + name + " resolve = " + resolve);
         for (ClassLoader loader : this.loaders) {
-            try {
-                Class<?> l = loader.loadClass(name);
-                System.out.println("LOADED BY " + l);
-                return l;
-            }
+            try { return loader.loadClass(name); }
             catch (Throwable ignored) {}
         }
         return super.loadClass(name, resolve);

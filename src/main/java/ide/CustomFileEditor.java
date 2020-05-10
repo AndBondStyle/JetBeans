@@ -41,6 +41,7 @@ public class CustomFileEditor extends UserDataHolderBase implements FileEditor, 
         try {
             SceneState state = new SceneState();
             byte[] content = this.file.contentsToByteArray();
+            if (content.length == 0) return;
             state.load(content, this.canvas, this.core);
         } catch (Exception e) {
             e = new RuntimeException("Scene import failed", e);

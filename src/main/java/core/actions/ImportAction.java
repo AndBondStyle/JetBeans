@@ -25,16 +25,10 @@ public class ImportAction extends AnAction implements DumbAware {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         JetBeans core = JetBeans.getInstance(e.getProject());
-        FileChooserDescriptor d = new FileChooserDescriptor(true, false, true, true, false, false)
-                .withFileFilter(file -> {
-                    if (FileTypeRegistry.getInstance().isFileOfType(file, JAR)) return true;
-                    if (FileTypeRegistry.getInstance().isFileOfType(file, CLASS)) return true;
-                    if (FileTypeRegistry.getInstance().isFileOfType(file, JAVA)) return true;
-                    return false;
-                });
+        FileChooserDescriptor d = ImportAction.getFileChooserDescriptor();
         FileChooser.chooseFile(d, e.getProject(), null, file -> {
             try {
-                core.loader.loadFile(file.getPath());
+                core.loader.loadFile(file.getPath(), true);
                 LibraryView view = e.getProject().getService(LibraryView.class);
                 view.setActiveTab(LibraryView.CLASSES_TAB);
             } catch (Exception err) {
@@ -42,5 +36,14 @@ public class ImportAction extends AnAction implements DumbAware {
                 core.logException(err, "Import error");
             }
         });
+    }
+
+    public static FileChooserDescriptor getFileChooserDescriptor() {
+        return new FileChooserDescriptor(true, false, true, true, false, false)
+                .withFileFilter(file -> {
+                    if (FileTypeRegistry.getInstance().isFileOfType(file, JAR)) return true;
+                    if (FileTypeRegistry.getInstance().isFileOfType(file, CLASS)) return true;
+                    return false;
+                });
     }
 }

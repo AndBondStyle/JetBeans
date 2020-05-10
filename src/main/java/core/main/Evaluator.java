@@ -6,6 +6,8 @@ import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.ScriptEvaluator;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 public class Evaluator extends ScriptEvaluator {
@@ -37,6 +39,7 @@ public class Evaluator extends ScriptEvaluator {
     public Object evaluate() throws InvocationTargetException { return this.evaluate(this.arguments); }
 
     public void setParameters(String[] names, String[] descriptions, Class<?>[] types, Object[] values) {
+        types = this.fixTypes(types);
         this.setParameters(names, types);
         this.arguments = values;
         StringBuilder placeholder = new StringBuilder();
@@ -48,6 +51,24 @@ public class Evaluator extends ScriptEvaluator {
             placeholder.append("\n");
         }
         this.body = placeholder.toString() + this.body;
+    }
+
+    public Class<?>[] fixTypes(Class<?>[] types) {
+        List<Class<?>> result = new ArrayList<>();
+        for (Class<?> type : types) {
+            if (type.isPrimitive()) {
+                result.add(type);
+                continue;
+            }
+            try {
+                Class<?> fixed = this.core.loader.loadClass(type.getName());
+                result.add(fixed);
+            } catch (ClassNotFoundException e) {
+                this.core.logException(e, "Evaluator class loaders mismatch (class " + type.getName() + ")");
+                result.add(type);
+            }
+        }
+        return result.toArray(Class[]::new);
     }
 
     public Function<Object[], Object> makeLabmda() {

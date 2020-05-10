@@ -143,10 +143,11 @@ public final class JetBeans implements SimpleEventSupport {
         Notification n = new Notification("JetBeans", null, NotificationType.ERROR);
         n.setTitle(title);
         if (e != null) {
-            n.setDropDownText(e.getMessage());
+            n.setDropDownText(e.getMessage() != null ? e.getMessage() : "");
             StringWriter writer = new StringWriter();
             PrintWriter printer = new PrintWriter(writer);
-            e.getCause().printStackTrace(printer);
+            if (e.getCause() != null) e.getCause().printStackTrace(printer);
+            else e.printStackTrace(printer);
             n.setSubtitle(writer.toString());
         }
         Notifications.Bus.notify(n, this.project);
